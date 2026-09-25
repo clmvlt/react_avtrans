@@ -1,4 +1,5 @@
 import { ChangelogDialog } from '@/features/changelog/components/ChangelogDialog'
+import { ProfileCompletionDialog } from '@/features/profile/components/ProfileCompletionDialog'
 import { ServiceHistoryDialog } from '@/features/service-history/components/ServiceHistoryDialog'
 import { SignatureReminderDialog } from '@/features/signatures/components/SignatureReminderDialog'
 import { selectIsAdmin, useAuthStore } from '@/stores/auth-store'
@@ -20,11 +21,8 @@ export function GlobalDialogs({ changelogOpen, onChangelogOpenChange }: GlobalDi
       {/* Nouveautés : ouvert automatiquement par AppLayout s'il y en a de non vues */}
       <ChangelogDialog open={changelogOpen} onOpenChange={onChangelogOpenChange} />
 
-      {/*
-        À ajouter en phase 4, ici (même condition d'affichage : pages protégées) :
-        - ProfileCompletionDialog (features/profile) : ouvert à l'arrivée si l'adresse
-          (rue, ville, code postal) ou le numéro de permis manque.
-      */}
+      {/* Complétion de profil : ouverte à l'arrivée si l'adresse ou le numéro de permis manque */}
+      <ProfileCompletionDialog />
 
       {/* Rappel de signature des heures du mois dernier : bloquant, une fois par session */}
       <SignatureReminderDialog />
