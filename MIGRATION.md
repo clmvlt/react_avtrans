@@ -33,8 +33,8 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 
 | Phase | Contenu | Statut |
 |---|---|---|
-| 0. Inventaire | ce fichier + annexes | **fait, en attente de validation** |
-| 1. Socle | Vite React-TS, git, Tailwind v4, alias, shadcn init, tokens, ESLint/Prettier, React Compiler, `CLAUDE.md` | à faire |
+| 0. Inventaire | ce fichier + annexes | **fait** (validé le 25/09/2026, voir section 0) |
+| 1. Socle | Vite React-TS, git, Tailwind v4, alias, shadcn init, tokens, ESLint/Prettier, React Compiler, `CLAUDE.md` | **fait** (25/09/2026) |
 | 2. Couche agnostique | api, services, models, enums, types, utils, lib, config, public ; type-check vert | à faire |
 | 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | à faire, **validation requise en fin de phase** |
 | 4. Domaines | voir l'ordre ci-dessous | à faire |
@@ -65,7 +65,9 @@ Ordre des domaines en phase 4 (celui du brief) :
 
 ## 0. Décisions à valider avant la phase 1
 
-Ce sont les seuls points qui bloquent le socle. Les autres questions (section 9) peuvent attendre le domaine concerné.
+> **Statut (25/09/2026)** : le propriétaire a répondu « vasy met en place le projet » sans trancher point par point. Les **recommandations D1 à D6 sont donc appliquées**. Pour D6, aucun numéro n'ayant été donné, **tous les bugs B-xx de la section 8.2 sont reproduits à l'identique** jusqu'à autorisation explicite ; ceux de la section 8.1 sont corrigés par construction. Chaque décision reste révisable.
+
+Ce sont les seuls points qui bloquaient le socle. Les autres questions (section 9) peuvent attendre le domaine concerné.
 
 **D1. Viewer 3D de la landing : abandonner `@react-three/fiber` et `drei` ?**
 `FleetViewer.vue` n'est plus importé nulle part depuis le commit `751eedd` (« retrait du viewer 3D », 24 juin 2026). Porter la 3D ajouterait deux dépendances sans aucun écran pour les utiliser.
@@ -134,7 +136,8 @@ Les annexes relèvent plusieurs centaines de constats (bugs, incohérences, code
 | `chart.js`, `vue-chartjs` | `recharts` via le composant `chart` de shadcn | un seul graphique (historique km d'un véhicule) |
 | `three`, `@tresjs/core`, `@tresjs/cientos` | — (voir D1) | code mort depuis `751eedd` |
 | `mapbox-gl`, `pdfjs-dist`, `jspdf`, `html2canvas-pro` | inchangés | worker pdf.js local (`?url`) au lieu du CDN figé en 4.0.379 |
-| `class-variance-authority`, `clsx`, `tailwind-merge` | inchangés | |
+| `class-variance-authority` | inchangé | |
+| `clsx`, `tailwind-merge` | paquet **`cn`** (officiel shadcn-ui) | **Écart au brief, décidé en phase 1.** Le CLI shadcn v4 et son registre importent désormais `cn` depuis ce paquet dans chaque composant généré ; garder clsx + tailwind-merge aurait obligé à retoucher chaque fichier de `components/ui`. `@/lib/utils` réexporte le même `cn`. Parité vérifiée : 52 670 fusions comparées sur les 2 025 chaînes de classes du Vue, 0 écart hors `bg-gradient-to-*` (syntaxe v3 que tailwind-merge prend à tort pour une couleur ; en syntaxe v4 `bg-linear-to-*`, résultats identiques). |
 | `tailwindcss`, `@tailwindcss/vite`, `tw-animate-css` | inchangés | |
 | `vite`, `typescript`, `@types/node`, `vite-plugin-compression2` | inchangés | |
 | — | `@tanstack/react-query` (+ `@tanstack/react-query-devtools` en dev) | |
@@ -144,6 +147,15 @@ Les annexes relèvent plusieurs centaines de constats (bugs, incohérences, code
 | — | `eslint` (config du template), `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `typescript-eslint`, `prettier` (+ `prettier-plugin-tailwindcss` proposé) | |
 | — | `@dnd-kit/*` : **non**, sauf décision (Q-DND, section 9) | glisser-déposer du stock, des todos et des types d'entretien |
 | — | `dompurify` : **non** | aucun `v-html` dans le Vue ; l'export PDF du planning construit du HTML à la main (voir B-02) : on échappera les valeurs, sans DOMPurify |
+
+**Versions installées en phase 1** (25/09/2026). Vite 8.3, React Router 8.4 et TypeScript 7.0 sont publiés, mais le brief fixe les majeures : on reste sur Vite 7, React Router 7 et TypeScript 5.9 (typescript-eslint exige TS < 6.1).
+- **Scaffold** : `create-vite@8.3.0`, dernière version dont le template `react-ts` génère Vite 7.
+- **Base** : vite 7.3.6, react / react-dom 19.3.0, typescript 5.9.3, @vitejs/plugin-react 5.2.0, babel-plugin-react-compiler 1.0.0.
+- **Styles** : tailwindcss / @tailwindcss/vite 4.3.3, tw-animate-css 1.4.0.
+- **UI** : shadcn CLI 4.21 (style `new-york`, Radix via `radix-ui` 1.6.7), lucide-react 1.48, class-variance-authority 0.7.1, cn 0.4.0.
+- **Outillage** : eslint 9.39, typescript-eslint 8.x, eslint-plugin-react-hooks 7, prettier 3.9 + prettier-plugin-tailwindcss 0.8.
+
+**shadcn CLI v4** : `init` ne propose plus `--style` ni `--base-color` mais des *presets*. Le preset « vega » installait un style différent du Vue (boutons destructive « doux », paddings réduits) et la police Inter. `components.json` a donc été remis en `style: "new-york"`, `baseColor: "neutral"`, identique aux composants shadcn-vue du projet Vue. Les variantes du `button` généré sont les mêmes que dans le Vue.
 
 ## 3. Architecture retenue (rappel du brief et précisions)
 
@@ -314,17 +326,17 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 
 | Source Vue | Cible React | Adaptation | Phase | Statut |
 |---|---|---|---|---|
-| `package.json` | `package.json` | nom, scripts (`dev`, `build` = `tsc -b && vite build && node scripts/prerender.cjs`, `lint`, `preview`, `prerender`), dépendances de la section 2 ; version reprise (`0.1.6`) | 1 | à faire |
-| `vite.config.js` | `vite.config.ts` | `@vitejs/plugin-react` + React Compiler ; alias `@` ; port 5173 et `host 0.0.0.0` ; `define __APP_VERSION__` ; plugins `version.json`, sitemap (sources : `src/pages/landing`, `src/features/landing`, `src/assets/images`, `index.html`, `src/pages/auth/LoginPage.tsx`) et compression gzip + brotli ; `manualChunks` revus (plus de vue, fontawesome, chartjs, threejs) | 1 puis 5 | à faire |
-| `tsconfig.json` | `tsconfig.json` + `tsconfig.app.json` + `tsconfig.node.json` (template) | alias `@/*` dans les deux premiers ; strict ; `noUncheckedIndexedAccess` (présent dans le Vue) ; `erasableSyntaxOnly` selon D3 | 1 | à faire |
-| `components.json` | `components.json` | régénéré par `shadcn init` (new-york, neutral, CSS variables, lucide) | 1 | à faire |
-| `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | à faire |
+| `package.json` | `package.json` | nom, scripts (`dev`, `build` = `tsc -b && vite build && node scripts/prerender.cjs`, `lint`, `preview`, `prerender`), dépendances de la section 2 ; version reprise (`0.1.6`) | 1 puis 5 | en cours (socle fait ; `prerender` et plugins en phase 5) |
+| `vite.config.js` | `vite.config.ts` | `@vitejs/plugin-react` + React Compiler ; alias `@` ; port 5173 et `host 0.0.0.0` ; `define __APP_VERSION__` ; plugins `version.json`, sitemap (sources : `src/pages/landing`, `src/features/landing`, `src/assets/images`, `index.html`, `src/pages/auth/LoginPage.tsx`) et compression gzip + brotli ; `manualChunks` revus (plus de vue, fontawesome, chartjs, threejs) | 1 puis 5 | en cours (plugin React + Compiler, Tailwind, alias, serveur faits ; `define`, plugins version, sitemap, compression en phase 2 et 5) |
+| `tsconfig.json` | `tsconfig.json` + `tsconfig.app.json` + `tsconfig.node.json` (template) | alias `@/*` dans les deux premiers ; strict ; `noUncheckedIndexedAccess` (présent dans le Vue) ; `erasableSyntaxOnly` selon D3 | 1 | fait |
+| `components.json` | `components.json` | régénéré par `shadcn init` puis remis en `new-york` / `neutral` (CLI v4, voir section 2) ; CSS variables, lucide | 1 | fait |
+| `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | en cours (`lang="fr"`, viewport, theme-color, `#app`, `main.tsx` faits ; métas, favicons, JSON-LD, anti-FOUC en phase 3 et 5) |
 | `scripts/prerender.cjs` | `scripts/prerender.cjs` | même client CDP ; attente adaptée à React (`#app h1` + marqueur de fin de rendu) ; `cleanHtml` sans les commentaires Vue ; montage React par `createRoot` (pas `hydrateRoot` : le DOM pré-rendu diffère, avec les classes `revealed` et les compteurs à leur valeur finale) ; capture du `<head>` si D2 = A | 5 | à faire |
 | `public/` (favicons, icons/, manifest.json, og-image.jpg, robots.txt, .well-known/, sounds/notif.wav) | `public/` | copiés ; pas `models/*.glb` (D1), `sounds/notif.{aiff,flac}`, `notif_converted.wav`, `vite.svg` (morts) | 2 | à faire |
 | `src/assets/` (favicon.png, logo.png, images/*.webp) | `src/assets/` | copiés ; `images/fonctions.png` jamais importé | 2 | à faire |
-| `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 1 | à faire |
-| `.gitignore` | `.gitignore` | repris (secrets, `.env*`, `dist`, `deploy.py`) ; lignes propres au Vue (`*.vue.b`) retirées ; `CLAUDE.md` selon D5 | 1 | à faire |
-| `CLAUDE.md` | `CLAUDE.md` | réécrit pour React (stack, architecture, conventions, pièges du brief et de cet inventaire) | 1 | à faire |
+| `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 2 | à faire |
+| `.gitignore` | `.gitignore` | repris (secrets, `.env*`, `dist`, `deploy.py`) ; lignes propres au Vue (`*.vue.b`) retirées ; `CLAUDE.md` selon D5 | 1 | fait |
+| `CLAUDE.md` | `CLAUDE.md` | réécrit pour React (stack, architecture, conventions, pièges du brief et de cet inventaire) | 1 | fait |
 | `deploy/deploy.py`, `deploy/apache-cache-headers.conf`, `deploy/install_apache_headers.py` | `deploy/` | copiés en fin de migration, chemins adaptés, `deploy.py` ajouté au `.gitignore` ; **jamais exécutés par moi** | 5 | à faire |
 | `src/main.ts` | `src/main.tsx` | `createRoot(#app)`, `RouterProvider`, `AppProviders`, import du CSS ; plus de FontAwesome | 3 | à faire |
 | `src/App.vue` | `components/layout/RootLayout.tsx`, `components/layout/AppLayout.tsx`, `components/layout/GlobalDialogs.tsx`, `providers/AppProviders.tsx` | voir 5.3 pour les comportements globaux | 3 | à faire |
@@ -338,14 +350,14 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `src/types/*.ts` (api, file, geocoding, google-identity.d.ts, index) | `src/types/` | copiés | 2 | à faire |
 | `src/utils/*.ts` (absenceFormatters, acompteFormatters, fileUtils, timeFormatters, userVisibility) | `src/utils/` | copiés inchangés | 2 | à faire |
 | `src/utils/serviceModificationFormatters.ts` | `src/utils/serviceModificationFormatters.ts` | seul utilitaire dépendant de Vue : `Component` devient `LucideIcon`, import `lucide-react` | 2 | à faire |
-| `src/lib/utils.ts` | `src/lib/utils.ts` | régénéré par `shadcn init` (identique) | 1 | à faire |
+| `src/lib/utils.ts` | `src/lib/utils.ts` | réexporte `cn` du paquet `cn` (écart au brief, voir section 2) | 1 | fait |
 | `src/config/api.ts`, `map.ts`, `seo.ts`, `version.ts` | `src/config/` | copiés | 2 | à faire |
 | `src/config/navConfig.ts` | `src/config/navConfig.ts` | `Component` devient `LucideIcon`, import `lucide-react` (mêmes icônes) ; même contenu, y compris `requiredEmails` | 2 | à faire |
 | `src/config/icons.ts` | — | supprimé (FontAwesome) | 2 | à faire |
 | `src/data/changelog.ts` | `src/features/changelog/data/changelog.ts` | copié | 2 | à faire |
 | `src/vite-env.d.ts` | `src/vite-env.d.ts` | sans `declare module '*.vue'` ; ajout de `VITE_MAPBOX_TOKEN` | 2 | à faire |
-| `src/styles/tailwind.css` | `src/index.css` (fichier de shadcn init) | tokens, `@custom-variant dark`, `@layer base` (voir 4.2) | 1 | à faire |
-| `src/styles/theme.css` | — | non porté ; seuls `--font-sans`/`--font-mono`, le lissage des polices et une scrollbar adaptée au thème sombre sont repris dans `index.css` | 1 | à faire |
+| `src/styles/tailwind.css` | `src/index.css` (fichier de shadcn init) | tokens, `@custom-variant dark`, `@layer base` (voir 4.2) | 1 | fait |
+| `src/styles/theme.css` | — | non porté ; seuls `--font-sans`/`--font-mono`, le lissage des polices et une scrollbar adaptée au thème sombre sont repris dans `index.css` | 1 | fait |
 | `src/style.css` | — | mort (jamais importé) | — | — |
 
 ### 5.3 Comportements globaux (App.vue) → coquille React
@@ -799,4 +811,5 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 
 | Date | Session | Fait | Commit |
 |---|---|---|---|
-| 2026-09-25 | 1 | Phase 0 : lecture des fichiers de référence ; inventaire complet par 8 sous-agents en lecture seule ; annexes dans `docs/migration/` ; revérification des bugs B-01, B-02, B-04, B-11, B-15 et de la page UserEdit ; vérification de l'environnement (Node, Edge, CORS). Aucun fichier du Vue modifié. | — (pas encore de dépôt git) |
+| 2026-09-25 | 1 | Phase 0 : lecture des fichiers de référence ; inventaire complet par 8 sous-agents en lecture seule ; annexes dans `docs/migration/` ; revérification des bugs B-01, B-02, B-04, B-11, B-15 et de la page UserEdit ; vérification de l'environnement (Node, Edge, CORS). Aucun fichier du Vue modifié. | `16d5819` |
+| 2026-09-25 | 1 | Phase 1 (socle) : dépôt git (`main`, LF imposé) ; Vite 7 + React 19 + TS 5.9 (create-vite 8.3.0) ; Tailwind v4 et alias `@` ; React Compiler (runtime vérifié dans le bundle) ; shadcn CLI v4 remis en style new-york, `button`, paquet `cn` (parité testée) ; tokens et règles de base du Vue dans `src/index.css` (police système, scrollbar et sélection en sombre) ; Prettier + eslint-config-prettier ; `CLAUDE.md`. Vérifié : build, lint (0 warning), format, rendu clair/sombre à 375 px et en desktop dans le navigateur intégré. | `c0f3c4a` à `4803d46`, puis le commit de documentation |
