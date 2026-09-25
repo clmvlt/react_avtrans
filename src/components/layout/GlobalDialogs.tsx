@@ -1,5 +1,6 @@
 import { ChangelogDialog } from '@/features/changelog/components/ChangelogDialog'
 import { ServiceHistoryDialog } from '@/features/service-history/components/ServiceHistoryDialog'
+import { SignatureReminderDialog } from '@/features/signatures/components/SignatureReminderDialog'
 import { selectIsAdmin, useAuthStore } from '@/stores/auth-store'
 
 type GlobalDialogsProps = {
@@ -22,10 +23,11 @@ export function GlobalDialogs({ changelogOpen, onChangelogOpenChange }: GlobalDi
       {/*
         À ajouter en phase 4, ici (même condition d'affichage : pages protégées) :
         - ProfileCompletionDialog (features/profile) : ouvert à l'arrivée si l'adresse
-          (rue, ville, code postal) ou le numéro de permis manque ;
-        - SignatureReminderDialog (features/signatures) : bloquant, une fois par session, si des
-          heures du mois dernier ne sont pas signées (compte actif et e-mail vérifié).
+          (rue, ville, code postal) ou le numéro de permis manque.
       */}
+
+      {/* Rappel de signature des heures du mois dernier : bloquant, une fois par session */}
+      <SignatureReminderDialog />
 
       {/* Historique d'un pointage (notifications, journal, pointages d'un employé) : admins */}
       {isAdmin && <ServiceHistoryDialog />}

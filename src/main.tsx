@@ -10,10 +10,25 @@ import { useAuthStore } from '@/stores/auth-store'
 // (GET /profile), sans bloquer le rendu, comme le store Pinia au démarrage.
 void useAuthStore.getState().refreshUser()
 
-createRoot(document.getElementById('app')!).render(
-  <StrictMode>
-    <AppProviders>
-      <RouterProvider router={router} />
-    </AppProviders>
-  </StrictMode>,
-)
+function render() {
+  createRoot(document.getElementById('app')!).render(
+    <StrictMode>
+      <AppProviders>
+        <RouterProvider router={router} />
+      </AppProviders>
+    </StrictMode>,
+  )
+}
+
+// On attend que la première route (page lazy, loaders) soit prête avant de monter React :
+// createRoot vide #app, qui contient la landing pré-rendue sur « / » ; monter plus tôt
+// afficherait une page blanche le temps de charger le fichier JS de la page.
+if (router.state.initialized) {
+  render()
+} else {
+  const unsubscribe = router.subscribe((state) => {
+    if (!state.initialized) return
+    unsubscribe()
+    render()
+  })
+}

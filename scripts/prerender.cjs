@@ -19,8 +19,8 @@
  * Métadonnées (MIGRATION.md, décision D2) : <title>, description, robots et canonical sont rendus
  * par React 19 (PageMeta) et ne figurent plus dans index.html. Le script recopie ceux de la
  * landing dans le <head> de dist/index.html (marqués data-prerender-head) pour les robots qui
- * n'exécutent pas le JavaScript ; le script inline les retire avant le montage, React rendant
- * ensuite ceux de la page affichée (sans doublon).
+ * n'exécutent pas le JavaScript, avec le JSON-LD de la page ; le script inline les retire avant
+ * le montage, React rendant ensuite ceux de la page affichée (sans doublon).
  *
  * En cas d'échec (navigateur introuvable, délai dépassé…), un avertissement est affiché et le
  * build reste valide (index.html vide comme avant). PRERENDER_STRICT=1 rend l'échec bloquant.
@@ -290,11 +290,15 @@ const renderLanding = async (wsUrl, pageUrl) => {
     const loaded = cdp.once('Page.loadEventFired')
     await cdp.send('Page.navigate', { url: pageUrl })
     await loaded
-    // React rend la page (h1) et ses métadonnées (<title> de PageMeta)
+    // React rend la page (h1), ses métadonnées (<title> de PageMeta) puis, dans le dernier
+    // effet de LandingPage, le JSON-LD de la page : la landing est alors entièrement montée
     await waitUntil(
-      () => cdp.evaluate(`!!document.querySelector('#app h1') && document.title.length > 0`),
+      () =>
+        cdp.evaluate(
+          `!!document.querySelector('#app h1') && document.title.length > 0 && !!document.head.querySelector('script[data-landing-jsonld]')`,
+        ),
       20_000,
-      'rendu de la landing (h1 et <title>)',
+      'rendu de la landing (h1, <title> et JSON-LD)',
     )
 
     // Défilement complet : déclenche les IntersectionObserver (.reveal, compteur des statistiques)
@@ -314,15 +318,18 @@ const renderLanding = async (wsUrl, pageUrl) => {
     )
 
     return await cdp.evaluate(`(() => {
-      const root = document.getElementById('app')
-      // Balises SEO rendues par React 19 (PageMeta) : index.html ne les contient pas
-      const selector = 'title, meta[name="description"], meta[name="robots"], link[rel="canonical"]'
+      // Seulement la landing : #app contient aussi la bannière de mise à jour (invisible) et la
+      // zone des toasts, inutiles dans le HTML statique
+      const root = document.querySelector('[data-landing-root]')
+      // Balises SEO rendues par React 19 (PageMeta) et JSON-LD de la page : index.html ne les
+      // contient pas
+      const selector = 'title, meta[name="description"], meta[name="robots"], link[rel="canonical"], script[data-landing-jsonld]'
       const head = [...document.head.querySelectorAll(selector)].map((el) => {
         const clone = el.cloneNode(true)
         clone.setAttribute('data-prerender-head', '')
         return clone.outerHTML
       })
-      return { html: root ? root.innerHTML : '', title: document.title, head }
+      return { html: root ? root.outerHTML : '', title: document.title, head }
     })()`)
   } finally {
     cdp.close()
@@ -411,8 +418,9 @@ const main = async () => {
     const { html, title, head } = await renderLanding(page.webSocketDebuggerUrl, pageUrl)
     const rendered = cleanHtml(html)
     checkRendered(rendered)
-    if (head.length !== 4) {
-      throw new Error(`métadonnées de la landing incomplètes (${head.length}/4 balises)`)
+    // title, description, robots, canonical + JSON-LD de la page
+    if (head.length !== 5) {
+      throw new Error(`métadonnées de la landing incomplètes (${head.length}/5 balises)`)
     }
 
     const size = injectIntoIndex(rendered, head)

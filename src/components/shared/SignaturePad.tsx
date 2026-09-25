@@ -72,7 +72,9 @@ export function SignaturePad({
     if (!canvas) return
 
     const resize = () => {
-      const { width, height } = canvas.getBoundingClientRect()
+      // Taille de mise en page (insensible au zoom-in-95 d'ouverture des Dialogs)
+      const width = canvas.clientWidth
+      const height = canvas.clientHeight
       if (width === 0 || height === 0) return
       const dpr = window.devicePixelRatio || 1
       const previous = emptyRef.current ? null : canvas.toDataURL('image/png')
@@ -128,8 +130,12 @@ export function SignaturePad({
   useImperativeHandle(ref, () => ({ clear, toDataURL, isEmpty: () => emptyRef.current }))
 
   const getPoint = (event: PointerEvent<HTMLCanvasElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect()
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top }
+    const canvas = event.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    // Ramène le point à la taille de mise en page si le canvas est transformé (animation)
+    const scaleX = rect.width ? canvas.clientWidth / rect.width : 1
+    const scaleY = rect.height ? canvas.clientHeight / rect.height : 1
+    return { x: (event.clientX - rect.left) * scaleX, y: (event.clientY - rect.top) * scaleY }
   }
 
   const handlePointerDown = (event: PointerEvent<HTMLCanvasElement>) => {
