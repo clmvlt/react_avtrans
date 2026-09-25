@@ -5,6 +5,188 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#581c87" />
 
+    <!-- Icônes (fichiers statiques dans public/, chemins absolus pour fonctionner sur toutes les routes) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Preconnect API pour réduire la latence de la première requête authentifiée -->
+    <link rel="preconnect" href="https://api.avtrans-concept.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.avtrans-concept.com" />
+
+    <!-- SEO : <title>, description, robots et canonical sont propres à chaque page et rendus par
+         React 19 (components/shared/PageMeta). scripts/prerender.cjs recopie ceux de la landing
+         ici même au build, pour les robots qui n'exécutent pas le JavaScript. -->
+    <meta name="author" content="AVTRANS Concept" />
+
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="AVTRANS Concept" />
+    <meta property="og:title" content="Coursier & Transport en Bretagne – AVTRANS Concept" />
+    <meta
+      property="og:description"
+      content="Coursier, messagerie express, fret, poids lourd et température dirigée à Saint-Brieuc, Lamballe et dans tout le Grand Ouest. Devis gratuit."
+    />
+    <meta property="og:url" content="https://pointage.avtrans-concept.com/" />
+    <meta property="og:image" content="https://pointage.avtrans-concept.com/og-image.jpg" />
+    <meta
+      property="og:image:secure_url"
+      content="https://pointage.avtrans-concept.com/og-image.jpg"
+    />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Flotte de véhicules AVTRANS Concept devant les locaux de Pommeret, Côtes-d'Armor"
+    />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Coursier & Transport en Bretagne – AVTRANS Concept" />
+    <meta
+      name="twitter:description"
+      content="Coursier, messagerie express, fret, poids lourd et température dirigée à Saint-Brieuc, Lamballe et dans tout le Grand Ouest."
+    />
+    <meta name="twitter:image" content="https://pointage.avtrans-concept.com/og-image.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Flotte de véhicules AVTRANS Concept devant les locaux de Pommeret, Côtes-d'Armor"
+    />
+
+    <!-- Geo Targeting (référencement local) -->
+    <meta name="geo.region" content="FR-22" />
+    <meta name="geo.placename" content="Pommeret, Côtes-d'Armor, Bretagne" />
+    <meta name="geo.position" content="48.4614;-2.6989" />
+    <meta name="ICBM" content="48.4614, -2.6989" />
+
+    <!-- Données structurées site (entreprise + site web). Les entités propres à la landing
+         (WebPage, FAQPage) sont injectées par la landing et référencent ces @id. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "LocalBusiness",
+            "@id": "https://pointage.avtrans-concept.com/#business",
+            "name": "AVTRANS Concept",
+            "legalName": "AVTRANS CONCEPT",
+            "alternateName": "AVTRANS",
+            "description": "Coursier et transporteur en Bretagne : messagerie express, fret, livraison en poids lourd et transport sous température dirigée à Saint-Brieuc, Lamballe, Pommeret et dans tout le Grand Ouest.",
+            "url": "https://pointage.avtrans-concept.com/",
+            "telephone": "+33257770777",
+            "email": "contact@avtrans-concept.com",
+            "vatID": "FR21845350347",
+            "image": "https://pointage.avtrans-concept.com/og-image.jpg",
+            "logo": "https://pointage.avtrans-concept.com/icons/icon-512x512.png",
+            "priceRange": "€€",
+            "currenciesAccepted": "EUR",
+            "paymentAccepted": "Virement, Chèque, Carte bancaire",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "ZA de Pommeret, Route de Quenhoet",
+              "addressLocality": "Hillion",
+              "postalCode": "22120",
+              "addressRegion": "Bretagne",
+              "addressCountry": "FR"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 48.4614,
+              "longitude": -2.6989
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+33257770777",
+              "contactType": "customer service",
+              "availableLanguage": "French",
+              "areaServed": "FR"
+            },
+            "areaServed": [
+              { "@type": "AdministrativeArea", "name": "Bretagne" },
+              { "@type": "AdministrativeArea", "name": "Côtes-d'Armor" },
+              { "@type": "City", "name": "Saint-Brieuc" },
+              { "@type": "City", "name": "Lamballe" },
+              { "@type": "City", "name": "Pommeret" },
+              { "@type": "City", "name": "Dinan" },
+              { "@type": "City", "name": "Guingamp" },
+              { "@type": "City", "name": "Lannion" },
+              { "@type": "City", "name": "Loudéac" },
+              { "@type": "City", "name": "Rennes" },
+              { "@type": "City", "name": "Brest" },
+              { "@type": "City", "name": "Vannes" },
+              { "@type": "City", "name": "Lorient" },
+              { "@type": "AdministrativeArea", "name": "Grand Ouest" },
+              { "@type": "Country", "name": "France" }
+            ],
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Services de transport AVTRANS Concept",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Coursier & messagerie express",
+                    "description": "Service de coursier et messagerie express en Bretagne. Du simple pli à la palette de 1000 kg, livraisons locales, nationales et internationales."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Transport sous température dirigée",
+                    "description": "Transport frigorifique et chaîne du froid pour produits pharmaceutiques et marchandises sensibles en Bretagne et dans le Grand Ouest."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Livraison en poids lourd",
+                    "description": "Porteur poids lourd jusqu'à 60 m³ avec hayon élévateur : palettes, lots volumineux et chargements complets depuis la Bretagne vers la France entière."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Fret & affrètement",
+                    "description": "Solutions de fret routier et d'affrètement depuis la Bretagne vers la France et l'international."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Stockage & entreposage",
+                    "description": "Entrepôt sécurisé dans les Côtes-d'Armor pour des solutions de stockage ponctuelles ou récurrentes."
+                  }
+                }
+              ]
+            },
+            "sameAs": ["https://avtrans-concept.com"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://pointage.avtrans-concept.com/#website",
+            "url": "https://pointage.avtrans-concept.com/",
+            "name": "AVTRANS Concept",
+            "publisher": { "@id": "https://pointage.avtrans-concept.com/#business" },
+            "inLanguage": "fr-FR"
+          }
+        ]
+      }
+    </script>
+
+    <!-- iOS PWA support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="AVTRANS" />
+
     <!-- Script inline anti-FOUC (Flash of Unstyled Content), identique au projet Vue.
          La landing (/) est toujours en thème clair : on n'y applique pas .dark, sinon le HTML
          pré-rendu (voir scripts/prerender.cjs) clignoterait en sombre avant le montage de React. -->
@@ -19,7 +201,6 @@
     </script>
   </head>
   <body>
-    <!-- Point de montage : l'id "app" est attendu par scripts/prerender.cjs -->
     <div id="app"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

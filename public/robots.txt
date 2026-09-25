@@ -8,7 +8,7 @@
 # longue sont supportées par Google, Bing, Yandex, DuckDuckGo et Applebot.
 #
 # ⚠ Les ressources statiques (JS, CSS, images, manifest) DOIVENT rester
-# accessibles : sans elles Googlebot ne peut pas rendre l'application Vue et
+# accessibles : sans elles Googlebot ne peut pas rendre l'application React et
 # ne verrait qu'une page blanche.
 
 User-agent: *
@@ -24,7 +24,6 @@ Allow: /login?
 # ── Ressources nécessaires au rendu et au référencement ──────────────────────
 Allow: /assets/
 Allow: /icons/
-Allow: /models/
 Allow: /.well-known/
 Allow: /manifest.json
 Allow: /version.json
