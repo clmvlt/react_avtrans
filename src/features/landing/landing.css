@@ -1,0 +1,105 @@
+/*
+ * Styles de la landing qui ne s'expriment pas en utilitaires Tailwind (ex-<style scoped> de
+ * Landing.vue). Importé par src/pages/landing/LandingPage.tsx.
+ *
+ * Volontairement hors de toute @layer, comme les styles scoped du Vue : `.reveal` l'emporte sur
+ * les utilitaires Tailwind (en @layer utilities) posés sur le même élément, par exemple
+ * `transition-all duration-300` des cartes, exactement comme dans le Vue.
+ */
+
+/* ── Mise à l'échelle grands écrans ──
+   Toute la page est en rem : on fait grossir la police racine proportionnellement
+   à la largeur de la fenêtre au-delà de 1920px (0.8333vw = 16px à 1920px).
+   - < 1920px  : 100 % (inchangé, référence écran 24")
+   - 2560px    : ~133 % (21.3px)
+   - ≥ 3120px  : plafonné à 162.5 % (26px)
+   Les breakpoints Tailwind (rem dans les media queries) ne sont pas affectés :
+   ils se basent toujours sur la taille de police initiale du navigateur.
+   Classe posée sur <html> par useFluidRootScale. */
+html.landing-fluid {
+  font-size: clamp(100%, 0.8333vw, 162.5%);
+}
+
+/* Zoom lent de l'image du héro (utilitaire animate-[hero-zoom_25s_ease-out_forwards]) */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Apparition au défilement (classe `revealed` ajoutée par useRevealOnScroll) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Micro-interactions des icônes de services ──
+   Sélecteur `.group:hover` natif (et non `group-hover:` de Tailwind, limité aux écrans à
+   pointeur) : comme dans le Vue, l'animation joue aussi au toucher. */
+.group:hover .anim-bounce svg {
+  animation: bounce-icon 0.5s ease;
+}
+.group:hover .anim-spin svg {
+  animation: spin-icon 0.8s ease;
+}
+.group:hover .anim-ping svg {
+  animation: ping-icon 0.6s ease;
+}
+.group:hover .anim-lift svg {
+  animation: lift-icon 0.5s ease;
+}
+
+@keyframes bounce-icon {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes spin-icon {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ping-icon {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes lift-icon {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
