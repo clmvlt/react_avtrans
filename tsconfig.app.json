@@ -16,13 +16,23 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    /* Désactivé volontairement (MIGRATION.md, décision D3) : la couche agnostique copiée du Vue
+       (src/enums, ApiError dans src/api) utilise des `enum` et des propriétés de paramètres de
+       constructeur, que cette option interdit. Les fichiers restent ainsi identiques au Vue. */
+    "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src"]
 }
