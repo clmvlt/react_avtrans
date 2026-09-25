@@ -35,7 +35,7 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 |---|---|---|
 | 0. Inventaire | ce fichier + annexes | **fait** (validé le 25/09/2026, voir section 0) |
 | 1. Socle | Vite React-TS, git, Tailwind v4, alias, shadcn init, tokens, ESLint/Prettier, React Compiler, `CLAUDE.md` | **fait** (25/09/2026) |
-| 2. Couche agnostique | api, services, models, enums, types, utils, lib, config, public ; type-check vert | à faire |
+| 2. Couche agnostique | api, services, models, enums, types, utils, lib, config, public ; type-check vert | **fait** (25/09/2026) |
 | 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | à faire, **validation requise en fin de phase** |
 | 4. Domaines | voir l'ordre ci-dessous | à faire |
 | 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | à faire |
@@ -332,9 +332,9 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `components.json` | `components.json` | régénéré par `shadcn init` puis remis en `new-york` / `neutral` (CLI v4, voir section 2) ; CSS variables, lucide | 1 | fait |
 | `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | en cours (`lang="fr"`, viewport, theme-color, `#app`, `main.tsx` faits ; métas, favicons, JSON-LD, anti-FOUC en phase 3 et 5) |
 | `scripts/prerender.cjs` | `scripts/prerender.cjs` | même client CDP ; attente adaptée à React (`#app h1` + marqueur de fin de rendu) ; `cleanHtml` sans les commentaires Vue ; montage React par `createRoot` (pas `hydrateRoot` : le DOM pré-rendu diffère, avec les classes `revealed` et les compteurs à leur valeur finale) ; capture du `<head>` si D2 = A | 5 | à faire |
-| `public/` (favicons, icons/, manifest.json, og-image.jpg, robots.txt, .well-known/, sounds/notif.wav) | `public/` | copiés ; pas `models/*.glb` (D1), `sounds/notif.{aiff,flac}`, `notif_converted.wav`, `vite.svg` (morts) | 2 | à faire |
-| `src/assets/` (favicon.png, logo.png, images/*.webp) | `src/assets/` | copiés ; `images/fonctions.png` jamais importé | 2 | à faire |
-| `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 2 | à faire |
+| `public/` (favicons, icons/, manifest.json, og-image.jpg, robots.txt, .well-known/, sounds/notif.wav) | `public/` | copiés ; pas `models/*.glb` (D1), `sounds/notif.{aiff,flac}`, `notif_converted.wav`, `vite.svg` (morts) | 2 | fait |
+| `src/assets/` (favicon.png, logo.png, images/*.webp) | `src/assets/` | copiés ; `images/fonctions.png` jamais importé | 2 | fait |
+| `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 2 | fait |
 | `.gitignore` | `.gitignore` | repris (secrets, `.env*`, `dist`, `deploy.py`) ; lignes propres au Vue (`*.vue.b`) retirées ; `CLAUDE.md` selon D5 | 1 | fait |
 | `CLAUDE.md` | `CLAUDE.md` | réécrit pour React (stack, architecture, conventions, pièges du brief et de cet inventaire) | 1 | fait |
 | `deploy/deploy.py`, `deploy/apache-cache-headers.conf`, `deploy/install_apache_headers.py` | `deploy/` | copiés en fin de migration, chemins adaptés, `deploy.py` ajouté au `.gitignore` ; **jamais exécutés par moi** | 5 | à faire |
@@ -342,20 +342,20 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `src/App.vue` | `components/layout/RootLayout.tsx`, `components/layout/AppLayout.tsx`, `components/layout/GlobalDialogs.tsx`, `providers/AppProviders.tsx` | voir 5.3 pour les comportements globaux | 3 | à faire |
 | `src/router/index.ts` | `src/router/routes.tsx`, `src/router/guards.tsx`, `src/lib/getDefaultRoute.ts` | gardes en routes layout ; le passage en vue admin (`setViewMode(false)`) se fait à l'entrée de la zone admin ; `getDefaultRoute` unique (aujourd'hui recopié dans Login, Register et Navbar) | 3 | à faire |
 | `src/stores/auth.ts` | `src/stores/auth-store.ts` | Zustand ; hydratation manuelle depuis `auth_token` + `user` ; `refreshUser` en arrière-plan au démarrage (GET `/profile`, 401 → déconnexion, erreurs réseau ignorées) ; sélecteurs `isAdmin`/`isMechanic`/`isUser` par UUID de rôle ; `login` et `loginWithGoogle` deviennent des mutations de `features/auth` | 3 | à faire |
-| `src/api/ApiClient.ts` | `src/api/ApiClient.ts` | copié à l'identique (D3) | 2 | à faire |
-| `src/api/index.ts` | `src/api/index.ts` | intercepteur 401 conservé (sauf `Access denied: Required role …`) ; déconnexion via `useAuthStore.getState().logout()`, `router.navigate('/login')` par import dynamique, `queryClient.clear()` | 2 puis 3 | à faire |
-| `src/services/*.ts` (25 services + index) | `src/services/` | copiés **inchangés** (`export.ts` garde son `fetch` direct ; `POST /services/history` garde son `+1 jour`) | 2 | à faire |
-| `src/models/*.ts` (36 DTO + index) | `src/models/` | copiés inchangés | 2 | à faire |
-| `src/enums/*.ts` (UserRole, UserStatus, PeriodiciteType, AbsencePeriod, index) | `src/enums/` | copiés (D3) | 2 | à faire |
-| `src/types/*.ts` (api, file, geocoding, google-identity.d.ts, index) | `src/types/` | copiés | 2 | à faire |
-| `src/utils/*.ts` (absenceFormatters, acompteFormatters, fileUtils, timeFormatters, userVisibility) | `src/utils/` | copiés inchangés | 2 | à faire |
-| `src/utils/serviceModificationFormatters.ts` | `src/utils/serviceModificationFormatters.ts` | seul utilitaire dépendant de Vue : `Component` devient `LucideIcon`, import `lucide-react` | 2 | à faire |
+| `src/api/ApiClient.ts` | `src/api/ApiClient.ts` | copié à l'identique (D3) | 2 | fait |
+| `src/api/index.ts` | `src/api/index.ts` | intercepteur 401 conservé (sauf `Access denied: Required role …`) ; déconnexion via `useAuthStore.getState().logout()`, `router.navigate('/login')` par import dynamique, `queryClient.clear()` | 2 puis 3 | en cours : les imports dynamiques du store Pinia et du router Vue sont remplacés par `setUnauthorizedHandler()`, enregistré par la coquille en phase 3 |
+| `src/services/*.ts` (25 services + index) | `src/services/` | copiés **inchangés** (`export.ts` garde son `fetch` direct ; `POST /services/history` garde son `+1 jour`) | 2 | fait |
+| `src/models/*.ts` (36 DTO + index) | `src/models/` | copiés ; seule adaptation : `import type` sur 16 imports de types (10 fichiers), exigé par `verbatimModuleSyntax` du template | 2 | fait |
+| `src/enums/*.ts` (UserRole, UserStatus, PeriodiciteType, AbsencePeriod, index) | `src/enums/` | copiés (D3) | 2 | fait |
+| `src/types/*.ts` (api, file, geocoding, google-identity.d.ts, index) | `src/types/` | copiés | 2 | fait |
+| `src/utils/*.ts` (absenceFormatters, acompteFormatters, fileUtils, timeFormatters, userVisibility) | `src/utils/` | copiés inchangés | 2 | fait |
+| `src/utils/serviceModificationFormatters.ts` | `src/utils/serviceModificationFormatters.ts` | seul utilitaire dépendant de Vue : `Component` devient `LucideIcon`, import `lucide-react` | 2 | fait |
 | `src/lib/utils.ts` | `src/lib/utils.ts` | réexporte `cn` du paquet `cn` (écart au brief, voir section 2) | 1 | fait |
-| `src/config/api.ts`, `map.ts`, `seo.ts`, `version.ts` | `src/config/` | copiés | 2 | à faire |
-| `src/config/navConfig.ts` | `src/config/navConfig.ts` | `Component` devient `LucideIcon`, import `lucide-react` (mêmes icônes) ; même contenu, y compris `requiredEmails` | 2 | à faire |
-| `src/config/icons.ts` | — | supprimé (FontAwesome) | 2 | à faire |
-| `src/data/changelog.ts` | `src/features/changelog/data/changelog.ts` | copié | 2 | à faire |
-| `src/vite-env.d.ts` | `src/vite-env.d.ts` | sans `declare module '*.vue'` ; ajout de `VITE_MAPBOX_TOKEN` | 2 | à faire |
+| `src/config/api.ts`, `map.ts`, `seo.ts`, `version.ts` | `src/config/` | copiés | 2 | fait |
+| `src/config/navConfig.ts` | `src/config/navConfig.ts` | `Component` devient `LucideIcon`, import `lucide-react` (mêmes icônes) ; même contenu, y compris `requiredEmails` | 2 | fait |
+| `src/config/icons.ts` | — | supprimé (FontAwesome) | 2 | fait |
+| `src/data/changelog.ts` | `src/features/changelog/data/changelog.ts` | copié | 2 | fait |
+| `src/vite-env.d.ts` | `src/vite-env.d.ts` | sans `declare module '*.vue'` ; ajout de `VITE_MAPBOX_TOKEN` | 2 | fait |
 | `src/styles/tailwind.css` | `src/index.css` (fichier de shadcn init) | tokens, `@custom-variant dark`, `@layer base` (voir 4.2) | 1 | fait |
 | `src/styles/theme.css` | — | non porté ; seuls `--font-sans`/`--font-mono`, le lissage des polices et une scrollbar adaptée au thème sombre sont repris dans `index.css` | 1 | fait |
 | `src/style.css` | — | mort (jamais importé) | — | — |

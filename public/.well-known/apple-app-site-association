@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "WD2CXPPR7A.bzh.stack.avtrans",
+        "paths": ["*"]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["WD2CXPPR7A.bzh.stack.avtrans"]
+  }
+}

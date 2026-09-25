@@ -1,0 +1,62 @@
+# robots.txt — pointage.avtrans-concept.com
+#
+# Principe : liste blanche. Seules la page d'accueil (landing) et la page de
+# connexion sont ouvertes aux robots ; tout le reste (espace employé, pages
+# d'authentification secondaires, pages légales, téléchargement) est fermé.
+#
+# Les règles Allow avec « $ » (fin d'URL) et la priorité à la règle la plus
+# longue sont supportées par Google, Bing, Yandex, DuckDuckGo et Applebot.
+#
+# ⚠ Les ressources statiques (JS, CSS, images, manifest) DOIVENT rester
+# accessibles : sans elles Googlebot ne peut pas rendre l'application Vue et
+# ne verrait qu'une page blanche.
+
+User-agent: *
+
+# ── Pages publiques ──────────────────────────────────────────────────────────
+# (variantes avec paramètres d'URL — ex. ?utm_source= depuis la fiche Google —
+#  autorisées aussi ; la balise canonical ramène tout sur l'URL propre)
+Allow: /$
+Allow: /?
+Allow: /login$
+Allow: /login?
+
+# ── Ressources nécessaires au rendu et au référencement ──────────────────────
+Allow: /assets/
+Allow: /icons/
+Allow: /models/
+Allow: /.well-known/
+Allow: /manifest.json
+Allow: /version.json
+Allow: /sitemap.xml
+Allow: /favicon.ico
+Allow: /favicon-16x16.png
+Allow: /favicon-32x32.png
+Allow: /og-image.jpg
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.webp$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+Allow: /*.woff2$
+
+# ── Tout le reste est fermé (espace employé, /register, /download, /verify,
+#    /password-reset, /forgot-password, /unauthorized, pages légales…) ────────
+Disallow: /
+
+# ── Robots SEO tiers gourmands : pas de crawl ────────────────────────────────
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# ── Plan du site ─────────────────────────────────────────────────────────────
+Sitemap: https://pointage.avtrans-concept.com/sitemap.xml
