@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#581c87" />
-    <title>Pointage AVTRANS</title>
+
+    <!-- Script inline anti-FOUC (Flash of Unstyled Content), identique au projet Vue.
+         La landing (/) est toujours en thème clair : on n'y applique pas .dark, sinon le HTML
+         pré-rendu (voir scripts/prerender.cjs) clignoterait en sombre avant le montage de React. -->
+    <script>
+      ;(function () {
+        if (location.pathname === '/') return
+        const stored = localStorage.getItem('theme-preference')
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        const isDark = stored === 'dark' || (stored !== 'light' && prefersDark)
+        if (isDark) document.documentElement.classList.add('dark')
+      })()
+    </script>
   </head>
   <body>
     <!-- Point de montage : l'id "app" est attendu par scripts/prerender.cjs -->
