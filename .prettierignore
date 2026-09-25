@@ -1,0 +1,16 @@
+dist
+node_modules
+package-lock.json
+public
+*.md
+
+# Sortie du CLI shadcn : laissée telle que générée (npx shadcn add --diff reste lisible)
+src/components/ui
+
+# Couche agnostique copiée « inchangée » du projet Vue (phase 2) : pas de reformatage
+src/api
+src/services
+src/models
+src/enums
+src/types
+src/utils
