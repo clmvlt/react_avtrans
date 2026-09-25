@@ -1,6 +1,13 @@
+import type { AbsenceSearchParams } from '@/services'
+
 /** Clés TanStack Query des absences et des types d'absence (à compléter par la feature absences). */
 export const absenceKeys = {
   all: ['absences'] as const,
+  /** Recherche admin (POST /absences/admin/search), une entrée par jeu de filtres + page. */
+  adminList: (params: AbsenceSearchParams) =>
+    [...absenceKeys.all, 'admin', 'list', params] as const,
+  /** Mes demandes (POST /absences/my), une entrée par jeu de filtres + page. */
+  myList: (params: AbsenceSearchParams) => [...absenceKeys.all, 'my', 'list', params] as const,
 }
 
 export const absenceTypeKeys = {
