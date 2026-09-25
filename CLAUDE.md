@@ -78,6 +78,17 @@ src/
 - `dangerouslySetInnerHTML` interdit sans DOMPurify. Le HTML construit à la main (export PDF du planning) échappe ses valeurs.
 - Boutons dans un `<form>` qui ne soumettent pas : **`type="button"`** (piège : les « Annuler » du Profil Vue n'en avaient pas).
 
+## Conventions fixées par la coquille (phase 3)
+- **Pages** : `src/pages/<domaine>/<Nom>Page.tsx` avec `export default function <Nom>Page()`. `src/router/routes.tsx` les charge en `lazy` : on n'y touche pas pour porter une page, on remplace le contenu du fichier (les pages non migrées affichent `MigrationPlaceholder`, supprimé en phase 5).
+- **Métadonnées** : `components/shared/PageMeta` (`title`, `description`, `robots`, `canonicalPath` ; valeurs par défaut = celles de la landing, comme le Vue). Une seule instance par écran : chaque page **publique** rend la sienne, `AppLayout` rend celle des pages protégées. Pas de `document.title` impératif.
+- **Store** : `useAuthStore(selectIsAdmin)` etc. (sélecteurs exportés par `src/stores/auth-store.ts`) ; `usePermissions()` pour `canAccess` / `hasRole` (navigation). Route par défaut : `getDefaultRoute(roleUuid)` (`src/lib/getDefaultRoute.ts`).
+- **Hooks de requêtes partagés déjà créés** (à compléter, pas à dupliquer) :
+  - `features/users/api` : `usersKeys`, `useUsersQuery` ;
+  - `features/vehicles/api` : `vehiclesKeys`, `useVehiclesQuery`, `useVehicleQuery`, `useAddKilometrageMutation` ;
+  - `features/absences/api` : `absenceKeys`, `absenceTypeKeys`, `useAbsenceTypesQuery`, `useValidateAbsenceMutation`.
+- **Toasts** : `import { toast } from 'sonner'`. Le Toaster est déjà monté dans `AppProviders`.
+- **401** : `setUnauthorizedHandler` (api) est branché dans `RootLayout` (déconnexion + `/login`). Ne pas le gérer dans les pages.
+
 ## Données (TanStack Query)
 - Un `queryKeys.ts` par feature, avec une racine par domaine (`['vehicles']`, `['absences']`…).
 - Les services renvoient des formes hétérogènes (voir « Contrat d'API ») : la normalisation se fait dans `select` du hook, jamais en modifiant le service.
