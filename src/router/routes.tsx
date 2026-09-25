@@ -3,8 +3,7 @@ import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { RouteErrorBoundary } from '@/components/layout/RouteErrorBoundary'
-import { leaveUserViewLoader } from './loaders'
-import { RedirectIfAuthenticated } from './RedirectIfAuthenticated'
+import { leaveUserViewLoader, redirectIfAuthenticatedLoader } from './loaders'
 import { RequireAuth } from './RequireAuth'
 import { RequireCouchette } from './RequireCouchette'
 import { RequireRole } from './RequireRole'
@@ -46,7 +45,8 @@ export const routes: RouteObject[] = [
 
       // ── Connexion / inscription : un utilisateur connecté va sur sa route par défaut ──
       {
-        element: <RedirectIfAuthenticated />,
+        loader: redirectIfAuthenticatedLoader,
+        shouldRevalidate: () => true,
         children: [
           { path: '/login', lazy: page(() => import('@/pages/auth/LoginPage')) },
           { path: '/register', lazy: page(() => import('@/pages/auth/RegisterPage')) },

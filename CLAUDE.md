@@ -111,7 +111,7 @@ src/
 - **Ne pas reproduire les contournements shadcn-vue / reka-ui** du CLAUDE.md Vue (`:teleport="false"` sur Select, mapping `checked`/`modelValue`, interdiction de `useForwardPropsEmits`). En React : `checked` + `onCheckedChange`, `Select` dans un `Dialog` tel quel (vérifier que ça marche).
 
 ## Routes et gardes
-- 43 routes, **chemins identiques au Vue** (liste : `MIGRATION.md` 5.1). Routes layout : `RequireAuth` (connecté, puis e-mail vérifié sinon `logout()` + `/login`, puis compte actif sinon `/unauthorized`), `RequireRole` admin ou mécanicien (mécanicien = admin **ou** mécanicien), `RequireCouchette` (`user.isCouchette === true`), `RedirectIfAuthenticated` pour `/login` et `/register`.
+- 43 routes, **chemins identiques au Vue** (liste : `MIGRATION.md` 5.1). Routes layout : `RequireAuth` (connecté, puis e-mail vérifié sinon `logout()` + `/login`, puis compte actif sinon `/unauthorized`), `RequireRole` admin ou mécanicien (mécanicien = admin **ou** mécanicien), `RequireCouchette` (`user.isCouchette === true`), `redirectIfAuthenticatedLoader` (loader, vérifié à la navigation comme le `beforeEach` du Vue) pour `/login` et `/register`.
 - Route par défaut : admin → `/users`, mécanicien → `/vehicules`, sinon → `/pointage` (`src/lib/getDefaultRoute.ts`, une seule définition).
 - Entrer dans la zone admin désactive la « vue utilisateur » (`setViewMode(false)`).
 - Défilement : `<ScrollRestoration />`.
