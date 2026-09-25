@@ -1,1 +1,249 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* Polices : pile système reprise du projet Vue (src/styles/theme.css), pas de police web. */
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+  --font-heading: var(--font-sans);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Couleurs sémantiques propres à AVTRANS (badges, statuts) */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Échelle identique au Vue avec --radius = 0.625rem : sm 6px, md 8px, lg 10px, xl 14px */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Palette violet / blanc reprise telle quelle du projet Vue (src/styles/tailwind.css). */
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 286);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 286);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 286);
+
+  --primary: oklch(0.42 0.195 285);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --secondary: oklch(0.967 0.001 286);
+  --secondary-foreground: oklch(0.21 0.006 286);
+
+  --muted: oklch(0.967 0.001 286);
+  --muted-foreground: oklch(0.552 0.016 286);
+
+  --accent: oklch(0.967 0.001 286);
+  --accent-foreground: oklch(0.21 0.006 286);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(0.92 0.004 286);
+  --input: oklch(0.92 0.004 286);
+  --ring: oklch(0.42 0.195 285);
+
+  --success: oklch(0.52 0.15 155);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.65 0.17 65);
+  --warning-foreground: oklch(0.985 0 0);
+  --info: oklch(0.42 0.195 285);
+  --info-foreground: oklch(0.985 0 0);
+
+  --chart-1: oklch(0.42 0.195 285);
+  --chart-2: oklch(0.52 0.15 155);
+  --chart-3: oklch(0.65 0.17 65);
+  --chart-4: oklch(0.5 0.22 300);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 286);
+  --sidebar-primary: oklch(0.42 0.195 285);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286);
+  --sidebar-accent-foreground: oklch(0.21 0.006 286);
+  --sidebar-border: oklch(0.92 0.004 286);
+  --sidebar-ring: oklch(0.42 0.195 285);
+
+  /* Barre de défilement et sélection : mêmes valeurs que theme.css du Vue en thème clair */
+  --scrollbar-track: #f9fafb;
+  --scrollbar-thumb: #d1d5db;
+  --scrollbar-thumb-hover: #9ca3af;
+  --selection: rgb(124 58 237 / 0.2);
+  --selection-foreground: #111827;
+}
+
+.dark {
+  --background: oklch(0.141 0.005 286);
+  --foreground: oklch(0.985 0 0);
+
+  --card: oklch(0.141 0.005 286);
+  --card-foreground: oklch(0.985 0 0);
+
+  --popover: oklch(0.141 0.005 286);
+  --popover-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.58 0.185 285);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --secondary: oklch(0.274 0.006 286);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.274 0.006 286);
+  --muted-foreground: oklch(0.715 0.012 286);
+
+  --accent: oklch(0.274 0.006 286);
+  --accent-foreground: oklch(0.985 0 0);
+
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(0.274 0.006 286);
+  --input: oklch(0.274 0.006 286);
+  --ring: oklch(0.58 0.185 285);
+
+  --success: oklch(0.62 0.17 155);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.75 0.17 65);
+  --warning-foreground: oklch(0.15 0 0);
+  --info: oklch(0.58 0.185 285);
+  --info-foreground: oklch(0.985 0 0);
+
+  --chart-1: oklch(0.58 0.185 285);
+  --chart-2: oklch(0.62 0.17 155);
+  --chart-3: oklch(0.75 0.17 65);
+  --chart-4: oklch(0.55 0.22 300);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  --sidebar: oklch(0.205 0.006 286);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.58 0.185 285);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.274 0.006 286);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.274 0.006 286);
+  --sidebar-ring: oklch(0.58 0.185 285);
+
+  /* Le Vue n'avait pas de variante sombre (piste claire en mode sombre) : corrigé ici */
+  --scrollbar-track: oklch(0.205 0.006 286);
+  --scrollbar-thumb: oklch(0.37 0.01 286);
+  --scrollbar-thumb-hover: oklch(0.45 0.012 286);
+  --selection: oklch(0.58 0.185 285 / 0.35);
+  --selection-foreground: oklch(0.985 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* viewport-fit=cover (index.html) : on garde le contenu hors de l'encoche en paysage.
+       Vaut 0 en portrait et sur Android, donc sans effet dans le cas courant. */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  /* Tailwind v4 ne met plus cursor:pointer sur les boutons : on le rétablit */
+  button:not(:disabled),
+  [role='button']:not(:disabled),
+  label:has(> input[type='checkbox']),
+  label:has(> input[type='radio']) {
+    cursor: pointer;
+  }
+  button:disabled,
+  [role='button'][aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+  /* Les champs date/heure natifs (iOS Safari surtout) ont une largeur intrinsèque
+     qui ignore le conteneur et fait déborder les grilles : on les force à suivre la largeur du parent */
+  input[type='date'],
+  input[type='time'],
+  input[type='datetime-local'],
+  input[type='month'] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+  }
+  input::-webkit-date-and-time-value {
+    text-align: left;
+    min-height: 1.5em;
+  }
+  ::selection {
+    background-color: var(--selection);
+    color: var(--selection-foreground);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
