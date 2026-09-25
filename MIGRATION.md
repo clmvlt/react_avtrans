@@ -66,6 +66,21 @@ Ordre des domaines en phase 4 (celui du brief) :
 ## 0. Décisions à valider avant la phase 1
 
 > **Statut (25/09/2026)** : le propriétaire a répondu « vasy met en place le projet » sans trancher point par point. Les **recommandations D1 à D6 sont donc appliquées**. Pour D6, aucun numéro n'ayant été donné, **tous les bugs B-xx de la section 8.2 sont reproduits à l'identique** jusqu'à autorisation explicite ; ceux de la section 8.1 sont corrigés par construction. Chaque décision reste révisable.
+> Les **recommandations de la section 9 s'appliquent de la même façon** :
+> - Q-NAVBAR : navbar sur les seules pages protégées ;
+> - Q-GLOBALDIALOGS : dialogs globaux ouverts dans `AppLayout`, y compris juste après la connexion ; changelog marqué vu quelle que soit la façon de le fermer ;
+> - Q-USEREDIT : redirection vers `/users` ;
+> - Q-APPVERSIONS, Q-UNAUTHORIZED : parité ;
+> - Q-NOTIF-POLL : polling suspendu onglet masqué ;
+> - Q-REDIRECT : pas de `?redirect=` ;
+> - Q-VALIDATION : messages de validation courts en français, mêmes règles que le Vue ;
+> - Q-DATES : champs natifs ;
+> - Q-DND : glisser-déposer HTML5 natif ;
+> - Q-URL : pas d'état dans l'URL, sauf les `?userUuid=` existants ;
+> - Q-ACCENTS : accents manquants corrigés ;
+> - Q-TOKENS : tokens `success` / `warning` / `info` conservés.
+>
+> Le propriétaire a aussi demandé d'**enchaîner toutes les phases sans s'arrêter** : pas de point d'arrêt en fin de phase 3.
 
 Ce sont les seuls points qui bloquaient le socle. Les autres questions (section 9) peuvent attendre le domaine concerné.
 
