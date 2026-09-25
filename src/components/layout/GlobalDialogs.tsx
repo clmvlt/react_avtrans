@@ -1,5 +1,34 @@
-// Dialogs globaux de l'app authentifiée (changelog, complétion de profil, historique d'un
-// pointage, rappel de signature) : ajoutés au fil des phases 3 et 4.
-export function GlobalDialogs() {
-  return null
+import { ChangelogDialog } from '@/features/changelog/components/ChangelogDialog'
+import { ServiceHistoryDialog } from '@/features/service-history/components/ServiceHistoryDialog'
+import { selectIsAdmin, useAuthStore } from '@/stores/auth-store'
+
+type GlobalDialogsProps = {
+  changelogOpen: boolean
+  onChangelogOpenChange: (open: boolean) => void
+}
+
+/**
+ * Dialogs globaux de l'app authentifiée, montés par AppLayout (donc seulement sur les pages
+ * protégées, y compris juste après la connexion : décision Q-GLOBALDIALOGS).
+ */
+export function GlobalDialogs({ changelogOpen, onChangelogOpenChange }: GlobalDialogsProps) {
+  const isAdmin = useAuthStore(selectIsAdmin)
+
+  return (
+    <>
+      {/* Nouveautés : ouvert automatiquement par AppLayout s'il y en a de non vues */}
+      <ChangelogDialog open={changelogOpen} onOpenChange={onChangelogOpenChange} />
+
+      {/*
+        À ajouter en phase 4, ici (même condition d'affichage : pages protégées) :
+        - ProfileCompletionDialog (features/profile) : ouvert à l'arrivée si l'adresse
+          (rue, ville, code postal) ou le numéro de permis manque ;
+        - SignatureReminderDialog (features/signatures) : bloquant, une fois par session, si des
+          heures du mois dernier ne sont pas signées (compte actif et e-mail vérifié).
+      */}
+
+      {/* Historique d'un pointage (notifications, journal, pointages d'un employé) : admins */}
+      {isAdmin && <ServiceHistoryDialog />}
+    </>
+  )
 }
