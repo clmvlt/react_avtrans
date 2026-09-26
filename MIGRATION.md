@@ -37,8 +37,8 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 | 1. Socle | Vite React-TS, git, Tailwind v4, alias, shadcn init, tokens, ESLint/Prettier, React Compiler, `CLAUDE.md` | **fait** (25/09/2026) |
 | 2. Couche agnostique | api, services, models, enums, types, utils, lib, config, public ; type-check vert | **fait** (25/09/2026) |
 | 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | **fait** (25/09/2026) ; validation visuelle connectée en attente d'une session |
-| 4. Domaines | voir l'ordre ci-dessous | en cours |
-| 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | en cours |
+| 4. Domaines | voir l'ordre ci-dessous | **fait** (26/09/2026) : les 43 routes sont portées ; contrôle visuel connecté en attente d'une session |
+| 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | **fait** (26/09/2026) : build + pré-rendu strict + lint + format sans erreur ni warning ; passage à `vérifié` après le contrôle visuel connecté |
 
 Ordre des domaines en phase 4 (celui du brief) :
 
@@ -47,16 +47,16 @@ Ordre des domaines en phase 4 (celui du brief) :
 | 4.1 | auth (register, verify, mot de passe oublié / reset, Google, écran d'accueil) | fait |
 | 4.2 | pointage | fait |
 | 4.3 | heures / planning / export / contrats / journal | fait |
-| 4.4 | users (liste, pointages d'un employé, suivi des présences) | en cours |
+| 4.4 | users (liste, pointages d'un employé, suivi des présences) | fait |
 | 4.5 | véhicules | fait |
-| 4.6 | entretiens | en cours |
+| 4.6 | entretiens | fait |
 | 4.7 | absences | fait |
 | 4.8 | acomptes | fait |
 | 4.9 | signatures | fait |
 | 4.10 | couchettes | fait |
-| 4.11 | stock | en cours |
-| 4.12 | cartes | en cours |
-| 4.13 | todos | en cours |
+| 4.11 | stock | fait |
+| 4.12 | cartes | fait |
+| 4.13 | todos | fait |
 | 4.14 | versions d'app | fait |
 | 4.15 | notifications / profil | fait |
 | 4.16 | landing + pages légales | fait |
@@ -213,6 +213,8 @@ src/
 `npx shadcn@latest add` :
 `accordion alert alert-dialog avatar badge button card chart checkbox collapsible command context-menu dialog dropdown-menu empty field input input-group label popover progress scroll-area select separator sheet skeleton sonner spinner table tabs textarea toggle-group tooltip`
 
+*Fin de migration* : `alert-dialog`, `card`, `input-group`, `scroll-area`, `toggle` et `toggle-group` ont été retirés, aucun écran ne les utilisant (`ConfirmDialog` repose sur `dialog`).
+
 - **Non installés** : `sidebar` (seul usage : `AppSidebar.vue`, mort), `form` (remplacé par `field`), `calendar` (sauf Q-DATES), `pagination` (une `SimplePagination` maison sur Button suffit ; le Vue a trois variantes de pagination, voir 4.2).
 - `accordion` : historique de Pointage uniquement. **Pas** pour la FAQ de la landing : Radix démonte le contenu fermé, les réponses disparaîtraient du HTML pré-rendu. La FAQ garde `<details>`.
 - Hook `use-mobile` (livré avec certains composants) : breakpoint 768 px, cohérent avec `md`.
@@ -309,10 +311,10 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `/mycouchettes` | MesCouchettes | auth + couchette | views/couchettes/MesCouchettes.vue | pages/couchettes/MesCouchettesPage.tsx | fait |
 | `/notifications` | Notifications | auth | views/common/Notifications.vue | pages/common/NotificationsPage.tsx | fait |
 | `/profile` | Profile | auth | views/common/Profile.vue | pages/common/ProfilePage.tsx | fait |
-| `/services` | ServicesMonitoring | admin | views/common/ServicesMonitoring.vue | pages/common/ServicesMonitoringPage.tsx | en cours |
-| `/users` | Users | admin | views/users/Users.vue | pages/users/UsersPage.tsx | en cours |
+| `/services` | ServicesMonitoring | admin | views/common/ServicesMonitoring.vue | pages/common/ServicesMonitoringPage.tsx | fait |
+| `/users` | Users | admin | views/users/Users.vue | pages/users/UsersPage.tsx | fait |
 | `/users/:uuid` | UserEdit | admin | views/users/UserEdit.vue | **à décider (Q-USEREDIT)** : la page Vue est cassée et orpheline | fait |
-| `/users/:uuid/services` | UserServices | admin | views/users/UserServices.vue | pages/users/UserServicesPage.tsx | en cours |
+| `/users/:uuid/services` | UserServices | admin | views/users/UserServices.vue | pages/users/UserServicesPage.tsx | fait |
 | `/absences` | Absences | admin (`?userUuid=`) | views/absences/Absences.vue | pages/absences/AbsencesPage.tsx | fait |
 | `/absence-types` | AbsenceTypes | admin | views/absences/AbsenceTypes.vue | pages/absences/AbsenceTypesPage.tsx | fait |
 | `/planning` | Planning | admin | views/hours/Planning.vue | pages/hours/PlanningPage.tsx | fait |
@@ -323,16 +325,16 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `/acomptes` | Acomptes | admin (`?userUuid=`) | views/acomptes/Acomptes.vue | pages/acomptes/AcomptesPage.tsx | fait |
 | `/signatures` | Signatures | admin | views/signatures/Signatures.vue | pages/signatures/SignaturesPage.tsx | fait |
 | `/couchettes` | Couchettes | admin (`?userUuid=`) | views/couchettes/Couchettes.vue | pages/couchettes/CouchettesPage.tsx | fait |
-| `/cartes` | Cartes | admin | views/cartes/Cartes.vue | pages/cartes/CartesPage.tsx | en cours |
-| `/types-cartes` | TypesCartes | admin | views/cartes/TypesCartes.vue | pages/cartes/TypesCartesPage.tsx | en cours |
+| `/cartes` | Cartes | admin | views/cartes/Cartes.vue | pages/cartes/CartesPage.tsx | fait |
+| `/types-cartes` | TypesCartes | admin | views/cartes/TypesCartes.vue | pages/cartes/TypesCartesPage.tsx | fait |
 | `/app-versions` | AppVersions | admin (lien de nav limité à un e-mail, voir Q-APPVERSIONS) | views/app-versions/AppVersions.vue | pages/app-versions/AppVersionsPage.tsx | fait |
 | `/vehicules` | Vehicules | mécanicien | views/vehicles/Vehicules.vue | pages/vehicles/VehiculesPage.tsx | fait |
 | `/vehicules/:id` | VehiculeDetail | mécanicien | views/vehicles/VehiculeDetail.vue | pages/vehicles/VehiculeDetailPage.tsx | fait |
-| `/entretiens` | Entretiens | mécanicien | views/maintenance/Entretiens.vue | pages/maintenance/EntretiensPage.tsx | en cours |
-| `/entretiens/vehicule/:id` | EntretiensVehicule | mécanicien | views/maintenance/EntretiensVehicule.vue | pages/maintenance/EntretiensVehiculePage.tsx | en cours |
-| `/types-entretien` | TypesEntretien | mécanicien | views/maintenance/TypesEntretien.vue | pages/maintenance/TypesEntretienPage.tsx | en cours |
-| `/stock` | Stock | mécanicien | views/stock/StockItems.vue | pages/stock/StockItemsPage.tsx | en cours |
-| `/todos` | Todos | mécanicien | views/todos/Todos.vue | pages/todos/TodosPage.tsx | en cours |
+| `/entretiens` | Entretiens | mécanicien | views/maintenance/Entretiens.vue | pages/maintenance/EntretiensPage.tsx | fait |
+| `/entretiens/vehicule/:id` | EntretiensVehicule | mécanicien | views/maintenance/EntretiensVehicule.vue | pages/maintenance/EntretiensVehiculePage.tsx | fait |
+| `/types-entretien` | TypesEntretien | mécanicien | views/maintenance/TypesEntretien.vue | pages/maintenance/TypesEntretienPage.tsx | fait |
+| `/stock` | Stock | mécanicien | views/stock/StockItems.vue | pages/stock/StockItemsPage.tsx | fait |
+| `/todos` | Todos | mécanicien | views/todos/Todos.vue | pages/todos/TodosPage.tsx | fait |
 | `*` | NotFound | public | views/common/NotFound.vue | pages/common/NotFoundPage.tsx | fait |
 
 **Navbar** : dans le Vue, elle s'affiche si l'utilisateur est connecté et que le nom de route n'est pas dans `pagesWithoutNavbar`. Mais 6 des 9 noms de cette liste ne correspondent à aucune route (voir B-15). En pratique, la navbar est masquée seulement sur `/`, `/download` et 404. En React, le découpage en layouts remplace cette liste ; le choix des pages concernées est la question Q-NAVBAR.
@@ -341,12 +343,12 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 
 | Source Vue | Cible React | Adaptation | Phase | Statut |
 |---|---|---|---|---|
-| `package.json` | `package.json` | nom, scripts (`dev`, `build` = `tsc -b && vite build && node scripts/prerender.cjs`, `lint`, `preview`, `prerender`), dépendances de la section 2 ; version reprise (`0.1.6`) | 1 puis 5 | en cours (socle fait ; `prerender` et plugins en phase 5) |
-| `vite.config.js` | `vite.config.ts` | `@vitejs/plugin-react` + React Compiler ; alias `@` ; port 5173 et `host 0.0.0.0` ; `define __APP_VERSION__` ; plugins `version.json`, sitemap (sources : `src/pages/landing`, `src/features/landing`, `src/assets/images`, `index.html`, `src/pages/auth/LoginPage.tsx`) et compression gzip + brotli ; `manualChunks` revus (plus de vue, fontawesome, chartjs, threejs) | 1 puis 5 | en cours (plugin React + Compiler, Tailwind, alias, serveur faits ; `define`, plugins version, sitemap, compression en phase 2 et 5) |
+| `package.json` | `package.json` | nom, scripts (`dev`, `build` = `tsc -b && vite build && node scripts/prerender.cjs`, `lint`, `preview`, `prerender`), dépendances de la section 2 ; version reprise (`0.1.6`) | 1 puis 5 | fait (script `build` = `tsc -b && vite build && node scripts/prerender.cjs`) |
+| `vite.config.js` | `vite.config.ts` | `@vitejs/plugin-react` + React Compiler ; alias `@` ; port 5173 et `host 0.0.0.0` ; `define __APP_VERSION__` ; plugins `version.json`, sitemap (sources : `src/pages/landing`, `src/features/landing`, `src/assets/images`, `index.html`, `src/pages/auth/LoginPage.tsx`) et compression gzip + brotli ; `manualChunks` revus (plus de vue, fontawesome, chartjs, threejs) | 1 puis 5 | fait (`vite.config.ts` : React + Compiler, Tailwind, alias, serveur, `define`, version, sitemap, compression, chunk `react-vendor` à la place de `vue-vendor`) |
 | `tsconfig.json` | `tsconfig.json` + `tsconfig.app.json` + `tsconfig.node.json` (template) | alias `@/*` dans les deux premiers ; strict ; `noUncheckedIndexedAccess` (présent dans le Vue) ; `erasableSyntaxOnly` selon D3 | 1 | fait |
 | `components.json` | `components.json` | régénéré par `shadcn init` puis remis en `new-york` / `neutral` (CLI v4, voir section 2) ; CSS variables, lucide | 1 | fait |
-| `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | en cours (`lang="fr"`, viewport, theme-color, `#app`, `main.tsx` faits ; métas, favicons, JSON-LD, anti-FOUC en phase 3 et 5) |
-| `scripts/prerender.cjs` | `scripts/prerender.cjs` | même client CDP ; attente adaptée à React (`#app h1` + marqueur de fin de rendu) ; `cleanHtml` sans les commentaires Vue ; montage React par `createRoot` (pas `hydrateRoot` : le DOM pré-rendu diffère, avec les classes `revealed` et les compteurs à leur valeur finale) ; capture du `<head>` si D2 = A | 5 | à faire |
+| `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | fait (métas propres à chaque page retirées, rendues par `PageMeta` et recopiées par le pré-rendu : D2) |
+| `scripts/prerender.cjs` | `scripts/prerender.cjs` | même client CDP ; attente adaptée à React (`#app h1` + marqueur de fin de rendu) ; `cleanHtml` sans les commentaires Vue ; montage React par `createRoot` (pas `hydrateRoot` : le DOM pré-rendu diffère, avec les classes `revealed` et les compteurs à leur valeur finale) ; capture du `<head>` si D2 = A | 5 | fait |
 | `public/` (favicons, icons/, manifest.json, og-image.jpg, robots.txt, .well-known/, sounds/notif.wav) | `public/` | copiés ; pas `models/*.glb` (D1), `sounds/notif.{aiff,flac}`, `notif_converted.wav`, `vite.svg` (morts) | 2 | fait |
 | `src/assets/` (favicon.png, logo.png, images/*.webp) | `src/assets/` | copiés ; `images/fonctions.png` jamais importé | 2 | fait |
 | `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 2 | fait |
@@ -358,7 +360,7 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `src/router/index.ts` | `src/router/routes.tsx`, `src/router/guards.tsx`, `src/lib/getDefaultRoute.ts` | gardes en routes layout ; le passage en vue admin (`setViewMode(false)`) se fait à l'entrée de la zone admin ; `getDefaultRoute` unique (aujourd'hui recopié dans Login, Register et Navbar) | 3 | fait |
 | `src/stores/auth.ts` | `src/stores/auth-store.ts` | Zustand ; hydratation manuelle depuis `auth_token` + `user` ; `refreshUser` en arrière-plan au démarrage (GET `/profile`, 401 → déconnexion, erreurs réseau ignorées) ; sélecteurs `isAdmin`/`isMechanic`/`isUser` par UUID de rôle ; `login` et `loginWithGoogle` deviennent des mutations de `features/auth` | 3 | fait |
 | `src/api/ApiClient.ts` | `src/api/ApiClient.ts` | copié à l'identique (D3) | 2 | fait |
-| `src/api/index.ts` | `src/api/index.ts` | intercepteur 401 conservé (sauf `Access denied: Required role …`) ; déconnexion via `useAuthStore.getState().logout()`, `router.navigate('/login')` par import dynamique, `queryClient.clear()` | 2 puis 3 | en cours : les imports dynamiques du store Pinia et du router Vue sont remplacés par `setUnauthorizedHandler()`, enregistré par la coquille en phase 3 |
+| `src/api/index.ts` | `src/api/index.ts` | intercepteur 401 conservé (sauf `Access denied: Required role …`) ; déconnexion via `useAuthStore.getState().logout()`, `router.navigate('/login')` par import dynamique, `queryClient.clear()` | 2 puis 3 | fait : les imports dynamiques du store Pinia et du router Vue sont remplacés par `setUnauthorizedHandler()`, enregistré par `RootLayout` |
 | `src/services/*.ts` (25 services + index) | `src/services/` | copiés **inchangés** (`export.ts` garde son `fetch` direct ; `POST /services/history` garde son `+1 jour`) | 2 | fait |
 | `src/models/*.ts` (36 DTO + index) | `src/models/` | copiés ; seule adaptation : `import type` sur 16 imports de types (10 fichiers), exigé par `verbatimModuleSyntax` du template | 2 | fait |
 | `src/enums/*.ts` (UserRole, UserStatus, PeriodiciteType, AbsencePeriod, index) | `src/enums/` | copiés (D3) | 2 | fait |
@@ -402,7 +404,7 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `useGoogleIdentity.ts` | `features/auth/lib/googleIdentity.ts` (chargement mémoïsé du script Google) | fait |
 | `useGoogleRegistration.ts` | `features/auth/lib/googleRegistration.ts` (état de module en mémoire, volontairement non persisté) | fait |
 | `useGoogleSignIn.ts` | `features/auth/api/useGoogleSignInMutation.ts` + `features/auth/hooks/useGoogleSignIn.ts` | fait |
-| `useMapModal.ts` | `src/hooks/useMapboxMap.ts` + `components/shared/MapboxMap.tsx` + `features/user-services/components/ServiceLocationDialog.tsx` | à faire |
+| `useMapModal.ts` | `src/hooks/useMapboxMap.ts` + `components/shared/MapboxMap.tsx` + `features/user-services/components/ServiceLocationDialog.tsx` | fait |
 | `useMessages.ts` | sonner (`toast`), voir section 3 | fait |
 | `usePageMeta.ts` | balises natives React 19 ou `src/hooks/usePageMeta.ts` (D2) | fait |
 | `usePdfPreview.ts` | `src/lib/pdfPreview.ts` + `src/hooks/usePdfPreview.ts` (`useQuery`, clé fondée sur un hash du contenu) | fait |
@@ -412,7 +414,7 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `useSignatureReminder.ts` | `features/signatures/api/useSignatureSummaryQuery.ts` + `features/signatures/hooks/useSignatureReminder.ts` | fait |
 | `useTheme.ts` | `providers/ThemeProvider.tsx` + `src/hooks/useTheme.ts` | fait |
 | `useUserHours.ts` | — : mort (aucun import) | — |
-| `useUserServices.ts` (584 l.) | `features/user-services/{api/*, hooks/useServiceFilters.ts, hooks/useAdminServiceActions.ts, lib/groupServicesByDay.ts, lib/serviceLocation.ts, lib/serviceStatus.ts}` | à faire |
+| `useUserServices.ts` (584 l.) | `features/user-services/{api/*, hooks/useServiceFilters.ts, hooks/useAdminServiceActions.ts, lib/groupServicesByDay.ts, lib/serviceLocation.ts, lib/serviceStatus.ts}` | fait |
 | `useVersionCheck.ts` | `src/hooks/useVersionCheck.ts` | fait |
 
 ### 5.5 Composants de `components/ui` du Vue
@@ -443,7 +445,7 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 
 | Vue | React | Statut |
 |---|---|---|
-| `ui/alert-dialog/*` (inutilisé dans le Vue) | `ui/alert-dialog.tsx` (confirmations) | fait |
+| `ui/alert-dialog/*` (inutilisé dans le Vue) | non repris : `ConfirmDialog` repose sur `dialog` (`role="alertdialog"`) | fait |
 | `ui/avatar/*` | `ui/avatar.tsx` | fait |
 | `ui/badge/*` | `ui/badge.tsx` (+ variante `warning`) | fait |
 | `ui/button/*` | `ui/button.tsx` | fait |
@@ -510,13 +512,13 @@ Hooks Query : `usePlanningQuery`, `useUsersWithHoursQuery`, `useContractComparis
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/users/Users.vue (987) | pages/users/UsersPage.tsx ; features/users/components/{PendingActivationSection, UsersToolbar, UsersDataTable, users-columns, UserRowContextMenu, UserActionsDropdown, UserMobileList, UserMobileCard, UserIdentityCell, RoleBadge, PresenceBadge, AccountStatusBadges, LastVehicleInfo, DeleteUserDialog} ; hooks/{useUserActions, useUserDialogs, useUsersFilters} ; lib/{userPresence, formatters} | data-table, context-menu, ConfirmDialog « CONFIRMER » ; **pas** de `selectableUsers` (admin des comptes) | à faire |
-| views/users/UserEdit.vue (465) | Q-USEREDIT | page cassée (méthodes de service inexistantes) et orpheline | à faire |
-| views/users/UserServices.vue (919) + composables/useUserServices.ts (584) | pages/users/UserServicesPage.tsx ; features/user-services/components/{UserStatusCard, WorkedHoursStats, ServicesFiltersPanel, ServicesDayList, ServiceDayCard, ServiceRow, ServiceRowActions, ModifiedBadge, DayOffsetBadge, ServiceFormDialog, DeleteServiceDialog, ServiceLocationDialog, ServicesPagination} ; schemas/serviceForm.ts ; hooks/{useServiceFilters, useAdminServiceActions} ; lib/{groupServicesByDay, serviceLocation, serviceStatus} | mapbox-gl, `tooltip`, `toggle-group`, `collapsible`, historique des modifications | à faire |
-| components/users/UserEditModal.vue (564) | features/users/components/{UserEditDialog, UserEditForm, IdentityFields, AccessFields, ContractField, ContactFields, AddressFields, UserSystemInfo} ; schemas/userEdit.ts | AddressAutocomplete, InputField, cases en carte cliquable | à faire |
-| components/users/UserEmailModal.vue (191) | features/users/components/UserEmailDialog.tsx ; schemas/userEmail.ts | | à faire |
-| components/users/UserHoursModal.vue (669) | features/users/components/{UserHoursDialog, HoursPeriodTabs, PeriodNavigator, HoursStatsGrid} ; hooks/useHoursPeriod.ts ; lib/{isoWeek, dateKeys} | contrôlé par `open` + `user` (plus de `ref.open()`) ; réutilisé par le suivi des présences | à faire |
-| views/common/ServicesMonitoring.vue (583) | pages/common/ServicesMonitoringPage.tsx ; features/monitoring/components/{PresenceStatsPills, PresenceSection, PresenceUserCard, UserActionsMenuItems} ; lib/groupByPresence.ts | `refetchInterval: 10 s`, `collapsible`, context-menu | à faire |
+| views/users/Users.vue (987) | pages/users/UsersPage.tsx ; features/users/components/{PendingActivationSection, UsersToolbar, UsersDataTable, users-columns, UserRowContextMenu, UserActionsDropdown, UserMobileList, UserMobileCard, UserIdentityCell, RoleBadge, PresenceBadge, AccountStatusBadges, LastVehicleInfo, DeleteUserDialog} ; hooks/{useUserActions, useUserDialogs, useUsersFilters} ; lib/{userPresence, formatters} | data-table, context-menu, ConfirmDialog « CONFIRMER » ; **pas** de `selectableUsers` (admin des comptes) | fait |
+| views/users/UserEdit.vue (465) | Q-USEREDIT | page cassée (méthodes de service inexistantes) et orpheline | fait |
+| views/users/UserServices.vue (919) + composables/useUserServices.ts (584) | pages/users/UserServicesPage.tsx ; features/user-services/components/{UserStatusCard, WorkedHoursStats, ServicesFiltersPanel, ServicesDayList, ServiceDayCard, ServiceRow, ServiceRowActions, ModifiedBadge, DayOffsetBadge, ServiceFormDialog, DeleteServiceDialog, ServiceLocationDialog, ServicesPagination} ; schemas/serviceForm.ts ; hooks/{useServiceFilters, useAdminServiceActions} ; lib/{groupServicesByDay, serviceLocation, serviceStatus} | mapbox-gl, `tooltip`, `toggle-group`, `collapsible`, historique des modifications | fait |
+| components/users/UserEditModal.vue (564) | features/users/components/{UserEditDialog, UserEditForm, IdentityFields, AccessFields, ContractField, ContactFields, AddressFields, UserSystemInfo} ; schemas/userEdit.ts | AddressAutocomplete, InputField, cases en carte cliquable | fait |
+| components/users/UserEmailModal.vue (191) | features/users/components/UserEmailDialog.tsx ; schemas/userEmail.ts | | fait |
+| components/users/UserHoursModal.vue (669) | features/users/components/{UserHoursDialog, HoursPeriodTabs, PeriodNavigator, HoursStatsGrid} ; hooks/useHoursPeriod.ts ; lib/{isoWeek, dateKeys} | contrôlé par `open` + `user` (plus de `ref.open()`) ; réutilisé par le suivi des présences | fait |
+| views/common/ServicesMonitoring.vue (583) | pages/common/ServicesMonitoringPage.tsx ; features/monitoring/components/{PresenceStatsPills, PresenceSection, PresenceUserCard, UserActionsMenuItems} ; lib/groupByPresence.ts | `refetchInterval: 10 s`, `collapsible`, context-menu | fait |
 
 Hooks Query : `useUsersQuery`, `usePendingUsers`, `useUsersLastVehiclesQuery`, `useUserQuery`, `useUsersWithStatusQuery`, `useUserActiveServiceQuery`, `useUserServicesHistoryQuery`, `useUserWorkedHoursQuery`, mutations `useUpdateUser`, `useDeleteUser`, `useResendVerification`, create/update/delete/actions de pointage admin.
 
@@ -543,10 +545,10 @@ Hooks Query : `useVehiclesQuery`, `useVehicleQuery`, `useVehicleFiles`, `useVehi
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/maintenance/Entretiens.vue (2089) | pages/maintenance/EntretiensPage.tsx ; features/maintenance/components/fleet/{FleetDashboard, FleetStatusSection, FleetVehicleCard, FleetAlertLine, FleetDashboardSkeleton} ; history/{EntretiensHistory, EntretiensHistoryToolbar, entretienColumns, EntretiensDataTable, EntretienMobileCard, EntretienActionsMenu, EntretiensTotalCost} ; form/{EntretienFormDialog, TypeEntretienPicker, EntretienFilesField} ; files/EntretienFilesDialog ; lib/{fleetStatus, entretienDates, formatPeriodicite, buildHistorySearchParams} ; hooks/{useEntretiensHistory, useHistoryFilterConfig, useEntretienDialogs, useFleetStatus, useCanManageMaintenance} | SearchFilters, data-table, context-menu, Combobox hiérarchique (popover + command), FileDropzone, ImageLightbox, PdfViewerDialog | à faire |
-| views/maintenance/EntretiensVehicule.vue (1693) | pages/maintenance/EntretiensVehiculePage.tsx ; features/maintenance/components/vehicule/{VehiculeEntretiensHeader, VehicleUpcomingAlerts, UpcomingAlertCard, ValidateEntretienDialog} ; config/{VehiculeConfigsPanel, VehiculeConfigCard} ; + historique, formulaire et fichiers **partagés** avec Entretiens | `TabbedPageHeader` partagé | à faire |
-| views/maintenance/TypesEntretien.vue (894) | pages/maintenance/TypesEntretienPage.tsx ; features/maintenance/components/types/{DossiersSidebar, DossierNavItem, TypesToolbar, TypesEntretienList, TypeEntretienCard, TypeEntretienFormDialog, DossierFormDialog} ; hooks/{useTypesExplorer, useTypeDragAndDrop} | glisser-déposer (Q-DND), `scroll-area` | à faire |
-| components/maintenance/ConfigEntretienModal.vue (220) | features/maintenance/components/config/ConfigEntretienDialog.tsx ; schemas/configEntretien.ts | | à faire |
+| views/maintenance/Entretiens.vue (2089) | pages/maintenance/EntretiensPage.tsx ; features/maintenance/components/fleet/{FleetDashboard, FleetStatusSection, FleetVehicleCard, FleetAlertLine, FleetDashboardSkeleton} ; history/{EntretiensHistory, EntretiensHistoryToolbar, entretienColumns, EntretiensDataTable, EntretienMobileCard, EntretienActionsMenu, EntretiensTotalCost} ; form/{EntretienFormDialog, TypeEntretienPicker, EntretienFilesField} ; files/EntretienFilesDialog ; lib/{fleetStatus, entretienDates, formatPeriodicite, buildHistorySearchParams} ; hooks/{useEntretiensHistory, useHistoryFilterConfig, useEntretienDialogs, useFleetStatus, useCanManageMaintenance} | SearchFilters, data-table, context-menu, Combobox hiérarchique (popover + command), FileDropzone, ImageLightbox, PdfViewerDialog | fait |
+| views/maintenance/EntretiensVehicule.vue (1693) | pages/maintenance/EntretiensVehiculePage.tsx ; features/maintenance/components/vehicule/{VehiculeEntretiensHeader, VehicleUpcomingAlerts, UpcomingAlertCard, ValidateEntretienDialog} ; config/{VehiculeConfigsPanel, VehiculeConfigCard} ; + historique, formulaire et fichiers **partagés** avec Entretiens | `TabbedPageHeader` partagé | fait |
+| views/maintenance/TypesEntretien.vue (894) | pages/maintenance/TypesEntretienPage.tsx ; features/maintenance/components/types/{DossiersSidebar, DossierNavItem, TypesToolbar, TypesEntretienList, TypeEntretienCard, TypeEntretienFormDialog, DossierFormDialog} ; hooks/{useTypesExplorer, useTypeDragAndDrop} | glisser-déposer (Q-DND), `scroll-area` | fait |
+| components/maintenance/ConfigEntretienModal.vue (220) | features/maintenance/components/config/ConfigEntretienDialog.tsx ; schemas/configEntretien.ts | | fait |
 
 Hooks Query : `useFleetUpcomingQuery`, `useVehicleUpcomingQuery`, `useEntretiensHistoryQuery`, `useEntretienFilesQuery`, `useTypesEntretienQuery`, `useDossiersQuery`, `useVehiculeConfigsQuery` + mutations (voir l'annexe).
 
@@ -609,7 +611,7 @@ Hooks Query : `useAdminCouchettesQuery`, `useMyCouchettesQuery`, mutations creat
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/stock/StockItems.vue (1060) | pages/stock/StockItemsPage.tsx ; features/stock/components/{StockCategorySidebar, StockCategoryNavItem, StockToolbar, StockItemList, StockEmptyState, StockItemCard, StockQuantityStepper, StockItemFormDialog, StockCategoryFormDialog, StockItemDeleteDialog, StockCategoryDeleteDialog} ; hooks/{useStockFilters, useFilteredStockItems, useCanManageStock} ; lib/stock.ts ; schemas/{stockItem, stockCategory} | glisser-déposer vers une catégorie (Q-DND), stepper de quantité optimiste, suppression d'article « CONFIRMER » | à faire |
+| views/stock/StockItems.vue (1060) | pages/stock/StockItemsPage.tsx ; features/stock/components/{StockCategorySidebar, StockCategoryNavItem, StockToolbar, StockItemList, StockEmptyState, StockItemCard, StockQuantityStepper, StockItemFormDialog, StockCategoryFormDialog, StockItemDeleteDialog, StockCategoryDeleteDialog} ; hooks/{useStockFilters, useFilteredStockItems, useCanManageStock} ; lib/stock.ts ; schemas/{stockItem, stockCategory} | glisser-déposer vers une catégorie (Q-DND), stepper de quantité optimiste, suppression d'article « CONFIRMER » | fait |
 
 Hooks Query : `useStockItemsQuery`, `useStockCategoriesQuery`, CRUD articles et catégories, `useAdjustStockQuantityMutation`, `useMoveStockItemMutation`.
 
@@ -617,10 +619,10 @@ Hooks Query : `useStockItemsQuery`, `useStockCategoriesQuery`, CRUD articles et 
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/cartes/Cartes.vue (596) | pages/cartes/CartesPage.tsx ; features/cartes/components/{CartesTable, cartesColumns, CarteRowContextMenu, CarteMobileCard, CarteSecretValue, CarteExpirationBadge, CarteDeleteDialog} ; hooks/useRevealedSecrets.ts ; lib/cartes.ts | badge `warning` « Expire bientôt » (< 30 jours) | à faire |
-| views/cartes/TypesCartes.vue (315) | pages/cartes/TypesCartesPage.tsx ; features/cartes/components/{TypesCartesTable, typesCartesColumns, TypeCarteMobileCard, TypeCarteDeleteDialog} | | à faire |
-| components/cartes/CarteEditModal.vue (386) | features/cartes/components/{CarteFormDialog, CarteForm, CarteSystemInfo} ; schemas/carteForm.ts ; hooks/useCarteFormDefaults.ts | Combobox type et utilisateur (`selectableUsers`) ; `clearUser` | à faire |
-| components/cartes/TypeCarteEditModal.vue (236) | features/cartes/components/TypeCarteFormDialog.tsx ; schemas/typeCarteForm.ts | | à faire |
+| views/cartes/Cartes.vue (596) | pages/cartes/CartesPage.tsx ; features/cartes/components/{CartesTable, cartesColumns, CarteRowContextMenu, CarteMobileCard, CarteSecretValue, CarteExpirationBadge, CarteDeleteDialog} ; hooks/useRevealedSecrets.ts ; lib/cartes.ts | badge `warning` « Expire bientôt » (< 30 jours) | fait |
+| views/cartes/TypesCartes.vue (315) | pages/cartes/TypesCartesPage.tsx ; features/cartes/components/{TypesCartesTable, typesCartesColumns, TypeCarteMobileCard, TypeCarteDeleteDialog} | | fait |
+| components/cartes/CarteEditModal.vue (386) | features/cartes/components/{CarteFormDialog, CarteForm, CarteSystemInfo} ; schemas/carteForm.ts ; hooks/useCarteFormDefaults.ts | Combobox type et utilisateur (`selectableUsers`) ; `clearUser` | fait |
+| components/cartes/TypeCarteEditModal.vue (236) | features/cartes/components/TypeCarteFormDialog.tsx ; schemas/typeCarteForm.ts | | fait |
 
 Hooks Query : `useCartesQuery`, `useCarteQuery`, `useTypeCartesQuery`, `useTypeCarteQuery`, CRUD cartes et types.
 
@@ -628,9 +630,9 @@ Hooks Query : `useCartesQuery`, `useCarteQuery`, `useTypeCartesQuery`, `useTypeC
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/todos/Todos.vue (552, dont un `<style>` global) | pages/todos/TodosPage.tsx ; features/todos/components/{TodosToolbar, TodoBoard, TodoColumn, TodoCard, TodoToggleButton, TodoTrashDropZone, TodoDeleteDialog} ; hooks/{useTodoBoard, useTodoDragAndDrop} | kanban, corbeille flottante animée (`tw-animate-css`), glisser-déposer (Q-DND) | à faire |
-| components/todos/TodoEditModal.vue (216) | features/todos/components/TodoFormDialog.tsx ; schemas/todoForm.ts | | à faire |
-| components/todos/TodoCategoriesModal.vue (271) | features/todos/components/{TodoCategoriesDialog, TodoCategoryForm, TodoCategoryList, TodoCategoryDeleteDialog} | | à faire |
+| views/todos/Todos.vue (552, dont un `<style>` global) | pages/todos/TodosPage.tsx ; features/todos/components/{TodosToolbar, TodoBoard, TodoColumn, TodoCard, TodoToggleButton, TodoTrashDropZone, TodoDeleteDialog} ; hooks/{useTodoBoard, useTodoDragAndDrop} | kanban, corbeille flottante animée (`tw-animate-css`), glisser-déposer (Q-DND) | fait |
+| components/todos/TodoEditModal.vue (216) | features/todos/components/TodoFormDialog.tsx ; schemas/todoForm.ts | | fait |
+| components/todos/TodoCategoriesModal.vue (271) | features/todos/components/{TodoCategoriesDialog, TodoCategoryForm, TodoCategoryList, TodoCategoryDeleteDialog} | | fait |
 
 Hooks Query : `useTodosQuery`, `useTodoQuery`, `useTodoCategoriesQuery`, mutations create / update / move (optimiste) / toggle / delete, CRUD des catégories.
 
@@ -671,8 +673,8 @@ Hooks Query : `useNotificationsQuery`, `useUnreadNotificationsQuery`, `useMarkNo
 | `robots.txt` (liste blanche `/` et `/login`, robots SEO tiers bloqués, sitemap) | `public/robots.txt` (sans `Allow: /models/` si D1) | fait |
 | Sitemap (lastmod = dernier commit git des sources de la page) | plugin Vite, sources React | fait |
 | `version.json` (`version`, `buildTime`, `commit`) + `__APP_VERSION__` | plugin Vite + `define` | fait |
-| Compression gzip + brotli | `vite-plugin-compression2` | à faire |
-| Pré-rendu de `/` (Edge headless via CDP, `PRERENDER_STRICT=1`) | `scripts/prerender.cjs` adapté | à faire |
+| Compression gzip + brotli | `vite-plugin-compression2` | fait |
+| Pré-rendu de `/` (Edge headless via CDP, `PRERENDER_STRICT=1`) | `scripts/prerender.cjs` adapté | fait |
 | JSON-LD site (`index.html`) + page (landing : WebPage, FAQPage) | mêmes `@id` : `#business`, `#website`, `#webpage`, `#faq` | fait |
 | Métadonnées par page (title, description, robots, canonical ; `https://pointage.avtrans-concept.com`, jamais `app.`) | D2 | fait |
 | Manifest PWA, icônes, `theme-color` `#581c87`, métas iOS | `public/manifest.json` + `index.html` | fait |
@@ -688,7 +690,7 @@ Hooks Query : `useNotificationsQuery`, `useUnreadNotificationsQuery`, `useMarkNo
 |---|---|---|
 | `components/landing/FleetViewer.vue`, `public/models/*.glb`, `three`, `@tresjs/*` | aucun import depuis `751eedd` | D1 |
 | `components/layout/AppSidebar.vue` + `components/ui/sidebar/*` (18 fichiers) | aucun import ; `SidebarProvider` jamais monté | pas de `sidebar` shadcn |
-| `components/ui/alert-dialog/*`, `dialog/DialogScrollContent`, `table/{TableEmpty, TableCaption, TableFooter, utils.ts}` | 0 import hors `ui/` | `alert-dialog` réinstallé car utile aux confirmations |
+| `components/ui/alert-dialog/*`, `dialog/DialogScrollContent`, `table/{TableEmpty, TableCaption, TableFooter, utils.ts}` | 0 import hors `ui/` | non repris (`ConfirmDialog` repose sur `dialog`) |
 | `composables/useUserHours.ts` | 0 import | — |
 | `views/users/UserServices.styles.css` (957 l.), `views/users/UserServices.vue.b` (sauvegarde) | 0 import | — |
 | `src/style.css` | jamais importé | — |
@@ -811,7 +813,7 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 
 **Par domaine** (détail dans les annexes, section « Points d'ombre »)
 - *Pointage* : **Q-PAUSES**. La pause est-elle incluse dans un service qui reste ouvert, ou les deux se succèdent-ils ? Cela détermine lequel des deux calculs est juste (B-14). Le kilométrage doit-il être obligatoire en « vue utilisateur » ? Le mécanicien doit-il avoir accès à `/pointage` (route ouverte, sans lien de nav) ?
-- *Entretiens* : droits du mécanicien (B-04) ; seuils « à venir » (10 000 km / 90 j) aussi dans EntretiensVehicule ; conserver l'approximation « mois = 30 j » ?
+- *Entretiens* : dans le dialog des fichiers de `/entretiens`, cliquer un PDF ne fait rien (comme le Vue ; l'annexe prévoyait d'ouvrir la visionneuse partout, comme sur `/entretiens/vehicule/:id`) : l'activer ? Droits du mécanicien (B-04) ; seuils « à venir » (10 000 km / 90 j) aussi dans EntretiensVehicule ; conserver l'approximation « mois = 30 j » ?
 - *Planning* : garder l'export en capture d'image, ou générer un PDF tabulaire qui ne coupe pas les lignes ?
 - *Signatures* : autoriser la suppression depuis l'historique (aujourd'hui, seule la dernière est supprimable) ?
 - *Cartes* : PIN et numéro complet transmis en clair par l'API : acceptable ? Règle du PIN : exactement 4 chiffres, ou au moins 4 caractères comme aujourd'hui ?
@@ -829,3 +831,4 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 | 2026-09-25 | 1 | Phase 0 : lecture des fichiers de référence ; inventaire complet par 8 sous-agents en lecture seule ; annexes dans `docs/migration/` ; revérification des bugs B-01, B-02, B-04, B-11, B-15 et de la page UserEdit ; vérification de l'environnement (Node, Edge, CORS). Aucun fichier du Vue modifié. | `16d5819` |
 | 2026-09-25 | 1 | Phase 1 (socle) : dépôt git (`main`, LF imposé) ; Vite 7 + React 19 + TS 5.9 (create-vite 8.3.0) ; Tailwind v4 et alias `@` ; React Compiler (runtime vérifié dans le bundle) ; shadcn CLI v4 remis en style new-york, `button`, paquet `cn` (parité testée) ; tokens et règles de base du Vue dans `src/index.css` (police système, scrollbar et sélection en sombre) ; Prettier + eslint-config-prettier ; `CLAUDE.md`. Vérifié : build, lint (0 warning), format, rendu clair/sombre à 375 px et en desktop dans le navigateur intégré. | `c0f3c4a` à `4803d46`, puis le commit de documentation |
 | 2026-09-25 / 26 | 1 | Phases 2 et 3 : couche agnostique copiée (seules adaptations : icônes lucide, intercepteur 401 découplé, `import type`) ; coquille (store Zustand hydraté depuis les clés du Vue, router data mode et gardes, ThemeProvider, navbar, notifications, bannière de version, changelog, historique d'un pointage) ; composants partagés. Phase 4 par sous-agents parallèles : auth, pointage, heures/planning/journal, véhicules, absences, acomptes, signatures, couchettes, versions, notifications, profil, landing et légal portés ; B-02 corrigé (échappement, règle de sécurité du brief). Phase 5 amorcée : version.json, sitemap, en-tête SEO, pré-rendu porté, deploy/. Vérifié visuellement contre la prod Vue : login (360 px clair et sombre), landing (desktop identique, même hauteur à 360 px). Utilisateurs, entretiens, stock, cartes et todos : reprise en cours après une coupure de l'API. | `9161c08` à `8e593ca` |
+| 2026-09-26 | 1 | Fin de la phase 4 : utilisateurs (liste, pointages d'un employé, suivi des présences), entretiens (flotte, véhicule, types), stock, cartes et todos portés et relus ; bugs du Vue reproduits (B-01, B-04 à B-07, B-16 à B-27, B-30, B-31, 8.3). Phase 5 : compression gzip + brotli, `AppLayout` chargé à la demande et chunk `react-vendor` (bundle initial de la landing : 505 ko au lieu de 805 ko + coquille), limite de taille relevée pour mapbox-gl seul ; `MigrationPlaceholder` et 6 composants shadcn inutilisés retirés ; aucun module orphelin ni `any` ; libellés d'`InputField` alignés sur le Vue (login identique au pixel près). Vérifié : `npm run build` avec `PRERENDER_STRICT=1`, lint, format, parité des 43 routes et des gardes. Reste : contrôle visuel des écrans connectés (session requise). | `c534637` à ce commit |
