@@ -33,33 +33,33 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 
 | Phase | Contenu | Statut |
 |---|---|---|
-| 0. Inventaire | ce fichier + annexes | **fait** (validé le 25/09/2026, voir section 0) |
-| 1. Socle | Vite React-TS, git, Tailwind v4, alias, shadcn init, tokens, ESLint/Prettier, React Compiler, `CLAUDE.md` | **fait** (25/09/2026) |
-| 2. Couche agnostique | api, services, models, enums, types, utils, lib, config, public ; type-check vert | **fait** (25/09/2026) |
-| 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | **fait** (25/09/2026) ; validation visuelle connectée en attente d'une session |
-| 4. Domaines | voir l'ordre ci-dessous | **fait** (26/09/2026) : les 43 routes sont portées ; contrôle visuel connecté en attente d'une session |
-| 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | **fait** (26/09/2026) : build + pré-rendu strict + lint + format sans erreur ni warning ; passage à `vérifié` après le contrôle visuel connecté |
+| 0. Inventaire | ce fichier + annexes | **vérifié** (validé le 25/09/2026, voir section 0) |
+| 1. Socle | Vite React-TS, git, Tailwind v4, alias, shadcn init, tokens, ESLint/Prettier, React Compiler, `CLAUDE.md` | **vérifié** (25/09/2026) |
+| 2. Couche agnostique | api, services, models, enums, types, utils, lib, config, public ; type-check vert | **vérifié** (25/09/2026) |
+| 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | **vérifié** (25/09/2026) |
+| 4. Domaines | voir l'ordre ci-dessous | **vérifié** (26/09/2026) : les 43 routes sont portées |
+| 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | **vérifié** (26/09/2026) : build + pré-rendu strict + lint + format sans erreur ni warning |
 
 Ordre des domaines en phase 4 (celui du brief) :
 
 | # | Domaine | Statut |
 |---|---|---|
-| 4.1 | auth (register, verify, mot de passe oublié / reset, Google, écran d'accueil) | fait |
-| 4.2 | pointage | fait |
-| 4.3 | heures / planning / export / contrats / journal | fait |
-| 4.4 | users (liste, pointages d'un employé, suivi des présences) | fait |
-| 4.5 | véhicules | fait |
-| 4.6 | entretiens | fait |
-| 4.7 | absences | fait |
-| 4.8 | acomptes | fait |
-| 4.9 | signatures | fait |
-| 4.10 | couchettes | fait |
-| 4.11 | stock | fait |
-| 4.12 | cartes | fait |
-| 4.13 | todos | fait |
-| 4.14 | versions d'app | fait |
-| 4.15 | notifications / profil | fait |
-| 4.16 | landing + pages légales | fait |
+| 4.1 | auth (register, verify, mot de passe oublié / reset, Google, écran d'accueil) | vérifié |
+| 4.2 | pointage | vérifié |
+| 4.3 | heures / planning / export / contrats / journal | vérifié |
+| 4.4 | users (liste, pointages d'un employé, suivi des présences) | vérifié |
+| 4.5 | véhicules | vérifié |
+| 4.6 | entretiens | vérifié |
+| 4.7 | absences | vérifié |
+| 4.8 | acomptes | vérifié |
+| 4.9 | signatures | vérifié |
+| 4.10 | couchettes | vérifié |
+| 4.11 | stock | vérifié |
+| 4.12 | cartes | vérifié |
+| 4.13 | todos | vérifié |
+| 4.14 | versions d'app | vérifié |
+| 4.15 | notifications / profil | vérifié |
+| 4.16 | landing + pages légales | vérifié |
 
 ---
 
@@ -293,49 +293,49 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 
 | Chemin | Nom Vue | Garde | Vue source | Page React | Statut |
 |---|---|---|---|---|---|
-| `/` | Landing | public | views/landing/Landing.vue | pages/landing/LandingPage.tsx | fait |
-| `/mentions-legales` | MentionsLegales | public | views/legal/MentionsLegales.vue | pages/legal/MentionsLegalesPage.tsx | fait |
-| `/politique-confidentialite` | PolitiqueConfidentialite | public | views/legal/PolitiqueConfidentialite.vue | pages/legal/PolitiqueConfidentialitePage.tsx | fait |
-| `/unauthorized` | Unauthorized | public | views/common/Unauthorized.vue | pages/common/UnauthorizedPage.tsx | fait |
-| `/login` | Login | public, redirige si connecté | views/auth/Login.vue | pages/auth/LoginPage.tsx | fait |
-| `/register` | Register | public, redirige si connecté | views/auth/Register.vue | pages/auth/RegisterPage.tsx | fait |
-| `/register/google` | GoogleRegister | public | views/auth/GoogleRegister.vue | pages/auth/GoogleRegisterPage.tsx | fait |
-| `/verify` | Verify | public (`?token=`) | views/auth/Verify.vue | pages/auth/VerifyPage.tsx | fait |
-| `/forgot-password` | ForgotPassword | public | views/auth/ForgotPassword.vue | pages/auth/ForgotPasswordPage.tsx | fait |
-| `/password-reset` | PasswordReset | public (`?token=`) | views/auth/ResetPassword.vue | pages/auth/ResetPasswordPage.tsx | fait |
-| `/download` | AppDownload | public | views/app-versions/AppVersionsPublic.vue | pages/app-versions/AppVersionsPublicPage.tsx | fait |
-| `/add-to-homescreen` | AddToHomescreen | auth | views/auth/AddToHomescreen.vue | pages/auth/AddToHomescreenPage.tsx | fait |
-| `/pointage` | Pointage | auth | views/hours/Pointage.vue | pages/hours/PointagePage.tsx | fait |
-| `/myabsences` | MyAbsences | auth | views/myabsences/MyAbsences.vue | pages/myabsences/MyAbsencesPage.tsx | fait |
-| `/myacomptes` | MyAcomptes | auth | views/acomptes/MyAcomptes.vue | pages/acomptes/MyAcomptesPage.tsx | fait |
-| `/mycouchettes` | MesCouchettes | auth + couchette | views/couchettes/MesCouchettes.vue | pages/couchettes/MesCouchettesPage.tsx | fait |
-| `/notifications` | Notifications | auth | views/common/Notifications.vue | pages/common/NotificationsPage.tsx | fait |
-| `/profile` | Profile | auth | views/common/Profile.vue | pages/common/ProfilePage.tsx | fait |
-| `/services` | ServicesMonitoring | admin | views/common/ServicesMonitoring.vue | pages/common/ServicesMonitoringPage.tsx | fait |
-| `/users` | Users | admin | views/users/Users.vue | pages/users/UsersPage.tsx | fait |
-| `/users/:uuid` | UserEdit | admin | views/users/UserEdit.vue | **à décider (Q-USEREDIT)** : la page Vue est cassée et orpheline | fait |
-| `/users/:uuid/services` | UserServices | admin | views/users/UserServices.vue | pages/users/UserServicesPage.tsx | fait |
-| `/absences` | Absences | admin (`?userUuid=`) | views/absences/Absences.vue | pages/absences/AbsencesPage.tsx | fait |
-| `/absence-types` | AbsenceTypes | admin | views/absences/AbsenceTypes.vue | pages/absences/AbsenceTypesPage.tsx | fait |
-| `/planning` | Planning | admin | views/hours/Planning.vue | pages/hours/PlanningPage.tsx | fait |
-| `/heures` | Heures | admin | views/hours/Heures.vue | pages/hours/HeuresPage.tsx | fait |
-| `/export-hours` | ExportHours | admin | views/hours/ExportHours.vue | pages/hours/ExportHoursPage.tsx | fait |
-| `/contract-hours` | ContractHours | admin | views/hours/ContractHours.vue | pages/hours/ContractHoursPage.tsx | fait |
-| `/journal-pointages` | JournalPointages | admin | views/hours/JournalPointages.vue | pages/hours/JournalPointagesPage.tsx | fait |
-| `/acomptes` | Acomptes | admin (`?userUuid=`) | views/acomptes/Acomptes.vue | pages/acomptes/AcomptesPage.tsx | fait |
-| `/signatures` | Signatures | admin | views/signatures/Signatures.vue | pages/signatures/SignaturesPage.tsx | fait |
-| `/couchettes` | Couchettes | admin (`?userUuid=`) | views/couchettes/Couchettes.vue | pages/couchettes/CouchettesPage.tsx | fait |
-| `/cartes` | Cartes | admin | views/cartes/Cartes.vue | pages/cartes/CartesPage.tsx | fait |
-| `/types-cartes` | TypesCartes | admin | views/cartes/TypesCartes.vue | pages/cartes/TypesCartesPage.tsx | fait |
-| `/app-versions` | AppVersions | admin (lien de nav limité à un e-mail, voir Q-APPVERSIONS) | views/app-versions/AppVersions.vue | pages/app-versions/AppVersionsPage.tsx | fait |
-| `/vehicules` | Vehicules | mécanicien | views/vehicles/Vehicules.vue | pages/vehicles/VehiculesPage.tsx | fait |
-| `/vehicules/:id` | VehiculeDetail | mécanicien | views/vehicles/VehiculeDetail.vue | pages/vehicles/VehiculeDetailPage.tsx | fait |
-| `/entretiens` | Entretiens | mécanicien | views/maintenance/Entretiens.vue | pages/maintenance/EntretiensPage.tsx | fait |
-| `/entretiens/vehicule/:id` | EntretiensVehicule | mécanicien | views/maintenance/EntretiensVehicule.vue | pages/maintenance/EntretiensVehiculePage.tsx | fait |
-| `/types-entretien` | TypesEntretien | mécanicien | views/maintenance/TypesEntretien.vue | pages/maintenance/TypesEntretienPage.tsx | fait |
-| `/stock` | Stock | mécanicien | views/stock/StockItems.vue | pages/stock/StockItemsPage.tsx | fait |
-| `/todos` | Todos | mécanicien | views/todos/Todos.vue | pages/todos/TodosPage.tsx | fait |
-| `*` | NotFound | public | views/common/NotFound.vue | pages/common/NotFoundPage.tsx | fait |
+| `/` | Landing | public | views/landing/Landing.vue | pages/landing/LandingPage.tsx | vérifié |
+| `/mentions-legales` | MentionsLegales | public | views/legal/MentionsLegales.vue | pages/legal/MentionsLegalesPage.tsx | vérifié |
+| `/politique-confidentialite` | PolitiqueConfidentialite | public | views/legal/PolitiqueConfidentialite.vue | pages/legal/PolitiqueConfidentialitePage.tsx | vérifié |
+| `/unauthorized` | Unauthorized | public | views/common/Unauthorized.vue | pages/common/UnauthorizedPage.tsx | vérifié |
+| `/login` | Login | public, redirige si connecté | views/auth/Login.vue | pages/auth/LoginPage.tsx | vérifié |
+| `/register` | Register | public, redirige si connecté | views/auth/Register.vue | pages/auth/RegisterPage.tsx | vérifié |
+| `/register/google` | GoogleRegister | public | views/auth/GoogleRegister.vue | pages/auth/GoogleRegisterPage.tsx | vérifié |
+| `/verify` | Verify | public (`?token=`) | views/auth/Verify.vue | pages/auth/VerifyPage.tsx | vérifié |
+| `/forgot-password` | ForgotPassword | public | views/auth/ForgotPassword.vue | pages/auth/ForgotPasswordPage.tsx | vérifié |
+| `/password-reset` | PasswordReset | public (`?token=`) | views/auth/ResetPassword.vue | pages/auth/ResetPasswordPage.tsx | vérifié |
+| `/download` | AppDownload | public | views/app-versions/AppVersionsPublic.vue | pages/app-versions/AppVersionsPublicPage.tsx | vérifié |
+| `/add-to-homescreen` | AddToHomescreen | auth | views/auth/AddToHomescreen.vue | pages/auth/AddToHomescreenPage.tsx | vérifié |
+| `/pointage` | Pointage | auth | views/hours/Pointage.vue | pages/hours/PointagePage.tsx | vérifié |
+| `/myabsences` | MyAbsences | auth | views/myabsences/MyAbsences.vue | pages/myabsences/MyAbsencesPage.tsx | vérifié |
+| `/myacomptes` | MyAcomptes | auth | views/acomptes/MyAcomptes.vue | pages/acomptes/MyAcomptesPage.tsx | vérifié |
+| `/mycouchettes` | MesCouchettes | auth + couchette | views/couchettes/MesCouchettes.vue | pages/couchettes/MesCouchettesPage.tsx | vérifié |
+| `/notifications` | Notifications | auth | views/common/Notifications.vue | pages/common/NotificationsPage.tsx | vérifié |
+| `/profile` | Profile | auth | views/common/Profile.vue | pages/common/ProfilePage.tsx | vérifié |
+| `/services` | ServicesMonitoring | admin | views/common/ServicesMonitoring.vue | pages/common/ServicesMonitoringPage.tsx | vérifié |
+| `/users` | Users | admin | views/users/Users.vue | pages/users/UsersPage.tsx | vérifié |
+| `/users/:uuid` | UserEdit | admin | views/users/UserEdit.vue | **à décider (Q-USEREDIT)** : la page Vue est cassée et orpheline | vérifié |
+| `/users/:uuid/services` | UserServices | admin | views/users/UserServices.vue | pages/users/UserServicesPage.tsx | vérifié |
+| `/absences` | Absences | admin (`?userUuid=`) | views/absences/Absences.vue | pages/absences/AbsencesPage.tsx | vérifié |
+| `/absence-types` | AbsenceTypes | admin | views/absences/AbsenceTypes.vue | pages/absences/AbsenceTypesPage.tsx | vérifié |
+| `/planning` | Planning | admin | views/hours/Planning.vue | pages/hours/PlanningPage.tsx | vérifié |
+| `/heures` | Heures | admin | views/hours/Heures.vue | pages/hours/HeuresPage.tsx | vérifié |
+| `/export-hours` | ExportHours | admin | views/hours/ExportHours.vue | pages/hours/ExportHoursPage.tsx | vérifié |
+| `/contract-hours` | ContractHours | admin | views/hours/ContractHours.vue | pages/hours/ContractHoursPage.tsx | vérifié |
+| `/journal-pointages` | JournalPointages | admin | views/hours/JournalPointages.vue | pages/hours/JournalPointagesPage.tsx | vérifié |
+| `/acomptes` | Acomptes | admin (`?userUuid=`) | views/acomptes/Acomptes.vue | pages/acomptes/AcomptesPage.tsx | vérifié |
+| `/signatures` | Signatures | admin | views/signatures/Signatures.vue | pages/signatures/SignaturesPage.tsx | vérifié |
+| `/couchettes` | Couchettes | admin (`?userUuid=`) | views/couchettes/Couchettes.vue | pages/couchettes/CouchettesPage.tsx | vérifié |
+| `/cartes` | Cartes | admin | views/cartes/Cartes.vue | pages/cartes/CartesPage.tsx | vérifié |
+| `/types-cartes` | TypesCartes | admin | views/cartes/TypesCartes.vue | pages/cartes/TypesCartesPage.tsx | vérifié |
+| `/app-versions` | AppVersions | admin (lien de nav limité à un e-mail, voir Q-APPVERSIONS) | views/app-versions/AppVersions.vue | pages/app-versions/AppVersionsPage.tsx | vérifié |
+| `/vehicules` | Vehicules | mécanicien | views/vehicles/Vehicules.vue | pages/vehicles/VehiculesPage.tsx | vérifié |
+| `/vehicules/:id` | VehiculeDetail | mécanicien | views/vehicles/VehiculeDetail.vue | pages/vehicles/VehiculeDetailPage.tsx | vérifié |
+| `/entretiens` | Entretiens | mécanicien | views/maintenance/Entretiens.vue | pages/maintenance/EntretiensPage.tsx | vérifié |
+| `/entretiens/vehicule/:id` | EntretiensVehicule | mécanicien | views/maintenance/EntretiensVehicule.vue | pages/maintenance/EntretiensVehiculePage.tsx | vérifié |
+| `/types-entretien` | TypesEntretien | mécanicien | views/maintenance/TypesEntretien.vue | pages/maintenance/TypesEntretienPage.tsx | vérifié |
+| `/stock` | Stock | mécanicien | views/stock/StockItems.vue | pages/stock/StockItemsPage.tsx | vérifié |
+| `/todos` | Todos | mécanicien | views/todos/Todos.vue | pages/todos/TodosPage.tsx | vérifié |
+| `*` | NotFound | public | views/common/NotFound.vue | pages/common/NotFoundPage.tsx | vérifié |
 
 **Navbar** : dans le Vue, elle s'affiche si l'utilisateur est connecté et que le nom de route n'est pas dans `pagesWithoutNavbar`. Mais 6 des 9 noms de cette liste ne correspondent à aucune route (voir B-15). En pratique, la navbar est masquée seulement sur `/`, `/download` et 404. En React, le découpage en layouts remplace cette liste ; le choix des pages concernées est la question Q-NAVBAR.
 
@@ -343,79 +343,79 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 
 | Source Vue | Cible React | Adaptation | Phase | Statut |
 |---|---|---|---|---|
-| `package.json` | `package.json` | nom, scripts (`dev`, `build` = `tsc -b && vite build && node scripts/prerender.cjs`, `lint`, `preview`, `prerender`), dépendances de la section 2 ; version reprise (`0.1.6`) | 1 puis 5 | fait (script `build` = `tsc -b && vite build && node scripts/prerender.cjs`) |
-| `vite.config.js` | `vite.config.ts` | `@vitejs/plugin-react` + React Compiler ; alias `@` ; port 5173 et `host 0.0.0.0` ; `define __APP_VERSION__` ; plugins `version.json`, sitemap (sources : `src/pages/landing`, `src/features/landing`, `src/assets/images`, `index.html`, `src/pages/auth/LoginPage.tsx`) et compression gzip + brotli ; `manualChunks` revus (plus de vue, fontawesome, chartjs, threejs) | 1 puis 5 | fait (`vite.config.ts` : React + Compiler, Tailwind, alias, serveur, `define`, version, sitemap, compression, chunk `react-vendor` à la place de `vue-vendor`) |
-| `tsconfig.json` | `tsconfig.json` + `tsconfig.app.json` + `tsconfig.node.json` (template) | alias `@/*` dans les deux premiers ; strict ; `noUncheckedIndexedAccess` (présent dans le Vue) ; `erasableSyntaxOnly` selon D3 | 1 | fait |
-| `components.json` | `components.json` | régénéré par `shadcn init` puis remis en `new-york` / `neutral` (CLI v4, voir section 2) ; CSS variables, lucide | 1 | fait |
-| `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | fait (métas propres à chaque page retirées, rendues par `PageMeta` et recopiées par le pré-rendu : D2) |
-| `scripts/prerender.cjs` | `scripts/prerender.cjs` | même client CDP ; attente adaptée à React (`#app h1` + marqueur de fin de rendu) ; `cleanHtml` sans les commentaires Vue ; montage React par `createRoot` (pas `hydrateRoot` : le DOM pré-rendu diffère, avec les classes `revealed` et les compteurs à leur valeur finale) ; capture du `<head>` si D2 = A | 5 | fait |
-| `public/` (favicons, icons/, manifest.json, og-image.jpg, robots.txt, .well-known/, sounds/notif.wav) | `public/` | copiés ; pas `models/*.glb` (D1), `sounds/notif.{aiff,flac}`, `notif_converted.wav`, `vite.svg` (morts) | 2 | fait |
-| `src/assets/` (favicon.png, logo.png, images/*.webp) | `src/assets/` | copiés ; `images/fonctions.png` jamais importé | 2 | fait |
-| `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 2 | fait |
-| `.gitignore` | `.gitignore` | repris (secrets, `.env*`, `dist`, `deploy.py`) ; lignes propres au Vue (`*.vue.b`) retirées ; `CLAUDE.md` selon D5 | 1 | fait |
-| `CLAUDE.md` | `CLAUDE.md` | réécrit pour React (stack, architecture, conventions, pièges du brief et de cet inventaire) | 1 | fait |
-| `deploy/deploy.py`, `deploy/apache-cache-headers.conf`, `deploy/install_apache_headers.py` | `deploy/` | copiés en fin de migration, chemins adaptés, `deploy.py` ajouté au `.gitignore` ; **jamais exécutés par moi** | 5 | fait |
-| `src/main.ts` | `src/main.tsx` | `createRoot(#app)`, `RouterProvider`, `AppProviders`, import du CSS ; plus de FontAwesome | 3 | fait |
-| `src/App.vue` | `components/layout/RootLayout.tsx`, `components/layout/AppLayout.tsx`, `components/layout/GlobalDialogs.tsx`, `providers/AppProviders.tsx` | voir 5.3 pour les comportements globaux | 3 | fait |
-| `src/router/index.ts` | `src/router/routes.tsx`, `src/router/guards.tsx`, `src/lib/getDefaultRoute.ts` | gardes en routes layout ; le passage en vue admin (`setViewMode(false)`) se fait à l'entrée de la zone admin ; `getDefaultRoute` unique (aujourd'hui recopié dans Login, Register et Navbar) | 3 | fait |
-| `src/stores/auth.ts` | `src/stores/auth-store.ts` | Zustand ; hydratation manuelle depuis `auth_token` + `user` ; `refreshUser` en arrière-plan au démarrage (GET `/profile`, 401 → déconnexion, erreurs réseau ignorées) ; sélecteurs `isAdmin`/`isMechanic`/`isUser` par UUID de rôle ; `login` et `loginWithGoogle` deviennent des mutations de `features/auth` | 3 | fait |
-| `src/api/ApiClient.ts` | `src/api/ApiClient.ts` | copié à l'identique (D3) | 2 | fait |
-| `src/api/index.ts` | `src/api/index.ts` | intercepteur 401 conservé (sauf `Access denied: Required role …`) ; déconnexion via `useAuthStore.getState().logout()`, `router.navigate('/login')` par import dynamique, `queryClient.clear()` | 2 puis 3 | fait : les imports dynamiques du store Pinia et du router Vue sont remplacés par `setUnauthorizedHandler()`, enregistré par `RootLayout` |
-| `src/services/*.ts` (25 services + index) | `src/services/` | copiés **inchangés** (`export.ts` garde son `fetch` direct ; `POST /services/history` garde son `+1 jour`) | 2 | fait |
-| `src/models/*.ts` (36 DTO + index) | `src/models/` | copiés ; seule adaptation : `import type` sur 16 imports de types (10 fichiers), exigé par `verbatimModuleSyntax` du template | 2 | fait |
-| `src/enums/*.ts` (UserRole, UserStatus, PeriodiciteType, AbsencePeriod, index) | `src/enums/` | copiés (D3) | 2 | fait |
-| `src/types/*.ts` (api, file, geocoding, google-identity.d.ts, index) | `src/types/` | copiés | 2 | fait |
-| `src/utils/*.ts` (absenceFormatters, acompteFormatters, fileUtils, timeFormatters, userVisibility) | `src/utils/` | copiés inchangés | 2 | fait |
-| `src/utils/serviceModificationFormatters.ts` | `src/utils/serviceModificationFormatters.ts` | seul utilitaire dépendant de Vue : `Component` devient `LucideIcon`, import `lucide-react` | 2 | fait |
-| `src/lib/utils.ts` | `src/lib/utils.ts` | réexporte `cn` du paquet `cn` (écart au brief, voir section 2) | 1 | fait |
-| `src/config/api.ts`, `map.ts`, `seo.ts`, `version.ts` | `src/config/` | copiés | 2 | fait |
-| `src/config/navConfig.ts` | `src/config/navConfig.ts` | `Component` devient `LucideIcon`, import `lucide-react` (mêmes icônes) ; même contenu, y compris `requiredEmails` | 2 | fait |
-| `src/config/icons.ts` | — | supprimé (FontAwesome) | 2 | fait |
-| `src/data/changelog.ts` | `src/features/changelog/data/changelog.ts` | copié | 2 | fait |
-| `src/vite-env.d.ts` | `src/vite-env.d.ts` | sans `declare module '*.vue'` ; ajout de `VITE_MAPBOX_TOKEN` | 2 | fait |
-| `src/styles/tailwind.css` | `src/index.css` (fichier de shadcn init) | tokens, `@custom-variant dark`, `@layer base` (voir 4.2) | 1 | fait |
-| `src/styles/theme.css` | — | non porté ; seuls `--font-sans`/`--font-mono`, le lissage des polices et une scrollbar adaptée au thème sombre sont repris dans `index.css` | 1 | fait |
+| `package.json` | `package.json` | nom, scripts (`dev`, `build` = `tsc -b && vite build && node scripts/prerender.cjs`, `lint`, `preview`, `prerender`), dépendances de la section 2 ; version reprise (`0.1.6`) | 1 puis 5 | vérifié (script `build` = `tsc -b && vite build && node scripts/prerender.cjs`) |
+| `vite.config.js` | `vite.config.ts` | `@vitejs/plugin-react` + React Compiler ; alias `@` ; port 5173 et `host 0.0.0.0` ; `define __APP_VERSION__` ; plugins `version.json`, sitemap (sources : `src/pages/landing`, `src/features/landing`, `src/assets/images`, `index.html`, `src/pages/auth/LoginPage.tsx`) et compression gzip + brotli ; `manualChunks` revus (plus de vue, fontawesome, chartjs, threejs) | 1 puis 5 | vérifié (`vite.config.ts` : React + Compiler, Tailwind, alias, serveur, `define`, version, sitemap, compression, chunk `react-vendor` à la place de `vue-vendor`) |
+| `tsconfig.json` | `tsconfig.json` + `tsconfig.app.json` + `tsconfig.node.json` (template) | alias `@/*` dans les deux premiers ; strict ; `noUncheckedIndexedAccess` (présent dans le Vue) ; `erasableSyntaxOnly` selon D3 | 1 | vérifié |
+| `components.json` | `components.json` | régénéré par `shadcn init` puis remis en `new-york` / `neutral` (CLI v4, voir section 2) ; CSS variables, lucide | 1 | vérifié |
+| `index.html` | `index.html` | point de montage `<div id="app"></div>` **conservé** (attendu par `prerender.cjs`), entrée `/src/main.tsx`, métas, OG, JSON-LD LocalBusiness + WebSite, script anti-FOUC (sans `.dark` sur `/`) ; balises propres à chaque page selon D2 | 1 puis 5 | vérifié (métas propres à chaque page retirées, rendues par `PageMeta` et recopiées par le pré-rendu : D2) |
+| `scripts/prerender.cjs` | `scripts/prerender.cjs` | même client CDP ; attente adaptée à React (`#app h1` + marqueur de fin de rendu) ; `cleanHtml` sans les commentaires Vue ; montage React par `createRoot` (pas `hydrateRoot` : le DOM pré-rendu diffère, avec les classes `revealed` et les compteurs à leur valeur finale) ; capture du `<head>` si D2 = A | 5 | vérifié |
+| `public/` (favicons, icons/, manifest.json, og-image.jpg, robots.txt, .well-known/, sounds/notif.wav) | `public/` | copiés ; pas `models/*.glb` (D1), `sounds/notif.{aiff,flac}`, `notif_converted.wav`, `vite.svg` (morts) | 2 | vérifié |
+| `src/assets/` (favicon.png, logo.png, images/*.webp) | `src/assets/` | copiés ; `images/fonctions.png` jamais importé | 2 | vérifié |
+| `.env.development`, `.env.production`, `.env.example` | idem | copiés (git-ignorés sauf l'exemple) | 2 | vérifié |
+| `.gitignore` | `.gitignore` | repris (secrets, `.env*`, `dist`, `deploy.py`) ; lignes propres au Vue (`*.vue.b`) retirées ; `CLAUDE.md` selon D5 | 1 | vérifié |
+| `CLAUDE.md` | `CLAUDE.md` | réécrit pour React (stack, architecture, conventions, pièges du brief et de cet inventaire) | 1 | vérifié |
+| `deploy/deploy.py`, `deploy/apache-cache-headers.conf`, `deploy/install_apache_headers.py` | `deploy/` | copiés en fin de migration, chemins adaptés, `deploy.py` ajouté au `.gitignore` ; **jamais exécutés par moi** | 5 | vérifié |
+| `src/main.ts` | `src/main.tsx` | `createRoot(#app)`, `RouterProvider`, `AppProviders`, import du CSS ; plus de FontAwesome | 3 | vérifié |
+| `src/App.vue` | `components/layout/RootLayout.tsx`, `components/layout/AppLayout.tsx`, `components/layout/GlobalDialogs.tsx`, `providers/AppProviders.tsx` | voir 5.3 pour les comportements globaux | 3 | vérifié |
+| `src/router/index.ts` | `src/router/routes.tsx`, `src/router/guards.tsx`, `src/lib/getDefaultRoute.ts` | gardes en routes layout ; le passage en vue admin (`setViewMode(false)`) se fait à l'entrée de la zone admin ; `getDefaultRoute` unique (aujourd'hui recopié dans Login, Register et Navbar) | 3 | vérifié |
+| `src/stores/auth.ts` | `src/stores/auth-store.ts` | Zustand ; hydratation manuelle depuis `auth_token` + `user` ; `refreshUser` en arrière-plan au démarrage (GET `/profile`, 401 → déconnexion, erreurs réseau ignorées) ; sélecteurs `isAdmin`/`isMechanic`/`isUser` par UUID de rôle ; `login` et `loginWithGoogle` deviennent des mutations de `features/auth` | 3 | vérifié |
+| `src/api/ApiClient.ts` | `src/api/ApiClient.ts` | copié à l'identique (D3) | 2 | vérifié |
+| `src/api/index.ts` | `src/api/index.ts` | intercepteur 401 conservé (sauf `Access denied: Required role …`) ; déconnexion via `useAuthStore.getState().logout()`, `router.navigate('/login')` par import dynamique, `queryClient.clear()` | 2 puis 3 | vérifié : les imports dynamiques du store Pinia et du router Vue sont remplacés par `setUnauthorizedHandler()`, enregistré par `RootLayout` |
+| `src/services/*.ts` (25 services + index) | `src/services/` | copiés **inchangés** (`export.ts` garde son `fetch` direct ; `POST /services/history` garde son `+1 jour`) | 2 | vérifié |
+| `src/models/*.ts` (36 DTO + index) | `src/models/` | copiés ; seule adaptation : `import type` sur 16 imports de types (10 fichiers), exigé par `verbatimModuleSyntax` du template | 2 | vérifié |
+| `src/enums/*.ts` (UserRole, UserStatus, PeriodiciteType, AbsencePeriod, index) | `src/enums/` | copiés (D3) | 2 | vérifié |
+| `src/types/*.ts` (api, file, geocoding, google-identity.d.ts, index) | `src/types/` | copiés | 2 | vérifié |
+| `src/utils/*.ts` (absenceFormatters, acompteFormatters, fileUtils, timeFormatters, userVisibility) | `src/utils/` | copiés inchangés | 2 | vérifié |
+| `src/utils/serviceModificationFormatters.ts` | `src/utils/serviceModificationFormatters.ts` | seul utilitaire dépendant de Vue : `Component` devient `LucideIcon`, import `lucide-react` | 2 | vérifié |
+| `src/lib/utils.ts` | `src/lib/utils.ts` | réexporte `cn` du paquet `cn` (écart au brief, voir section 2) | 1 | vérifié |
+| `src/config/api.ts`, `map.ts`, `seo.ts`, `version.ts` | `src/config/` | copiés | 2 | vérifié |
+| `src/config/navConfig.ts` | `src/config/navConfig.ts` | `Component` devient `LucideIcon`, import `lucide-react` (mêmes icônes) ; même contenu, y compris `requiredEmails` | 2 | vérifié |
+| `src/config/icons.ts` | — | supprimé (FontAwesome) | 2 | vérifié |
+| `src/data/changelog.ts` | `src/features/changelog/data/changelog.ts` | copié | 2 | vérifié |
+| `src/vite-env.d.ts` | `src/vite-env.d.ts` | sans `declare module '*.vue'` ; ajout de `VITE_MAPBOX_TOKEN` | 2 | vérifié |
+| `src/styles/tailwind.css` | `src/index.css` (fichier de shadcn init) | tokens, `@custom-variant dark`, `@layer base` (voir 4.2) | 1 | vérifié |
+| `src/styles/theme.css` | — | non porté ; seuls `--font-sans`/`--font-mono`, le lissage des polices et une scrollbar adaptée au thème sombre sont repris dans `index.css` | 1 | vérifié |
 | `src/style.css` | — | mort (jamais importé) | — | — |
 
 ### 5.3 Comportements globaux (App.vue) → coquille React
 
 | Comportement Vue | Cible React | Statut |
 |---|---|---|
-| Navbar si connecté et route hors `pagesWithoutNavbar` | `AppLayout` sur les routes concernées (Q-NAVBAR) | fait |
-| `<Messages>` (toasts maison, z-1070, `top-16`) | `<Toaster />` sonner dans `AppProviders` | fait |
-| `UpdateBanner` + `useVersionCheck` (prod seulement : `/version.json` sans cache, vérification sur visibilité, focus, online, pageshow, navigation, et toutes les 5 min ; rechargement silencieux une fois par version au démarrage ; « plus tard » mémorisé en sessionStorage) | `components/layout/UpdateBanner.tsx` + `src/hooks/useVersionCheck.ts` ; navigation via `router.subscribe` | fait |
-| `ChangelogDialog` + `useChangelog` (entrée filtrée par rôle, `changelog_last_seen_version`) | `features/changelog/{components/ChangelogDialog, hooks/useChangelog, data/changelog}` ; ouverture auto (Q-GLOBALDIALOGS) | fait |
-| `ProfileCompletionDialog` (adresse ou permis manquant) | `features/profile/components/ProfileCompletionDialog.tsx` (Q-GLOBALDIALOGS) | fait |
-| `ServiceHistoryDialog` + `useServiceHistory` (singleton, admin) | `features/service-history/` : contexte `ServiceHistoryProvider` dans `AppLayout`, `useServiceModificationsQuery(uuid)` | fait |
-| `SignatureReminderDialog` + `useSignatureReminder` (bloquant, une fois par session, si des heures du mois dernier ne sont pas signées) | `features/signatures/{components/SignatureReminderDialog, api/useSignatureSummaryQuery}` | fait |
-| `usePendingUsers` (badge du lien « Utilisateurs », admin) | `features/users/api/usePendingUsers.ts` = `useUsersQuery` + `select` (même cache que la page Utilisateurs) | fait |
-| Notifications : cloche, polling toutes les 5 s, son, titre `(n) …`, badge favicon | `features/notifications/{components/NotificationsPopover, api/useUnreadNotificationsQuery (refetchInterval 5 s), hooks/useNotificationSideEffects}` monté **une seule fois** ; `src/lib/faviconBadge.ts` | fait |
-| Thème (`useTheme`, `theme-preference`, landing forcée en clair) | `providers/ThemeProvider.tsx` + `useTheme` ; `/` reste en clair | fait |
-| Déconnexion (`logout()` puis `/login`) | action du store + `queryClient.clear()` + navigation | fait |
+| Navbar si connecté et route hors `pagesWithoutNavbar` | `AppLayout` sur les routes concernées (Q-NAVBAR) | vérifié |
+| `<Messages>` (toasts maison, z-1070, `top-16`) | `<Toaster />` sonner dans `AppProviders` | vérifié |
+| `UpdateBanner` + `useVersionCheck` (prod seulement : `/version.json` sans cache, vérification sur visibilité, focus, online, pageshow, navigation, et toutes les 5 min ; rechargement silencieux une fois par version au démarrage ; « plus tard » mémorisé en sessionStorage) | `components/layout/UpdateBanner.tsx` + `src/hooks/useVersionCheck.ts` ; navigation via `router.subscribe` | vérifié |
+| `ChangelogDialog` + `useChangelog` (entrée filtrée par rôle, `changelog_last_seen_version`) | `features/changelog/{components/ChangelogDialog, hooks/useChangelog, data/changelog}` ; ouverture auto (Q-GLOBALDIALOGS) | vérifié |
+| `ProfileCompletionDialog` (adresse ou permis manquant) | `features/profile/components/ProfileCompletionDialog.tsx` (Q-GLOBALDIALOGS) | vérifié |
+| `ServiceHistoryDialog` + `useServiceHistory` (singleton, admin) | `features/service-history/` : contexte `ServiceHistoryProvider` dans `AppLayout`, `useServiceModificationsQuery(uuid)` | vérifié |
+| `SignatureReminderDialog` + `useSignatureReminder` (bloquant, une fois par session, si des heures du mois dernier ne sont pas signées) | `features/signatures/{components/SignatureReminderDialog, api/useSignatureSummaryQuery}` | vérifié |
+| `usePendingUsers` (badge du lien « Utilisateurs », admin) | `features/users/api/usePendingUsers.ts` = `useUsersQuery` + `select` (même cache que la page Utilisateurs) | vérifié |
+| Notifications : cloche, polling toutes les 5 s, son, titre `(n) …`, badge favicon | `features/notifications/{components/NotificationsPopover, api/useUnreadNotificationsQuery (refetchInterval 5 s), hooks/useNotificationSideEffects}` monté **une seule fois** ; `src/lib/faviconBadge.ts` | vérifié |
+| Thème (`useTheme`, `theme-preference`, landing forcée en clair) | `providers/ThemeProvider.tsx` + `useTheme` ; `/` reste en clair | vérifié |
+| Déconnexion (`logout()` puis `/login`) | action du store + `queryClient.clear()` + navigation | vérifié |
 
 ### 5.4 Composables (19)
 
 | Composable | Cible React | Statut |
 |---|---|---|
-| `useBrowserDetection.ts` | `features/auth/lib/browserDetection.ts` (fonctions pures, sans le champ `icon` jamais rendu) | fait |
-| `useChangelog.ts` | `features/changelog/hooks/useChangelog.ts` + `src/hooks/useLocalStorage.ts` | fait |
-| `useContextMenu.ts` | — : `ui/context-menu` shadcn | fait |
-| `useFaviconBadge.ts` | `src/lib/faviconBadge.ts` (module, pas un hook) | fait |
-| `useGoogleIdentity.ts` | `features/auth/lib/googleIdentity.ts` (chargement mémoïsé du script Google) | fait |
-| `useGoogleRegistration.ts` | `features/auth/lib/googleRegistration.ts` (état de module en mémoire, volontairement non persisté) | fait |
-| `useGoogleSignIn.ts` | `features/auth/api/useGoogleSignInMutation.ts` + `features/auth/hooks/useGoogleSignIn.ts` | fait |
-| `useMapModal.ts` | `src/hooks/useMapboxMap.ts` + `components/shared/MapboxMap.tsx` + `features/user-services/components/ServiceLocationDialog.tsx` | fait |
-| `useMessages.ts` | sonner (`toast`), voir section 3 | fait |
-| `usePageMeta.ts` | balises natives React 19 ou `src/hooks/usePageMeta.ts` (D2) | fait |
-| `usePdfPreview.ts` | `src/lib/pdfPreview.ts` + `src/hooks/usePdfPreview.ts` (`useQuery`, clé fondée sur un hash du contenu) | fait |
-| `usePendingUsers.ts` | `features/users/api/usePendingUsers.ts` + `features/users/lib/pendingActivation.ts` | fait |
-| `usePermissions.ts` | `src/hooks/usePermissions.ts` (sélecteurs du store ; `canAccess`, `hasPermission('couchette')`, simulation UTILISATEUR en « vue utilisateur ») | fait |
-| `useServiceHistory.ts` | `features/service-history/` (contexte + requête) | fait |
-| `useSignatureReminder.ts` | `features/signatures/api/useSignatureSummaryQuery.ts` + `features/signatures/hooks/useSignatureReminder.ts` | fait |
-| `useTheme.ts` | `providers/ThemeProvider.tsx` + `src/hooks/useTheme.ts` | fait |
+| `useBrowserDetection.ts` | `features/auth/lib/browserDetection.ts` (fonctions pures, sans le champ `icon` jamais rendu) | vérifié |
+| `useChangelog.ts` | `features/changelog/hooks/useChangelog.ts` + `src/hooks/useLocalStorage.ts` | vérifié |
+| `useContextMenu.ts` | — : `ui/context-menu` shadcn | vérifié |
+| `useFaviconBadge.ts` | `src/lib/faviconBadge.ts` (module, pas un hook) | vérifié |
+| `useGoogleIdentity.ts` | `features/auth/lib/googleIdentity.ts` (chargement mémoïsé du script Google) | vérifié |
+| `useGoogleRegistration.ts` | `features/auth/lib/googleRegistration.ts` (état de module en mémoire, volontairement non persisté) | vérifié |
+| `useGoogleSignIn.ts` | `features/auth/api/useGoogleSignInMutation.ts` + `features/auth/hooks/useGoogleSignIn.ts` | vérifié |
+| `useMapModal.ts` | `src/hooks/useMapboxMap.ts` + `components/shared/MapboxMap.tsx` + `features/user-services/components/ServiceLocationDialog.tsx` | vérifié |
+| `useMessages.ts` | sonner (`toast`), voir section 3 | vérifié |
+| `usePageMeta.ts` | balises natives React 19 ou `src/hooks/usePageMeta.ts` (D2) | vérifié |
+| `usePdfPreview.ts` | `src/lib/pdfPreview.ts` + `src/hooks/usePdfPreview.ts` (`useQuery`, clé fondée sur un hash du contenu) | vérifié |
+| `usePendingUsers.ts` | `features/users/api/usePendingUsers.ts` + `features/users/lib/pendingActivation.ts` | vérifié |
+| `usePermissions.ts` | `src/hooks/usePermissions.ts` (sélecteurs du store ; `canAccess`, `hasPermission('couchette')`, simulation UTILISATEUR en « vue utilisateur ») | vérifié |
+| `useServiceHistory.ts` | `features/service-history/` (contexte + requête) | vérifié |
+| `useSignatureReminder.ts` | `features/signatures/api/useSignatureSummaryQuery.ts` + `features/signatures/hooks/useSignatureReminder.ts` | vérifié |
+| `useTheme.ts` | `providers/ThemeProvider.tsx` + `src/hooks/useTheme.ts` | vérifié |
 | `useUserHours.ts` | — : mort (aucun import) | — |
-| `useUserServices.ts` (584 l.) | `features/user-services/{api/*, hooks/useServiceFilters.ts, hooks/useAdminServiceActions.ts, lib/groupServicesByDay.ts, lib/serviceLocation.ts, lib/serviceStatus.ts}` | fait |
-| `useVersionCheck.ts` | `src/hooks/useVersionCheck.ts` | fait |
+| `useUserServices.ts` (584 l.) | `features/user-services/{api/*, hooks/useServiceFilters.ts, hooks/useAdminServiceActions.ts, lib/groupServicesByDay.ts, lib/serviceLocation.ts, lib/serviceStatus.ts}` | vérifié |
+| `useVersionCheck.ts` | `src/hooks/useVersionCheck.ts` | vérifié |
 
 ### 5.5 Composants de `components/ui` du Vue
 
@@ -423,42 +423,42 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 
 | Vue | Cible React | Statut |
 |---|---|---|
-| `ui/address-autocomplete/AddressAutocomplete.vue` | `components/shared/AddressAutocomplete.tsx` | fait |
-| `ui/changelog/ChangelogDialog.vue` | `features/changelog/components/ChangelogDialog.tsx` | fait |
-| `ui/context-menu-popover/*` (3 fichiers) | — : `ui/context-menu` | fait |
-| `ui/file-card/FileCard.vue` | `components/shared/FileCard.tsx` | fait |
-| `ui/file-dropzone/FileDropzone.vue` | `components/shared/FileDropzone.tsx` (+ `ui/progress`) | fait |
-| `ui/image-lightbox/ImageLightbox.vue` (305 l.) | `components/shared/ImageLightbox.tsx` + hooks `useZoom`/`useSwipe` | fait |
-| `ui/input-field/InputField.vue` | `components/shared/InputField.tsx` | fait |
-| `ui/messages/Messages.vue` | — : `ui/sonner` | fait |
-| `ui/navbar/Navbar.vue` (448 l.) | `components/layout/Navbar.tsx`, `NavbarLinks.tsx`, `UserMenu.tsx`, `MobileNavSheet.tsx` + `src/lib/filterNav.ts` | fait |
-| `ui/notifications/Notifications.vue` (550 l.) | `features/notifications/components/NotificationsPopover.tsx`, `NotificationItem.tsx`, `hooks/useNotificationSideEffects.ts`, `lib/notificationMeta.ts` (partagé avec la page) | fait |
-| `ui/pdf-preview/PdfPreview.vue` | `components/shared/PdfPreview.tsx` | fait |
-| `ui/profile-completion/ProfileCompletionDialog.vue` | `features/profile/components/ProfileCompletionDialog.tsx` | fait |
-| `ui/retour/Retour.vue` | `components/shared/BackButton.tsx` | fait |
-| `ui/search-filters/SearchFilters.vue` | `components/shared/SearchFilters.tsx` | fait |
-| `ui/select/Select.vue` (maison) | `components/shared/Combobox.tsx` (popover + command) ; `ui/select` si pas de recherche | fait |
-| `ui/signature-pad/SignaturePad.vue` | `components/shared/SignaturePad.tsx` | fait |
-| `ui/update-banner/UpdateBanner.vue` | `components/layout/UpdateBanner.tsx` | fait |
+| `ui/address-autocomplete/AddressAutocomplete.vue` | `components/shared/AddressAutocomplete.tsx` | vérifié |
+| `ui/changelog/ChangelogDialog.vue` | `features/changelog/components/ChangelogDialog.tsx` | vérifié |
+| `ui/context-menu-popover/*` (3 fichiers) | — : `ui/context-menu` | vérifié |
+| `ui/file-card/FileCard.vue` | `components/shared/FileCard.tsx` | vérifié |
+| `ui/file-dropzone/FileDropzone.vue` | `components/shared/FileDropzone.tsx` (+ `ui/progress`) | vérifié |
+| `ui/image-lightbox/ImageLightbox.vue` (305 l.) | `components/shared/ImageLightbox.tsx` + hooks `useZoom`/`useSwipe` | vérifié |
+| `ui/input-field/InputField.vue` | `components/shared/InputField.tsx` | vérifié |
+| `ui/messages/Messages.vue` | — : `ui/sonner` | vérifié |
+| `ui/navbar/Navbar.vue` (448 l.) | `components/layout/Navbar.tsx`, `NavbarLinks.tsx`, `UserMenu.tsx`, `MobileNavSheet.tsx` + `src/lib/filterNav.ts` | vérifié |
+| `ui/notifications/Notifications.vue` (550 l.) | `features/notifications/components/NotificationsPopover.tsx`, `NotificationItem.tsx`, `hooks/useNotificationSideEffects.ts`, `lib/notificationMeta.ts` (partagé avec la page) | vérifié |
+| `ui/pdf-preview/PdfPreview.vue` | `components/shared/PdfPreview.tsx` | vérifié |
+| `ui/profile-completion/ProfileCompletionDialog.vue` | `features/profile/components/ProfileCompletionDialog.tsx` | vérifié |
+| `ui/retour/Retour.vue` | `components/shared/BackButton.tsx` | vérifié |
+| `ui/search-filters/SearchFilters.vue` | `components/shared/SearchFilters.tsx` | vérifié |
+| `ui/select/Select.vue` (maison) | `components/shared/Combobox.tsx` (popover + command) ; `ui/select` si pas de recherche | vérifié |
+| `ui/signature-pad/SignaturePad.vue` | `components/shared/SignaturePad.tsx` | vérifié |
+| `ui/update-banner/UpdateBanner.vue` | `components/layout/UpdateBanner.tsx` | vérifié |
 
 **Composants shadcn-vue standard** : régénérés par le CLI, personnalisations de la section 4.2.
 
 | Vue | React | Statut |
 |---|---|---|
-| `ui/alert-dialog/*` (inutilisé dans le Vue) | non repris : `ConfirmDialog` repose sur `dialog` (`role="alertdialog"`) | fait |
-| `ui/avatar/*` | `ui/avatar.tsx` | fait |
-| `ui/badge/*` | `ui/badge.tsx` (+ variante `warning`) | fait |
-| `ui/button/*` | `ui/button.tsx` | fait |
-| `ui/checkbox/*` | `ui/checkbox.tsx` | fait |
-| `ui/dialog/*` (dont `DialogScrollContent`, inutilisé) | `ui/dialog.tsx` | fait |
-| `ui/dropdown-menu/*` | `ui/dropdown-menu.tsx` | fait |
-| `ui/input/*`, `ui/label/*`, `ui/textarea/*` | `ui/input.tsx`, `ui/label.tsx`, `ui/textarea.tsx` | fait |
-| `ui/separator/*` | `ui/separator.tsx` | fait |
-| `ui/sheet/*` | `ui/sheet.tsx` | fait |
-| `ui/skeleton/*` | `ui/skeleton.tsx` | fait |
-| `ui/table/*` (`TableEmpty`, `utils.ts` inutilisés) | `ui/table.tsx` | fait |
-| `ui/tabs/*` | `ui/tabs.tsx` | fait |
-| `ui/tooltip/*` | `ui/tooltip.tsx` | fait |
+| `ui/alert-dialog/*` (inutilisé dans le Vue) | non repris : `ConfirmDialog` repose sur `dialog` (`role="alertdialog"`) | vérifié |
+| `ui/avatar/*` | `ui/avatar.tsx` | vérifié |
+| `ui/badge/*` | `ui/badge.tsx` (+ variante `warning`) | vérifié |
+| `ui/button/*` | `ui/button.tsx` | vérifié |
+| `ui/checkbox/*` | `ui/checkbox.tsx` | vérifié |
+| `ui/dialog/*` (dont `DialogScrollContent`, inutilisé) | `ui/dialog.tsx` | vérifié |
+| `ui/dropdown-menu/*` | `ui/dropdown-menu.tsx` | vérifié |
+| `ui/input/*`, `ui/label/*`, `ui/textarea/*` | `ui/input.tsx`, `ui/label.tsx`, `ui/textarea.tsx` | vérifié |
+| `ui/separator/*` | `ui/separator.tsx` | vérifié |
+| `ui/sheet/*` | `ui/sheet.tsx` | vérifié |
+| `ui/skeleton/*` | `ui/skeleton.tsx` | vérifié |
+| `ui/table/*` (`TableEmpty`, `utils.ts` inutilisés) | `ui/table.tsx` | vérifié |
+| `ui/tabs/*` | `ui/tabs.tsx` | vérifié |
+| `ui/tooltip/*` | `ui/tooltip.tsx` | vérifié |
 | `ui/sidebar/*` (18 fichiers) + `components/layout/AppSidebar.vue` | — : morts (aucun import) | — |
 
 ### 5.6 Composants métier et pages, par domaine
@@ -469,17 +469,17 @@ Chaque ligne liste les fichiers cibles principaux. Le découpage fin (sous-compo
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/auth/Login.vue (220) | pages/auth/LoginPage.tsx ; features/auth/components/{AuthCard, LoginForm, OrDivider, AuthAlert} ; api/useLoginMutation.ts ; schemas/login.ts | InputField, Google, prompt écran d'accueil sur mobile, contrôles e-mail vérifié / compte actif après login | fait |
-| views/auth/Register.vue (278) | pages/auth/RegisterPage.tsx ; features/auth/components/{RegisterForm, RegisterSuccess} ; api/useRegisterMutation.ts ; schemas/register.ts | confirmation du mot de passe (`refine`) | fait |
-| views/auth/GoogleRegister.vue (190) | pages/auth/GoogleRegisterPage.tsx ; features/auth/components/GoogleRegisterForm.tsx ; api/useGoogleRegisterMutation.ts | relais de l'inscription Google (`lib/googleRegistration.ts`) ; redirection vers `/login` si le relais est vide | fait |
-| views/auth/Verify.vue (119) | pages/auth/VerifyPage.tsx ; features/auth/components/VerifyEmailStatus.tsx ; api/useVerifyEmailQuery.ts | `?token=` ; `retry: false`, un seul appel (StrictMode) ; redirection temporisée nettoyée | fait |
-| views/auth/ForgotPassword.vue (98) | pages/auth/ForgotPasswordPage.tsx ; features/auth/components/ForgotPasswordForm.tsx ; api/useRequestPasswordResetMutation.ts | | fait |
-| views/auth/ResetPassword.vue (148) | pages/auth/ResetPasswordPage.tsx ; features/auth/components/ResetPasswordForm.tsx ; api/useConfirmPasswordResetMutation.ts | `?token=` | fait |
-| views/auth/AddToHomescreen.vue (122) | pages/auth/AddToHomescreenPage.tsx ; features/auth/components/BrowserInstructionsTabs.tsx | `lib/browserDetection.ts` | fait |
-| components/auth/GoogleSignInButton.vue (100) | features/auth/components/GoogleSignInButton.tsx | script Google (GIS) chargé une fois ; effet avec nettoyage (StrictMode) | fait |
-| components/home-screen/HomeScreenPrompt.vue (63) | features/auth/components/HomeScreenPromptDialog.tsx | | fait |
-| views/common/NotFound.vue (76) | pages/common/NotFoundPage.tsx (route `*` et `errorElement`) | | fait |
-| views/common/Unauthorized.vue (56) | pages/common/UnauthorizedPage.tsx | | fait |
+| views/auth/Login.vue (220) | pages/auth/LoginPage.tsx ; features/auth/components/{AuthCard, LoginForm, OrDivider, AuthAlert} ; api/useLoginMutation.ts ; schemas/login.ts | InputField, Google, prompt écran d'accueil sur mobile, contrôles e-mail vérifié / compte actif après login | vérifié |
+| views/auth/Register.vue (278) | pages/auth/RegisterPage.tsx ; features/auth/components/{RegisterForm, RegisterSuccess} ; api/useRegisterMutation.ts ; schemas/register.ts | confirmation du mot de passe (`refine`) | vérifié |
+| views/auth/GoogleRegister.vue (190) | pages/auth/GoogleRegisterPage.tsx ; features/auth/components/GoogleRegisterForm.tsx ; api/useGoogleRegisterMutation.ts | relais de l'inscription Google (`lib/googleRegistration.ts`) ; redirection vers `/login` si le relais est vide | vérifié |
+| views/auth/Verify.vue (119) | pages/auth/VerifyPage.tsx ; features/auth/components/VerifyEmailStatus.tsx ; api/useVerifyEmailQuery.ts | `?token=` ; `retry: false`, un seul appel (StrictMode) ; redirection temporisée nettoyée | vérifié |
+| views/auth/ForgotPassword.vue (98) | pages/auth/ForgotPasswordPage.tsx ; features/auth/components/ForgotPasswordForm.tsx ; api/useRequestPasswordResetMutation.ts | | vérifié |
+| views/auth/ResetPassword.vue (148) | pages/auth/ResetPasswordPage.tsx ; features/auth/components/ResetPasswordForm.tsx ; api/useConfirmPasswordResetMutation.ts | `?token=` | vérifié |
+| views/auth/AddToHomescreen.vue (122) | pages/auth/AddToHomescreenPage.tsx ; features/auth/components/BrowserInstructionsTabs.tsx | `lib/browserDetection.ts` | vérifié |
+| components/auth/GoogleSignInButton.vue (100) | features/auth/components/GoogleSignInButton.tsx | script Google (GIS) chargé une fois ; effet avec nettoyage (StrictMode) | vérifié |
+| components/home-screen/HomeScreenPrompt.vue (63) | features/auth/components/HomeScreenPromptDialog.tsx | | vérifié |
+| views/common/NotFound.vue (76) | pages/common/NotFoundPage.tsx (route `*` et `errorElement`) | | vérifié |
+| views/common/Unauthorized.vue (56) | pages/common/UnauthorizedPage.tsx | | vérifié |
 
 Hooks Query : `useLoginMutation`, `useGoogleSignInMutation`, `useRegisterMutation`, `useGoogleRegisterMutation`, `useVerifyEmailQuery`, `useRequestPasswordResetMutation`, `useConfirmPasswordResetMutation`.
 
@@ -487,9 +487,9 @@ Hooks Query : `useLoginMutation`, `useGoogleSignInMutation`, `useRegisterMutatio
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/hours/Pointage.vue (1117) | pages/hours/PointagePage.tsx (~130 l.) ; features/pointage/components/{PointageHeader, PointageSkeleton, StatusHeroCard, StatusPill, WorkedHoursStats, TodayServicesCard, ServiceHistorySection, HistoryDayItem, HistoryPagination, HistoryFiltersSheet, MobileActionBar, KilometrageDialog} ; hooks/{usePointageStatus, useGeolocation, usePointageActions, useKilometrageDialog} ; lib/{workedTime, groupHistoryByDay} | `useNow` (chrono à la seconde), géolocalisation (permission, toasts), km du jour **obligatoire** pour le rôle Utilisateur avant « Démarrer », barre d'actions fixe en bas sous `md` avec safe-area, historique en `accordion`, filtres dans un `sheet` (en bas sous 640 px, à droite au-dessus), `useVehiclesQuery` + `useAddKilometrageMutation` (feature vehicles) | fait |
-| components/hours/PointageActions.vue (74) | features/pointage/components/PointageActions.tsx | | fait |
-| components/hours/ServiceTimeline.vue (78) | features/pointage/components/ServiceTimeline.tsx | | fait |
+| views/hours/Pointage.vue (1117) | pages/hours/PointagePage.tsx (~130 l.) ; features/pointage/components/{PointageHeader, PointageSkeleton, StatusHeroCard, StatusPill, WorkedHoursStats, TodayServicesCard, ServiceHistorySection, HistoryDayItem, HistoryPagination, HistoryFiltersSheet, MobileActionBar, KilometrageDialog} ; hooks/{usePointageStatus, useGeolocation, usePointageActions, useKilometrageDialog} ; lib/{workedTime, groupHistoryByDay} | `useNow` (chrono à la seconde), géolocalisation (permission, toasts), km du jour **obligatoire** pour le rôle Utilisateur avant « Démarrer », barre d'actions fixe en bas sous `md` avec safe-area, historique en `accordion`, filtres dans un `sheet` (en bas sous 640 px, à droite au-dessus), `useVehiclesQuery` + `useAddKilometrageMutation` (feature vehicles) | vérifié |
+| components/hours/PointageActions.vue (74) | features/pointage/components/PointageActions.tsx | | vérifié |
+| components/hours/ServiceTimeline.vue (78) | features/pointage/components/ServiceTimeline.tsx | | vérifié |
 
 Hooks Query : `useActiveServiceQuery`, `useMyWorkedHoursQuery`, `useDailyServicesQuery`, `useServiceHistoryQuery(filters, page)` (POST `/services/history`, `+1 jour` géré par le service), mutations start/end/startBreak/endBreak, `useMyLastKilometrageQuery`. Priorité : **vérifier d'abord à 360 px**.
 
@@ -497,14 +497,14 @@ Hooks Query : `useActiveServiceQuery`, `useMyWorkedHoursQuery`, `useDailyService
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/hours/Planning.vue (1221) | pages/hours/PlanningPage.tsx ; features/planning/components/{PlanningToolbar, PeriodNavigator, CustomRangeControls, PlanningExportMenu, PlanningGrid, PlanningDayHeaderCell, PlanningUserRow, PlanningDayCell, PlanningLegend, AbsenceDetailDialog, AbsenceValidationActions} ; hooks/{usePlanningPeriod, usePlanningExport} ; lib/{frenchHolidays, planningDates, absenceIndex, absenceCellStyle, planningExportHtml, exportPlanningFile} | `tabs`, `dropdown-menu`, jspdf + html2canvas-pro, `useAbsenceTypesQuery` / `useValidateAbsenceMutation` (feature absences) | fait |
-| views/hours/Heures.vue (509) | pages/hours/HeuresPage.tsx ; features/hours/components/{HoursStatsGrid, UsersHoursTable, UserHoursCard} ; lib/hoursFormat.ts | data-table | fait |
-| views/hours/ExportHours.vue (395) | pages/hours/ExportHoursPage.tsx ; features/hours/components/{ExportHoursForm, PeriodPresets, UserMultiSelectList} ; lib/periodPresets.ts ; `src/lib/downloadBlob.ts` | `exportService` (fetch direct, blob) | fait |
-| views/hours/ContractHours.vue (593) | pages/hours/ContractHoursPage.tsx ; features/hours/components/{MonthYearPicker, ContractStatsGrid, ContractComparisonTable, ContractComparisonCard} ; lib/contractFormat.ts | `progress` | fait |
-| views/hours/JournalPointages.vue (419) | pages/hours/JournalPointagesPage.tsx ; features/service-history/components/{ServiceModificationsTable, ServiceModificationCard, JournalFilters} ; hooks/useJournalFilters.ts | SearchFilters | fait |
-| components/hours/ServiceHistoryDialog.vue (193) | features/service-history/components/{ServiceHistoryDialog, ModificationTimelineEntry}.tsx + `ServiceHistoryProvider` | monté dans AppLayout (admin) | fait |
-| components/hours/ModificationUser.vue (48) | features/service-history/components/ModificationUser.tsx | | fait |
-| components/hours/ServiceModificationSummary.vue (70) | features/service-history/components/ServiceModificationSummary.tsx | `utils/serviceModificationFormatters` | fait |
+| views/hours/Planning.vue (1221) | pages/hours/PlanningPage.tsx ; features/planning/components/{PlanningToolbar, PeriodNavigator, CustomRangeControls, PlanningExportMenu, PlanningGrid, PlanningDayHeaderCell, PlanningUserRow, PlanningDayCell, PlanningLegend, AbsenceDetailDialog, AbsenceValidationActions} ; hooks/{usePlanningPeriod, usePlanningExport} ; lib/{frenchHolidays, planningDates, absenceIndex, absenceCellStyle, planningExportHtml, exportPlanningFile} | `tabs`, `dropdown-menu`, jspdf + html2canvas-pro, `useAbsenceTypesQuery` / `useValidateAbsenceMutation` (feature absences) | vérifié |
+| views/hours/Heures.vue (509) | pages/hours/HeuresPage.tsx ; features/hours/components/{HoursStatsGrid, UsersHoursTable, UserHoursCard} ; lib/hoursFormat.ts | data-table | vérifié |
+| views/hours/ExportHours.vue (395) | pages/hours/ExportHoursPage.tsx ; features/hours/components/{ExportHoursForm, PeriodPresets, UserMultiSelectList} ; lib/periodPresets.ts ; `src/lib/downloadBlob.ts` | `exportService` (fetch direct, blob) | vérifié |
+| views/hours/ContractHours.vue (593) | pages/hours/ContractHoursPage.tsx ; features/hours/components/{MonthYearPicker, ContractStatsGrid, ContractComparisonTable, ContractComparisonCard} ; lib/contractFormat.ts | `progress` | vérifié |
+| views/hours/JournalPointages.vue (419) | pages/hours/JournalPointagesPage.tsx ; features/service-history/components/{ServiceModificationsTable, ServiceModificationCard, JournalFilters} ; hooks/useJournalFilters.ts | SearchFilters | vérifié |
+| components/hours/ServiceHistoryDialog.vue (193) | features/service-history/components/{ServiceHistoryDialog, ModificationTimelineEntry}.tsx + `ServiceHistoryProvider` | monté dans AppLayout (admin) | vérifié |
+| components/hours/ModificationUser.vue (48) | features/service-history/components/ModificationUser.tsx | | vérifié |
+| components/hours/ServiceModificationSummary.vue (70) | features/service-history/components/ServiceModificationSummary.tsx | `utils/serviceModificationFormatters` | vérifié |
 
 Hooks Query : `usePlanningQuery`, `useUsersWithHoursQuery`, `useContractComparisonQuery(year, month)`, `useExportHoursMutation`, `useServiceModificationsSearchQuery`, `useServiceModificationsQuery(uuid)`.
 
@@ -512,13 +512,13 @@ Hooks Query : `usePlanningQuery`, `useUsersWithHoursQuery`, `useContractComparis
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/users/Users.vue (987) | pages/users/UsersPage.tsx ; features/users/components/{PendingActivationSection, UsersToolbar, UsersDataTable, users-columns, UserRowContextMenu, UserActionsDropdown, UserMobileList, UserMobileCard, UserIdentityCell, RoleBadge, PresenceBadge, AccountStatusBadges, LastVehicleInfo, DeleteUserDialog} ; hooks/{useUserActions, useUserDialogs, useUsersFilters} ; lib/{userPresence, formatters} | data-table, context-menu, ConfirmDialog « CONFIRMER » ; **pas** de `selectableUsers` (admin des comptes) | fait |
-| views/users/UserEdit.vue (465) | Q-USEREDIT | page cassée (méthodes de service inexistantes) et orpheline | fait |
-| views/users/UserServices.vue (919) + composables/useUserServices.ts (584) | pages/users/UserServicesPage.tsx ; features/user-services/components/{UserStatusCard, WorkedHoursStats, ServicesFiltersPanel, ServicesDayList, ServiceDayCard, ServiceRow, ServiceRowActions, ModifiedBadge, DayOffsetBadge, ServiceFormDialog, DeleteServiceDialog, ServiceLocationDialog, ServicesPagination} ; schemas/serviceForm.ts ; hooks/{useServiceFilters, useAdminServiceActions} ; lib/{groupServicesByDay, serviceLocation, serviceStatus} | mapbox-gl, `tooltip`, `toggle-group`, `collapsible`, historique des modifications | fait |
-| components/users/UserEditModal.vue (564) | features/users/components/{UserEditDialog, UserEditForm, IdentityFields, AccessFields, ContractField, ContactFields, AddressFields, UserSystemInfo} ; schemas/userEdit.ts | AddressAutocomplete, InputField, cases en carte cliquable | fait |
-| components/users/UserEmailModal.vue (191) | features/users/components/UserEmailDialog.tsx ; schemas/userEmail.ts | | fait |
-| components/users/UserHoursModal.vue (669) | features/users/components/{UserHoursDialog, HoursPeriodTabs, PeriodNavigator, HoursStatsGrid} ; hooks/useHoursPeriod.ts ; lib/{isoWeek, dateKeys} | contrôlé par `open` + `user` (plus de `ref.open()`) ; réutilisé par le suivi des présences | fait |
-| views/common/ServicesMonitoring.vue (583) | pages/common/ServicesMonitoringPage.tsx ; features/monitoring/components/{PresenceStatsPills, PresenceSection, PresenceUserCard, UserActionsMenuItems} ; lib/groupByPresence.ts | `refetchInterval: 10 s`, `collapsible`, context-menu | fait |
+| views/users/Users.vue (987) | pages/users/UsersPage.tsx ; features/users/components/{PendingActivationSection, UsersToolbar, UsersDataTable, users-columns, UserRowContextMenu, UserActionsDropdown, UserMobileList, UserMobileCard, UserIdentityCell, RoleBadge, PresenceBadge, AccountStatusBadges, LastVehicleInfo, DeleteUserDialog} ; hooks/{useUserActions, useUserDialogs, useUsersFilters} ; lib/{userPresence, formatters} | data-table, context-menu, ConfirmDialog « CONFIRMER » ; **pas** de `selectableUsers` (admin des comptes) | vérifié |
+| views/users/UserEdit.vue (465) | Q-USEREDIT | page cassée (méthodes de service inexistantes) et orpheline | vérifié |
+| views/users/UserServices.vue (919) + composables/useUserServices.ts (584) | pages/users/UserServicesPage.tsx ; features/user-services/components/{UserStatusCard, WorkedHoursStats, ServicesFiltersPanel, ServicesDayList, ServiceDayCard, ServiceRow, ServiceRowActions, ModifiedBadge, DayOffsetBadge, ServiceFormDialog, DeleteServiceDialog, ServiceLocationDialog, ServicesPagination} ; schemas/serviceForm.ts ; hooks/{useServiceFilters, useAdminServiceActions} ; lib/{groupServicesByDay, serviceLocation, serviceStatus} | mapbox-gl, `tooltip`, `toggle-group`, `collapsible`, historique des modifications | vérifié |
+| components/users/UserEditModal.vue (564) | features/users/components/{UserEditDialog, UserEditForm, IdentityFields, AccessFields, ContractField, ContactFields, AddressFields, UserSystemInfo} ; schemas/userEdit.ts | AddressAutocomplete, InputField, cases en carte cliquable | vérifié |
+| components/users/UserEmailModal.vue (191) | features/users/components/UserEmailDialog.tsx ; schemas/userEmail.ts | | vérifié |
+| components/users/UserHoursModal.vue (669) | features/users/components/{UserHoursDialog, HoursPeriodTabs, PeriodNavigator, HoursStatsGrid} ; hooks/useHoursPeriod.ts ; lib/{isoWeek, dateKeys} | contrôlé par `open` + `user` (plus de `ref.open()`) ; réutilisé par le suivi des présences | vérifié |
+| views/common/ServicesMonitoring.vue (583) | pages/common/ServicesMonitoringPage.tsx ; features/monitoring/components/{PresenceStatsPills, PresenceSection, PresenceUserCard, UserActionsMenuItems} ; lib/groupByPresence.ts | `refetchInterval: 10 s`, `collapsible`, context-menu | vérifié |
 
 Hooks Query : `useUsersQuery`, `usePendingUsers`, `useUsersLastVehiclesQuery`, `useUserQuery`, `useUsersWithStatusQuery`, `useUserActiveServiceQuery`, `useUserServicesHistoryQuery`, `useUserWorkedHoursQuery`, mutations `useUpdateUser`, `useDeleteUser`, `useResendVerification`, create/update/delete/actions de pointage admin.
 
@@ -526,18 +526,18 @@ Hooks Query : `useUsersQuery`, `usePendingUsers`, `useUsersLastVehiclesQuery`, `
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/vehicles/Vehicules.vue (967) | pages/vehicles/VehiculesPage.tsx ; features/vehicles/components/list/{VehiclesToolbar, vehiclesColumns, VehiclesDataTable, VehiclesMobileList, VehicleMobileCard, VehicleActionsMenuItems} ; components/{VehicleIdentity, VehicleAvatar, RelaiBadge} ; dialogs/{VehicleCreateDialog, VehicleDeleteDialog} ; forms/{VehicleFormFields, VehiclePictureInput} ; schemas/vehicle.ts | data-table, context-menu, ConfirmDialog « CONFIRMER » | fait |
-| views/vehicles/VehiculeDetail.vue (1242) | pages/vehicles/VehiculeDetailPage.tsx ; features/vehicles/components/detail/{VehicleInfoCard, VehicleInfoHeader, VehicleInfoView, VehicleKmBadge, AddKmDialog, VehicleDetailsGrid, InfoTile, VehicleEditForm, VehicleAvatarEditor, VehicleDetailTabs} ; hooks/{useVehicleFilesUpload, useDetailTab} ; PicturesGridDialog | onglets « classeur » (style à reproduire), PdfViewerDialog, ImageLightbox, FileDropzone | fait |
-| components/vehicles/VehiculeInfoCard.vue (570) | detail/VehicleInfoCard.tsx et sous-composants ; lib/expiryStatus.ts | échéances orange sous 30 jours, rouge si dépassées | fait |
-| components/vehicles/VehiculeKilometragesTab.vue (338) | tabs/kilometrages/{VehicleKmTab, KmChart, KmTimeline, KmTimelineItem, EditKmDialog} | **chart.js → `chart` shadcn (Recharts, AreaChart)** ; édition réservée à l'admin | fait |
-| components/vehicles/VehiculeCommentsTab.vue (100) | tabs/comments/{VehicleCommentsTab, CommentCard, AddCommentDialog, AdjustPicturesDialog} | | fait |
-| components/vehicles/VehiculeEquipementsTab.vue (85) | tabs/equipements/{VehicleEquipementsTab, EquipementCard} | | fait |
-| components/vehicles/VehiculeEquipementModal.vue (142) | tabs/equipements/EquipementFormDialog.tsx | | fait |
-| components/vehicles/VehiculeEquipementDeleteModal.vue (79) | tabs/equipements/EquipementDeleteDialog.tsx (ConfirmDialog) | | fait |
-| components/vehicles/VehiculeFilesTab.vue (78) | tabs/files/VehicleFilesTab.tsx | FileDropzone, FileCard | fait |
-| components/vehicles/VehiculeFileCard.vue (29) | — : simple relais, remplacé par `components/shared/FileCard` | | fait |
-| components/vehicles/VehiculePagination.vue (39) | `components/shared/SimplePagination.tsx` | | fait |
-| components/vehicles/VehiculeRapportsTab.vue (110) | tabs/rapports/{VehicleRapportsTab, RapportCard} | | fait |
+| views/vehicles/Vehicules.vue (967) | pages/vehicles/VehiculesPage.tsx ; features/vehicles/components/list/{VehiclesToolbar, vehiclesColumns, VehiclesDataTable, VehiclesMobileList, VehicleMobileCard, VehicleActionsMenuItems} ; components/{VehicleIdentity, VehicleAvatar, RelaiBadge} ; dialogs/{VehicleCreateDialog, VehicleDeleteDialog} ; forms/{VehicleFormFields, VehiclePictureInput} ; schemas/vehicle.ts | data-table, context-menu, ConfirmDialog « CONFIRMER » | vérifié |
+| views/vehicles/VehiculeDetail.vue (1242) | pages/vehicles/VehiculeDetailPage.tsx ; features/vehicles/components/detail/{VehicleInfoCard, VehicleInfoHeader, VehicleInfoView, VehicleKmBadge, AddKmDialog, VehicleDetailsGrid, InfoTile, VehicleEditForm, VehicleAvatarEditor, VehicleDetailTabs} ; hooks/{useVehicleFilesUpload, useDetailTab} ; PicturesGridDialog | onglets « classeur » (style à reproduire), PdfViewerDialog, ImageLightbox, FileDropzone | vérifié |
+| components/vehicles/VehiculeInfoCard.vue (570) | detail/VehicleInfoCard.tsx et sous-composants ; lib/expiryStatus.ts | échéances orange sous 30 jours, rouge si dépassées | vérifié |
+| components/vehicles/VehiculeKilometragesTab.vue (338) | tabs/kilometrages/{VehicleKmTab, KmChart, KmTimeline, KmTimelineItem, EditKmDialog} | **chart.js → `chart` shadcn (Recharts, AreaChart)** ; édition réservée à l'admin | vérifié |
+| components/vehicles/VehiculeCommentsTab.vue (100) | tabs/comments/{VehicleCommentsTab, CommentCard, AddCommentDialog, AdjustPicturesDialog} | | vérifié |
+| components/vehicles/VehiculeEquipementsTab.vue (85) | tabs/equipements/{VehicleEquipementsTab, EquipementCard} | | vérifié |
+| components/vehicles/VehiculeEquipementModal.vue (142) | tabs/equipements/EquipementFormDialog.tsx | | vérifié |
+| components/vehicles/VehiculeEquipementDeleteModal.vue (79) | tabs/equipements/EquipementDeleteDialog.tsx (ConfirmDialog) | | vérifié |
+| components/vehicles/VehiculeFilesTab.vue (78) | tabs/files/VehicleFilesTab.tsx | FileDropzone, FileCard | vérifié |
+| components/vehicles/VehiculeFileCard.vue (29) | — : simple relais, remplacé par `components/shared/FileCard` | | vérifié |
+| components/vehicles/VehiculePagination.vue (39) | `components/shared/SimplePagination.tsx` | | vérifié |
+| components/vehicles/VehiculeRapportsTab.vue (110) | tabs/rapports/{VehicleRapportsTab, RapportCard} | | vérifié |
 
 Hooks Query : `useVehiclesQuery`, `useVehicleQuery`, `useVehicleFiles`, `useVehicleKilometrages`, `useVehicleAdjustInfos`, `useAdjustInfoPictures`, `useVehicleRapports`, `useVehicleEquipements` ; mutations create/update/delete véhicule, add/update km (partagée avec Pointage), upload/delete fichier, commentaire, équipements.
 
@@ -545,10 +545,10 @@ Hooks Query : `useVehiclesQuery`, `useVehicleQuery`, `useVehicleFiles`, `useVehi
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/maintenance/Entretiens.vue (2089) | pages/maintenance/EntretiensPage.tsx ; features/maintenance/components/fleet/{FleetDashboard, FleetStatusSection, FleetVehicleCard, FleetAlertLine, FleetDashboardSkeleton} ; history/{EntretiensHistory, EntretiensHistoryToolbar, entretienColumns, EntretiensDataTable, EntretienMobileCard, EntretienActionsMenu, EntretiensTotalCost} ; form/{EntretienFormDialog, TypeEntretienPicker, EntretienFilesField} ; files/EntretienFilesDialog ; lib/{fleetStatus, entretienDates, formatPeriodicite, buildHistorySearchParams} ; hooks/{useEntretiensHistory, useHistoryFilterConfig, useEntretienDialogs, useFleetStatus, useCanManageMaintenance} | SearchFilters, data-table, context-menu, Combobox hiérarchique (popover + command), FileDropzone, ImageLightbox, PdfViewerDialog | fait |
-| views/maintenance/EntretiensVehicule.vue (1693) | pages/maintenance/EntretiensVehiculePage.tsx ; features/maintenance/components/vehicule/{VehiculeEntretiensHeader, VehicleUpcomingAlerts, UpcomingAlertCard, ValidateEntretienDialog} ; config/{VehiculeConfigsPanel, VehiculeConfigCard} ; + historique, formulaire et fichiers **partagés** avec Entretiens | `TabbedPageHeader` partagé | fait |
-| views/maintenance/TypesEntretien.vue (894) | pages/maintenance/TypesEntretienPage.tsx ; features/maintenance/components/types/{DossiersSidebar, DossierNavItem, TypesToolbar, TypesEntretienList, TypeEntretienCard, TypeEntretienFormDialog, DossierFormDialog} ; hooks/{useTypesExplorer, useTypeDragAndDrop} | glisser-déposer (Q-DND), `scroll-area` | fait |
-| components/maintenance/ConfigEntretienModal.vue (220) | features/maintenance/components/config/ConfigEntretienDialog.tsx ; schemas/configEntretien.ts | | fait |
+| views/maintenance/Entretiens.vue (2089) | pages/maintenance/EntretiensPage.tsx ; features/maintenance/components/fleet/{FleetDashboard, FleetStatusSection, FleetVehicleCard, FleetAlertLine, FleetDashboardSkeleton} ; history/{EntretiensHistory, EntretiensHistoryToolbar, entretienColumns, EntretiensDataTable, EntretienMobileCard, EntretienActionsMenu, EntretiensTotalCost} ; form/{EntretienFormDialog, TypeEntretienPicker, EntretienFilesField} ; files/EntretienFilesDialog ; lib/{fleetStatus, entretienDates, formatPeriodicite, buildHistorySearchParams} ; hooks/{useEntretiensHistory, useHistoryFilterConfig, useEntretienDialogs, useFleetStatus, useCanManageMaintenance} | SearchFilters, data-table, context-menu, Combobox hiérarchique (popover + command), FileDropzone, ImageLightbox, PdfViewerDialog | vérifié |
+| views/maintenance/EntretiensVehicule.vue (1693) | pages/maintenance/EntretiensVehiculePage.tsx ; features/maintenance/components/vehicule/{VehiculeEntretiensHeader, VehicleUpcomingAlerts, UpcomingAlertCard, ValidateEntretienDialog} ; config/{VehiculeConfigsPanel, VehiculeConfigCard} ; + historique, formulaire et fichiers **partagés** avec Entretiens | `TabbedPageHeader` partagé | vérifié |
+| views/maintenance/TypesEntretien.vue (894) | pages/maintenance/TypesEntretienPage.tsx ; features/maintenance/components/types/{DossiersSidebar, DossierNavItem, TypesToolbar, TypesEntretienList, TypeEntretienCard, TypeEntretienFormDialog, DossierFormDialog} ; hooks/{useTypesExplorer, useTypeDragAndDrop} | glisser-déposer (Q-DND), `scroll-area` | vérifié |
+| components/maintenance/ConfigEntretienModal.vue (220) | features/maintenance/components/config/ConfigEntretienDialog.tsx ; schemas/configEntretien.ts | | vérifié |
 
 Hooks Query : `useFleetUpcomingQuery`, `useVehicleUpcomingQuery`, `useEntretiensHistoryQuery`, `useEntretienFilesQuery`, `useTypesEntretienQuery`, `useDossiersQuery`, `useVehiculeConfigsQuery` + mutations (voir l'annexe).
 
@@ -556,17 +556,17 @@ Hooks Query : `useFleetUpcomingQuery`, `useVehicleUpcomingQuery`, `useEntretiens
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/absences/Absences.vue (971) | pages/absences/AbsencesPage.tsx ; features/absences/components/admin/{absenceColumns, AbsencesDataTable, AbsenceMobileList, absenceRowActions, AbsenceDialogs} ; hooks/useAdminAbsenceFilters.ts | SearchFilters, data-table, context-menu, `?userUuid=` entrant (Users, suivi des présences, Planning) | fait |
-| views/absences/AbsenceTypes.vue (323) | pages/absences/AbsenceTypesPage.tsx ; features/absences/components/types/AbsenceTypesTable.tsx | | fait |
-| views/myabsences/MyAbsences.vue (543) | pages/myabsences/MyAbsencesPage.tsx ; features/absences/components/my/MyAbsenceFiltersSheet.tsx ; hooks/useMyAbsenceFilters.ts | StatusChips, ResponsiveFilterSheet, `useMediaQuery('(max-width: 639px)')` | fait |
-| components/absences/AbsenceEditModal.vue (409) | features/absences/components/admin/AbsenceFormDialog.tsx + components/AbsenceFormFields.tsx (partagé avec la demande employé) ; schemas/absence.ts | Combobox employé (`selectableUsers`), « Approuver directement » | fait |
-| components/absences/AbsenceDetailModal.vue (239) | features/absences/components/admin/AbsenceDetailDialog.tsx | | fait |
-| components/absences/AbsenceValidateModal.vue (166) | `components/shared/ValidateRequestDialog.tsx` + résumé d'absence | motif obligatoire en cas de refus | fait |
-| components/absences/AbsenceDeleteModal.vue (179) | `components/shared/ConfirmDialog.tsx` + résumé d'absence | | fait |
-| components/absences/AbsenceTypeEditModal.vue (207) | features/absences/components/types/AbsenceTypeFormDialog.tsx | couleur `#RRGGBB` | fait |
-| components/myabsences/MyAbsenceCard.vue (135) | features/absences/components/my/MyAbsenceCard.tsx | | fait |
-| components/myabsences/MyAbsenceDetailModal.vue (200) | features/absences/components/my/MyAbsenceDetailDialog.tsx | | fait |
-| components/myabsences/MyAbsenceEditModal.vue (271) | features/absences/components/my/MyAbsenceRequestDialog.tsx | AbsenceFormFields | fait |
+| views/absences/Absences.vue (971) | pages/absences/AbsencesPage.tsx ; features/absences/components/admin/{absenceColumns, AbsencesDataTable, AbsenceMobileList, absenceRowActions, AbsenceDialogs} ; hooks/useAdminAbsenceFilters.ts | SearchFilters, data-table, context-menu, `?userUuid=` entrant (Users, suivi des présences, Planning) | vérifié |
+| views/absences/AbsenceTypes.vue (323) | pages/absences/AbsenceTypesPage.tsx ; features/absences/components/types/AbsenceTypesTable.tsx | | vérifié |
+| views/myabsences/MyAbsences.vue (543) | pages/myabsences/MyAbsencesPage.tsx ; features/absences/components/my/MyAbsenceFiltersSheet.tsx ; hooks/useMyAbsenceFilters.ts | StatusChips, ResponsiveFilterSheet, `useMediaQuery('(max-width: 639px)')` | vérifié |
+| components/absences/AbsenceEditModal.vue (409) | features/absences/components/admin/AbsenceFormDialog.tsx + components/AbsenceFormFields.tsx (partagé avec la demande employé) ; schemas/absence.ts | Combobox employé (`selectableUsers`), « Approuver directement » | vérifié |
+| components/absences/AbsenceDetailModal.vue (239) | features/absences/components/admin/AbsenceDetailDialog.tsx | | vérifié |
+| components/absences/AbsenceValidateModal.vue (166) | `components/shared/ValidateRequestDialog.tsx` + résumé d'absence | motif obligatoire en cas de refus | vérifié |
+| components/absences/AbsenceDeleteModal.vue (179) | `components/shared/ConfirmDialog.tsx` + résumé d'absence | | vérifié |
+| components/absences/AbsenceTypeEditModal.vue (207) | features/absences/components/types/AbsenceTypeFormDialog.tsx | couleur `#RRGGBB` | vérifié |
+| components/myabsences/MyAbsenceCard.vue (135) | features/absences/components/my/MyAbsenceCard.tsx | | vérifié |
+| components/myabsences/MyAbsenceDetailModal.vue (200) | features/absences/components/my/MyAbsenceDetailDialog.tsx | | vérifié |
+| components/myabsences/MyAbsenceEditModal.vue (271) | features/absences/components/my/MyAbsenceRequestDialog.tsx | AbsenceFormFields | vérifié |
 
 Hooks Query : `useAdminAbsencesQuery`, `useMyAbsencesQuery`, `useAbsenceTypesQuery` (partagé avec Planning), mutations create (admin et employé), update, validate (partagée avec Planning), delete, cancel, CRUD des types.
 
@@ -574,15 +574,15 @@ Hooks Query : `useAdminAbsencesQuery`, `useMyAbsencesQuery`, `useAbsenceTypesQue
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/acomptes/Acomptes.vue (930) | pages/acomptes/AcomptesPage.tsx ; features/acomptes/components/admin/{acompteColumns, AcomptesDataTable, AcompteMobileList, acompteRowActions, AcompteDialogs} ; components/PaymentStatusBadge.tsx ; hooks/useAdminAcompteFilters.ts | bascule « payé » en mise à jour optimiste | fait |
-| views/acomptes/MyAcomptes.vue (538) | pages/acomptes/MyAcomptesPage.tsx ; features/acomptes/components/my/MyAcompteFiltersSheet.tsx ; hooks/useMyAcompteFilters.ts | mêmes briques que MyAbsences | fait |
-| components/acomptes/AcompteEditModal.vue (232) | features/acomptes/components/admin/AcompteCreateDialog.tsx + components/AcompteFormFields.tsx | Combobox employé, ApproveDirectlyField | fait |
-| components/acomptes/AcompteDetailModal.vue (207) | features/acomptes/components/admin/AcompteDetailDialog.tsx | | fait |
-| components/acomptes/AcompteValidateModal.vue (155) | `components/shared/ValidateRequestDialog.tsx` | | fait |
-| components/acomptes/AcompteDeleteModal.vue (152) | `components/shared/ConfirmDialog.tsx` | | fait |
-| components/myacomptes/MyAcompteCard.vue (127) | features/acomptes/components/my/MyAcompteCard.tsx | | fait |
-| components/myacomptes/MyAcompteDetailModal.vue (180) | features/acomptes/components/my/MyAcompteDetailDialog.tsx | | fait |
-| components/myacomptes/MyAcompteEditModal.vue (149) | features/acomptes/components/my/MyAcompteRequestDialog.tsx | | fait |
+| views/acomptes/Acomptes.vue (930) | pages/acomptes/AcomptesPage.tsx ; features/acomptes/components/admin/{acompteColumns, AcomptesDataTable, AcompteMobileList, acompteRowActions, AcompteDialogs} ; components/PaymentStatusBadge.tsx ; hooks/useAdminAcompteFilters.ts | bascule « payé » en mise à jour optimiste | vérifié |
+| views/acomptes/MyAcomptes.vue (538) | pages/acomptes/MyAcomptesPage.tsx ; features/acomptes/components/my/MyAcompteFiltersSheet.tsx ; hooks/useMyAcompteFilters.ts | mêmes briques que MyAbsences | vérifié |
+| components/acomptes/AcompteEditModal.vue (232) | features/acomptes/components/admin/AcompteCreateDialog.tsx + components/AcompteFormFields.tsx | Combobox employé, ApproveDirectlyField | vérifié |
+| components/acomptes/AcompteDetailModal.vue (207) | features/acomptes/components/admin/AcompteDetailDialog.tsx | | vérifié |
+| components/acomptes/AcompteValidateModal.vue (155) | `components/shared/ValidateRequestDialog.tsx` | | vérifié |
+| components/acomptes/AcompteDeleteModal.vue (152) | `components/shared/ConfirmDialog.tsx` | | vérifié |
+| components/myacomptes/MyAcompteCard.vue (127) | features/acomptes/components/my/MyAcompteCard.tsx | | vérifié |
+| components/myacomptes/MyAcompteDetailModal.vue (180) | features/acomptes/components/my/MyAcompteDetailDialog.tsx | | vérifié |
+| components/myacomptes/MyAcompteEditModal.vue (149) | features/acomptes/components/my/MyAcompteRequestDialog.tsx | | vérifié |
 
 Hooks Query : `useAdminAcomptesQuery`, `useMyAcomptesQuery`, mutations create (admin et employé), validate, delete, `useToggleAcomptePaid` (optimiste), cancel.
 
@@ -590,8 +590,8 @@ Hooks Query : `useAdminAcomptesQuery`, `useMyAcomptesQuery`, mutations create (a
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/signatures/Signatures.vue (441) | pages/signatures/SignaturesPage.tsx ; features/signatures/components/{SignaturesTable, SignatureViewDialog, SignatureHistoryDialog, DeleteSignatureDialog} ; lib/signatureImage.ts | | fait |
-| components/signatures/SignatureReminderDialog.vue (121) | features/signatures/components/SignatureReminderDialog.tsx (monté dans GlobalDialogs) | SignaturePad ; dialog **bloquant** (exception assumée, comme dans le Vue) | fait |
+| views/signatures/Signatures.vue (441) | pages/signatures/SignaturesPage.tsx ; features/signatures/components/{SignaturesTable, SignatureViewDialog, SignatureHistoryDialog, DeleteSignatureDialog} ; lib/signatureImage.ts | | vérifié |
+| components/signatures/SignatureReminderDialog.vue (121) | features/signatures/components/SignatureReminderDialog.tsx (monté dans GlobalDialogs) | SignaturePad ; dialog **bloquant** (exception assumée, comme dans le Vue) | vérifié |
 
 Hooks Query : `useAllUsersSignaturesQuery`, `useUserSignaturesQuery`, `useDeleteSignatureMutation`, `useSignatureSummaryQuery`, `useCreateSignatureMutation`.
 
@@ -599,11 +599,11 @@ Hooks Query : `useAllUsersSignaturesQuery`, `useUserSignaturesQuery`, `useDelete
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/couchettes/Couchettes.vue (595) | pages/couchettes/CouchettesPage.tsx ; features/couchettes/components/{CouchettesTable, couchettesColumns, CouchetteMobileList} ; hooks/{useCouchetteSearchParams, useCouchettesFilterConfig} | SearchFilters, pagination serveur, `?userUuid=` | fait |
-| views/couchettes/MesCouchettes.vue (477) | pages/couchettes/MesCouchettesPage.tsx ; features/couchettes/components/{TodayCouchetteCard, CouchetteCounters, CouchetteHistory, CouchetteHistoryItem, MyCouchetteDeleteDialog, MesCouchettesSkeleton} ; lib/couchetteDates.ts | | fait |
-| components/couchettes/CouchetteCreateModal.vue (185) | features/couchettes/components/CouchetteCreateDialog.tsx | Combobox employé (`selectableUsers`) | fait |
-| components/couchettes/CouchetteDeleteModal.vue (131) | features/couchettes/components/CouchetteDeleteDialog.tsx + CouchetteUserSummary.tsx | | fait |
-| components/couchettes/CouchetteDetailModal.vue (117) | features/couchettes/components/CouchetteDetailDialog.tsx | | fait |
+| views/couchettes/Couchettes.vue (595) | pages/couchettes/CouchettesPage.tsx ; features/couchettes/components/{CouchettesTable, couchettesColumns, CouchetteMobileList} ; hooks/{useCouchetteSearchParams, useCouchettesFilterConfig} | SearchFilters, pagination serveur, `?userUuid=` | vérifié |
+| views/couchettes/MesCouchettes.vue (477) | pages/couchettes/MesCouchettesPage.tsx ; features/couchettes/components/{TodayCouchetteCard, CouchetteCounters, CouchetteHistory, CouchetteHistoryItem, MyCouchetteDeleteDialog, MesCouchettesSkeleton} ; lib/couchetteDates.ts | | vérifié |
+| components/couchettes/CouchetteCreateModal.vue (185) | features/couchettes/components/CouchetteCreateDialog.tsx | Combobox employé (`selectableUsers`) | vérifié |
+| components/couchettes/CouchetteDeleteModal.vue (131) | features/couchettes/components/CouchetteDeleteDialog.tsx + CouchetteUserSummary.tsx | | vérifié |
+| components/couchettes/CouchetteDetailModal.vue (117) | features/couchettes/components/CouchetteDetailDialog.tsx | | vérifié |
 
 Hooks Query : `useAdminCouchettesQuery`, `useMyCouchettesQuery`, mutations create / delete (employé et admin).
 
@@ -611,7 +611,7 @@ Hooks Query : `useAdminCouchettesQuery`, `useMyCouchettesQuery`, mutations creat
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/stock/StockItems.vue (1060) | pages/stock/StockItemsPage.tsx ; features/stock/components/{StockCategorySidebar, StockCategoryNavItem, StockToolbar, StockItemList, StockEmptyState, StockItemCard, StockQuantityStepper, StockItemFormDialog, StockCategoryFormDialog, StockItemDeleteDialog, StockCategoryDeleteDialog} ; hooks/{useStockFilters, useFilteredStockItems, useCanManageStock} ; lib/stock.ts ; schemas/{stockItem, stockCategory} | glisser-déposer vers une catégorie (Q-DND), stepper de quantité optimiste, suppression d'article « CONFIRMER » | fait |
+| views/stock/StockItems.vue (1060) | pages/stock/StockItemsPage.tsx ; features/stock/components/{StockCategorySidebar, StockCategoryNavItem, StockToolbar, StockItemList, StockEmptyState, StockItemCard, StockQuantityStepper, StockItemFormDialog, StockCategoryFormDialog, StockItemDeleteDialog, StockCategoryDeleteDialog} ; hooks/{useStockFilters, useFilteredStockItems, useCanManageStock} ; lib/stock.ts ; schemas/{stockItem, stockCategory} | glisser-déposer vers une catégorie (Q-DND), stepper de quantité optimiste, suppression d'article « CONFIRMER » | vérifié |
 
 Hooks Query : `useStockItemsQuery`, `useStockCategoriesQuery`, CRUD articles et catégories, `useAdjustStockQuantityMutation`, `useMoveStockItemMutation`.
 
@@ -619,10 +619,10 @@ Hooks Query : `useStockItemsQuery`, `useStockCategoriesQuery`, CRUD articles et 
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/cartes/Cartes.vue (596) | pages/cartes/CartesPage.tsx ; features/cartes/components/{CartesTable, cartesColumns, CarteRowContextMenu, CarteMobileCard, CarteSecretValue, CarteExpirationBadge, CarteDeleteDialog} ; hooks/useRevealedSecrets.ts ; lib/cartes.ts | badge `warning` « Expire bientôt » (< 30 jours) | fait |
-| views/cartes/TypesCartes.vue (315) | pages/cartes/TypesCartesPage.tsx ; features/cartes/components/{TypesCartesTable, typesCartesColumns, TypeCarteMobileCard, TypeCarteDeleteDialog} | | fait |
-| components/cartes/CarteEditModal.vue (386) | features/cartes/components/{CarteFormDialog, CarteForm, CarteSystemInfo} ; schemas/carteForm.ts ; hooks/useCarteFormDefaults.ts | Combobox type et utilisateur (`selectableUsers`) ; `clearUser` | fait |
-| components/cartes/TypeCarteEditModal.vue (236) | features/cartes/components/TypeCarteFormDialog.tsx ; schemas/typeCarteForm.ts | | fait |
+| views/cartes/Cartes.vue (596) | pages/cartes/CartesPage.tsx ; features/cartes/components/{CartesTable, cartesColumns, CarteRowContextMenu, CarteMobileCard, CarteSecretValue, CarteExpirationBadge, CarteDeleteDialog} ; hooks/useRevealedSecrets.ts ; lib/cartes.ts | badge `warning` « Expire bientôt » (< 30 jours) | vérifié |
+| views/cartes/TypesCartes.vue (315) | pages/cartes/TypesCartesPage.tsx ; features/cartes/components/{TypesCartesTable, typesCartesColumns, TypeCarteMobileCard, TypeCarteDeleteDialog} | | vérifié |
+| components/cartes/CarteEditModal.vue (386) | features/cartes/components/{CarteFormDialog, CarteForm, CarteSystemInfo} ; schemas/carteForm.ts ; hooks/useCarteFormDefaults.ts | Combobox type et utilisateur (`selectableUsers`) ; `clearUser` | vérifié |
+| components/cartes/TypeCarteEditModal.vue (236) | features/cartes/components/TypeCarteFormDialog.tsx ; schemas/typeCarteForm.ts | | vérifié |
 
 Hooks Query : `useCartesQuery`, `useCarteQuery`, `useTypeCartesQuery`, `useTypeCarteQuery`, CRUD cartes et types.
 
@@ -630,9 +630,9 @@ Hooks Query : `useCartesQuery`, `useCarteQuery`, `useTypeCartesQuery`, `useTypeC
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/todos/Todos.vue (552, dont un `<style>` global) | pages/todos/TodosPage.tsx ; features/todos/components/{TodosToolbar, TodoBoard, TodoColumn, TodoCard, TodoToggleButton, TodoTrashDropZone, TodoDeleteDialog} ; hooks/{useTodoBoard, useTodoDragAndDrop} | kanban, corbeille flottante animée (`tw-animate-css`), glisser-déposer (Q-DND) | fait |
-| components/todos/TodoEditModal.vue (216) | features/todos/components/TodoFormDialog.tsx ; schemas/todoForm.ts | | fait |
-| components/todos/TodoCategoriesModal.vue (271) | features/todos/components/{TodoCategoriesDialog, TodoCategoryForm, TodoCategoryList, TodoCategoryDeleteDialog} | | fait |
+| views/todos/Todos.vue (552, dont un `<style>` global) | pages/todos/TodosPage.tsx ; features/todos/components/{TodosToolbar, TodoBoard, TodoColumn, TodoCard, TodoToggleButton, TodoTrashDropZone, TodoDeleteDialog} ; hooks/{useTodoBoard, useTodoDragAndDrop} | kanban, corbeille flottante animée (`tw-animate-css`), glisser-déposer (Q-DND) | vérifié |
+| components/todos/TodoEditModal.vue (216) | features/todos/components/TodoFormDialog.tsx ; schemas/todoForm.ts | | vérifié |
+| components/todos/TodoCategoriesModal.vue (271) | features/todos/components/{TodoCategoriesDialog, TodoCategoryForm, TodoCategoryList, TodoCategoryDeleteDialog} | | vérifié |
 
 Hooks Query : `useTodosQuery`, `useTodoQuery`, `useTodoCategoriesQuery`, mutations create / update / move (optimiste) / toggle / delete, CRUD des catégories.
 
@@ -640,10 +640,10 @@ Hooks Query : `useTodosQuery`, `useTodoQuery`, `useTodoCategoriesQuery`, mutatio
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/app-versions/AppVersions.vue (358) | pages/app-versions/AppVersionsPage.tsx ; features/app-versions/components/{AppVersionsTable, appVersionColumns, AppVersionRowActions, DeleteAppVersionDialog} | data-table, context-menu | fait |
-| views/app-versions/AppVersionsPublic.vue (369) | pages/app-versions/AppVersionsPublicPage.tsx ; features/app-versions/components/{AndroidDownloadCard, AppVersionHistory, AppVersionHistoryItem, IosTestflightCard} ; data/iosSteps.ts ; lib/format.ts | page publique, `noindex` | fait |
-| components/app-versions/AppVersionCreateModal.vue (287) | features/app-versions/components/AppVersionCreateDialog.tsx ; hooks/useApkFileReader.ts ; schemas/createAppVersion.ts | FileDropzone (APK en base64) | fait |
-| components/app-versions/AppVersionEditModal.vue (235) | features/app-versions/components/AppVersionEditDialog.tsx | | fait |
+| views/app-versions/AppVersions.vue (358) | pages/app-versions/AppVersionsPage.tsx ; features/app-versions/components/{AppVersionsTable, appVersionColumns, AppVersionRowActions, DeleteAppVersionDialog} | data-table, context-menu | vérifié |
+| views/app-versions/AppVersionsPublic.vue (369) | pages/app-versions/AppVersionsPublicPage.tsx ; features/app-versions/components/{AndroidDownloadCard, AppVersionHistory, AppVersionHistoryItem, IosTestflightCard} ; data/iosSteps.ts ; lib/format.ts | page publique, `noindex` | vérifié |
+| components/app-versions/AppVersionCreateModal.vue (287) | features/app-versions/components/AppVersionCreateDialog.tsx ; hooks/useApkFileReader.ts ; schemas/createAppVersion.ts | FileDropzone (APK en base64) | vérifié |
+| components/app-versions/AppVersionEditModal.vue (235) | features/app-versions/components/AppVersionEditDialog.tsx | | vérifié |
 
 Hooks Query : `useAdminAppVersions`, `useActiveAppVersions`, `useAppVersion`, create / update / delete.
 
@@ -651,8 +651,8 @@ Hooks Query : `useAdminAppVersions`, `useActiveAppVersions`, `useAppVersion`, cr
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/common/Notifications.vue (440) | pages/common/NotificationsPage.tsx ; features/notifications/components/{NotificationList, NotificationItem} ; hooks/{useOpenNotification, useNotificationSound} ; lib/{notificationMeta, formatRelativeTime} (partagés avec le popover) | `tabs` ; même cache que le popover (le Vue ne les synchronise pas) | fait |
-| views/common/Profile.vue (858) | pages/common/ProfilePage.tsx ; features/profile/components/{ProfileInfoCard, ProfileInfoView, ProfileEditForm, AvatarPicker, NotificationPreferencesCard, NotificationPreferencesForm, ChangePasswordCard} ; schemas/{profile, notificationPreferences, changePassword} ; lib/notificationChannels.ts | FileDropzone (2 Mo), InputField avec œil ; boutons « Annuler » en `type="button"` | fait |
+| views/common/Notifications.vue (440) | pages/common/NotificationsPage.tsx ; features/notifications/components/{NotificationList, NotificationItem} ; hooks/{useOpenNotification, useNotificationSound} ; lib/{notificationMeta, formatRelativeTime} (partagés avec le popover) | `tabs` ; même cache que le popover (le Vue ne les synchronise pas) | vérifié |
+| views/common/Profile.vue (858) | pages/common/ProfilePage.tsx ; features/profile/components/{ProfileInfoCard, ProfileInfoView, ProfileEditForm, AvatarPicker, NotificationPreferencesCard, NotificationPreferencesForm, ChangePasswordCard} ; schemas/{profile, notificationPreferences, changePassword} ; lib/notificationChannels.ts | FileDropzone (2 Mo), InputField avec œil ; boutons « Annuler » en `type="button"` | vérifié |
 
 Hooks Query : `useNotificationsQuery`, `useUnreadNotificationsQuery`, `useMarkNotificationRead`, `useMarkAllNotificationsRead`, `useProfileQuery`, `useMyNotificationPreferencesQuery`, `useUpdateProfile`, `useChangePassword`, `useUpdateNotificationPreferences`.
 
@@ -660,27 +660,27 @@ Hooks Query : `useNotificationsQuery`, `useUnreadNotificationsQuery`, `useMarkNo
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/landing/Landing.vue (1233) | pages/landing/LandingPage.tsx ; features/landing/components/{LandingHeader, LandingMobileMenu, HeroSection, ServicesSection, HeavyServiceCard, ServiceCard, AboutSection, FleetSection, VehicleCard, StatsSection, FaqSection, ContactSection, ContactCard, LandingFooter, FloatingCallButton, SectionHeading} ; data/{navLinks, services, about, fleet, stats, faq, footer, contact} ; hooks/{useScrolledPast, useFloatingCtaVisible, useParallax, useCountUp, useRevealOnScroll, useForceLightTheme, useFluidRootScale, useLandingJsonLd} ; lib/{scrollToSection, formatMeters, buildLandingJsonLd} ; landing.css | contraintes du pré-rendu : `#app h1`, `id="services"`, `id="contact"`, `<footer>`, aucun `<script>` dans `#app`, plus de 10 000 caractères, `.reveal`/`.revealed`, `window.__PRERENDERED__` ; JSON-LD WebPage + FAQPage (mêmes `@id`) injecté dans `<head>` | fait |
+| views/landing/Landing.vue (1233) | pages/landing/LandingPage.tsx ; features/landing/components/{LandingHeader, LandingMobileMenu, HeroSection, ServicesSection, HeavyServiceCard, ServiceCard, AboutSection, FleetSection, VehicleCard, StatsSection, FaqSection, ContactSection, ContactCard, LandingFooter, FloatingCallButton, SectionHeading} ; data/{navLinks, services, about, fleet, stats, faq, footer, contact} ; hooks/{useScrolledPast, useFloatingCtaVisible, useParallax, useCountUp, useRevealOnScroll, useForceLightTheme, useFluidRootScale, useLandingJsonLd} ; lib/{scrollToSection, formatMeters, buildLandingJsonLd} ; landing.css | contraintes du pré-rendu : `#app h1`, `id="services"`, `id="contact"`, `<footer>`, aucun `<script>` dans `#app`, plus de 10 000 caractères, `.reveal`/`.revealed`, `window.__PRERENDERED__` ; JSON-LD WebPage + FAQPage (mêmes `@id`) injecté dans `<head>` | vérifié |
 | components/landing/FleetViewer.vue (161) | — (D1) | code mort | — |
-| components/legal/LegalLayout.vue (144) | components/layout/LegalLayout.tsx | `<style scoped>` → variantes Tailwind | fait |
-| views/legal/MentionsLegales.vue (83) | pages/legal/MentionsLegalesPage.tsx | `noindex, follow` | fait |
-| views/legal/PolitiqueConfidentialite.vue (118) | pages/legal/PolitiqueConfidentialitePage.tsx | `noindex, follow` | fait |
+| components/legal/LegalLayout.vue (144) | components/layout/LegalLayout.tsx | `<style scoped>` → variantes Tailwind | vérifié |
+| views/legal/MentionsLegales.vue (83) | pages/legal/MentionsLegalesPage.tsx | `noindex, follow` | vérifié |
+| views/legal/PolitiqueConfidentialite.vue (118) | pages/legal/PolitiqueConfidentialitePage.tsx | `noindex, follow` | vérifié |
 
 ### 5.7 SEO, PWA et build (phase 5)
 
 | Élément | Cible | Statut |
 |---|---|---|
-| `robots.txt` (liste blanche `/` et `/login`, robots SEO tiers bloqués, sitemap) | `public/robots.txt` (sans `Allow: /models/` si D1) | fait |
-| Sitemap (lastmod = dernier commit git des sources de la page) | plugin Vite, sources React | fait |
-| `version.json` (`version`, `buildTime`, `commit`) + `__APP_VERSION__` | plugin Vite + `define` | fait |
-| Compression gzip + brotli | `vite-plugin-compression2` | fait |
-| Pré-rendu de `/` (Edge headless via CDP, `PRERENDER_STRICT=1`) | `scripts/prerender.cjs` adapté | fait |
-| JSON-LD site (`index.html`) + page (landing : WebPage, FAQPage) | mêmes `@id` : `#business`, `#website`, `#webpage`, `#faq` | fait |
-| Métadonnées par page (title, description, robots, canonical ; `https://pointage.avtrans-concept.com`, jamais `app.`) | D2 | fait |
-| Manifest PWA, icônes, `theme-color` `#581c87`, métas iOS | `public/manifest.json` + `index.html` | fait |
-| Badge du favicon (nombre de non-lus) + titre `(n) …` | `src/lib/faviconBadge.ts` | fait |
-| Script anti-FOUC (pas de `.dark` sur `/`) | `index.html` | fait |
-| En-têtes de cache Apache (`index.html`, `version.json` et `manifest.json` jamais servis périmés ; `/assets/` immuable) | `deploy/apache-cache-headers.conf` copié tel quel | fait |
+| `robots.txt` (liste blanche `/` et `/login`, robots SEO tiers bloqués, sitemap) | `public/robots.txt` (sans `Allow: /models/` si D1) | vérifié |
+| Sitemap (lastmod = dernier commit git des sources de la page) | plugin Vite, sources React | vérifié |
+| `version.json` (`version`, `buildTime`, `commit`) + `__APP_VERSION__` | plugin Vite + `define` | vérifié |
+| Compression gzip + brotli | `vite-plugin-compression2` | vérifié |
+| Pré-rendu de `/` (Edge headless via CDP, `PRERENDER_STRICT=1`) | `scripts/prerender.cjs` adapté | vérifié |
+| JSON-LD site (`index.html`) + page (landing : WebPage, FAQPage) | mêmes `@id` : `#business`, `#website`, `#webpage`, `#faq` | vérifié |
+| Métadonnées par page (title, description, robots, canonical ; `https://pointage.avtrans-concept.com`, jamais `app.`) | D2 | vérifié |
+| Manifest PWA, icônes, `theme-color` `#581c87`, métas iOS | `public/manifest.json` + `index.html` | vérifié |
+| Badge du favicon (nombre de non-lus) + titre `(n) …` | `src/lib/faviconBadge.ts` | vérifié |
+| Script anti-FOUC (pas de `.dark` sur `/`) | `index.html` | vérifié |
+| En-têtes de cache Apache (`index.html`, `version.json` et `manifest.json` jamais servis périmés ; `/assets/` immuable) | `deploy/apache-cache-headers.conf` copié tel quel | vérifié |
 
 ---
 
@@ -832,3 +832,4 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 | 2026-09-25 | 1 | Phase 1 (socle) : dépôt git (`main`, LF imposé) ; Vite 7 + React 19 + TS 5.9 (create-vite 8.3.0) ; Tailwind v4 et alias `@` ; React Compiler (runtime vérifié dans le bundle) ; shadcn CLI v4 remis en style new-york, `button`, paquet `cn` (parité testée) ; tokens et règles de base du Vue dans `src/index.css` (police système, scrollbar et sélection en sombre) ; Prettier + eslint-config-prettier ; `CLAUDE.md`. Vérifié : build, lint (0 warning), format, rendu clair/sombre à 375 px et en desktop dans le navigateur intégré. | `c0f3c4a` à `4803d46`, puis le commit de documentation |
 | 2026-09-25 / 26 | 1 | Phases 2 et 3 : couche agnostique copiée (seules adaptations : icônes lucide, intercepteur 401 découplé, `import type`) ; coquille (store Zustand hydraté depuis les clés du Vue, router data mode et gardes, ThemeProvider, navbar, notifications, bannière de version, changelog, historique d'un pointage) ; composants partagés. Phase 4 par sous-agents parallèles : auth, pointage, heures/planning/journal, véhicules, absences, acomptes, signatures, couchettes, versions, notifications, profil, landing et légal portés ; B-02 corrigé (échappement, règle de sécurité du brief). Phase 5 amorcée : version.json, sitemap, en-tête SEO, pré-rendu porté, deploy/. Vérifié visuellement contre la prod Vue : login (360 px clair et sombre), landing (desktop identique, même hauteur à 360 px). Utilisateurs, entretiens, stock, cartes et todos : reprise en cours après une coupure de l'API. | `9161c08` à `8e593ca` |
 | 2026-09-26 | 1 | Fin de la phase 4 : utilisateurs (liste, pointages d'un employé, suivi des présences), entretiens (flotte, véhicule, types), stock, cartes et todos portés et relus ; bugs du Vue reproduits (B-01, B-04 à B-07, B-16 à B-27, B-30, B-31, 8.3). Phase 5 : compression gzip + brotli, `AppLayout` chargé à la demande et chunk `react-vendor` (bundle initial de la landing : 505 ko au lieu de 805 ko + coquille), limite de taille relevée pour mapbox-gl seul ; `MigrationPlaceholder` et 6 composants shadcn inutilisés retirés ; aucun module orphelin ni `any` ; libellés d'`InputField` alignés sur le Vue (login identique au pixel près). Vérifié : `npm run build` avec `PRERENDER_STRICT=1`, lint, format, parité des 43 routes et des gardes. Reste : contrôle visuel des écrans connectés (session requise). | `c534637` à ce commit |
+| 2026-09-26 | 1 | Contrôle visuel des écrans (rôles, 360 px et desktop, clair et sombre) validé par le propriétaire : toutes les lignes passent à `vérifié`. Migration terminée ; reste au propriétaire le premier déploiement avec `deploy.py --minor` (bump de version pour que les clients Vue détectent la bascule). | ce commit |
