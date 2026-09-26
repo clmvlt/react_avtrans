@@ -58,8 +58,9 @@ export function InputField({
       {label && (
         <FieldLabel
           htmlFor={inputId}
+          // `text-sm` en dernier annule le `leading-*` du label (hauteur de ligne 20 px, comme le Vue)
           className={cn(
-            'text-sm leading-none font-medium',
+            'text-sm font-medium',
             hasError && 'text-destructive',
             disabled && 'text-muted-foreground',
           )}
