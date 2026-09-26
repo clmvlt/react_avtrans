@@ -4,6 +4,7 @@ import path from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { compression } from 'vite-plugin-compression2'
 
 // Version unique de l'application : package.json fait foi (incrémenté par deploy/deploy.py).
 // Elle est injectée dans le bundle (__APP_VERSION__, voir src/config/version.ts) et écrite
@@ -116,6 +117,9 @@ export default defineConfig({
     tailwindcss(),
     versionPlugin(),
     sitemapPlugin(),
+    // Pré-compression des assets au build (.gz + .br servis par Apache, comme le Vue) ;
+    // scripts/prerender.cjs régénère ensuite ceux d'index.html
+    compression({ algorithms: ['gzip', 'brotliCompress'] }),
   ],
   resolve: {
     alias: {
@@ -125,5 +129,19 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+  },
+  build: {
+    // mapbox-gl (~1,8 Mo, chargé seulement par les cartes) est le seul chunk au-delà des
+    // 500 ko par défaut : limite relevée pour lui, les autres chunks restent bien en dessous
+    chunkSizeWarningLimit: 1900,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Cœur React, commun à toutes les pages : chunk stable d'un déploiement à l'autre
+          // (équivalent du `vue-vendor` du Vue)
+          'react-vendor': ['react', 'react-dom', 'react-dom/client', 'react-router', 'scheduler'],
+        },
+      },
+    },
   },
 })

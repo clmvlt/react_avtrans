@@ -1,6 +1,5 @@
 import type { ComponentType } from 'react'
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
-import { AppLayout } from '@/components/layout/AppLayout'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { RouteErrorBoundary } from '@/components/layout/RouteErrorBoundary'
 import { leaveUserViewLoader, redirectIfAuthenticatedLoader } from './loaders'
@@ -58,7 +57,11 @@ export const routes: RouteObject[] = [
         element: <RequireAuth />,
         children: [
           {
-            element: <AppLayout />,
+            // Coquille connectée (navbar, dialogs globaux) chargée à la demande : elle reste hors
+            // du bundle initial de la landing et des pages d'auth
+            lazy: async () => ({
+              Component: (await import('@/components/layout/AppLayout')).AppLayout,
+            }),
             children: [
               {
                 path: '/add-to-homescreen',

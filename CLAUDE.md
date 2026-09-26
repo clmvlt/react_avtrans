@@ -10,12 +10,12 @@ Ce projet est la **migration de l'app Vue 3** `D:\3_PROJET\AVTRANS\pointage2026\
 
 ## Commandes
 - Dev : `npm run dev` (port 5173, `host 0.0.0.0`). Pour lancer le Vue à côté : `npx vite --port 5174` depuis `vue_avtrans` (le CORS de l'API accepte toutes les origines).
-- Build : `npm run build` (`tsc -b && vite build` ; le pré-rendu `node scripts/prerender.cjs` sera ajouté en phase 5)
+- Build : `npm run build` (`tsc -b && vite build && node scripts/prerender.cjs` : type-check, bundle compressé gzip + brotli, puis pré-rendu de la landing ; `PRERENDER_STRICT=1` pour échouer si le pré-rendu échoue)
 - Type-check : `npm run typecheck`
 - Lint : `npm run lint` (échoue au moindre warning)
 - Format : `npm run format` / `npm run format:check`
 - Preview : `npm run preview`
-- Déploiement : `python deploy/deploy.py` (copié en phase 5, git-ignoré, contient les accès SSH). **Claude ne l'exécute jamais** : c'est le propriétaire qui le lance.
+- Déploiement : `python deploy/deploy.py` (git-ignoré, contient les accès SSH). **Claude ne l'exécute jamais** : c'est le propriétaire qui le lance.
 
 ## Stack (versions épinglées volontairement)
 Les majeures sont fixées par le brief même si des versions plus récentes existent : **ne pas monter de majeure sans accord**.
@@ -79,7 +79,7 @@ src/
 - Boutons dans un `<form>` qui ne soumettent pas : **`type="button"`** (piège : les « Annuler » du Profil Vue n'en avaient pas).
 
 ## Conventions fixées par la coquille (phase 3)
-- **Pages** : `src/pages/<domaine>/<Nom>Page.tsx` avec `export default function <Nom>Page()`. `src/router/routes.tsx` les charge en `lazy` : on n'y touche pas pour porter une page, on remplace le contenu du fichier (les pages non migrées affichent `MigrationPlaceholder`, supprimé en phase 5).
+- **Pages** : `src/pages/<domaine>/<Nom>Page.tsx` avec `export default function <Nom>Page()`. `src/router/routes.tsx` les charge en `lazy` ; une nouvelle page = un fichier + une entrée dans `routes.tsx`.
 - **Métadonnées** : `components/shared/PageMeta` (`title`, `description`, `robots`, `canonicalPath` ; valeurs par défaut = celles de la landing, comme le Vue). Une seule instance par écran : chaque page **publique** rend la sienne, `AppLayout` rend celle des pages protégées. Pas de `document.title` impératif.
 - **Store** : `useAuthStore(selectIsAdmin)` etc. (sélecteurs exportés par `src/stores/auth-store.ts`) ; `usePermissions()` pour `canAccess` / `hasRole` (navigation). Route par défaut : `getDefaultRoute(roleUuid)` (`src/lib/getDefaultRoute.ts`).
 - **Hooks de requêtes partagés déjà créés** (à compléter, pas à dupliquer) :
