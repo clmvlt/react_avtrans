@@ -1,8 +1,8 @@
 import type { AbsenceTypeDTO } from '@/models'
 import type { PlanningUserDTO } from '@/services/absences'
-import { findAbsenceForDate } from './absenceIndex'
+import { buildAbsenceDayMap } from './absenceDays'
 import { hexToRgba } from './absenceCellStyle'
-import type { PlanningDate } from './planningDates'
+import { groupMonths, type PlanningDate } from './planningDates'
 
 /**
  * HTML « imprimable » du planning, rendu hors écran puis capturé par html2canvas-pro
@@ -12,6 +12,10 @@ import type { PlanningDate } from './planningDates'
  * d'absence et `customType` sans échappement dans ce HTML, ensuite affecté à `innerHTML` (XSS en
  * session admin). Le brief interdit l'injection de HTML non assaini : ces valeurs passent par
  * `escapeHtml`, sans effet visible pour des noms ordinaires.
+ *
+ * D8 : mêmes jours que la grille (`buildAbsenceDayMap`) ; un jour non décompté (dimanche, férié)
+ * garde le fond du week-end ou du férié, à peine teinté et sans abréviation ; le samedi de
+ * reprise porte l'abréviation, en pointillé.
  */
 
 type AbbreviationInfo = { abbr: string; color: string; name: string }
@@ -76,19 +80,10 @@ export function buildExportHtml({
   }
 
   // Bandeau des mois
-  const monthSpans: { label: string; colspan: number }[] = []
-  let curMonthKey = ''
-  for (const date of dates) {
-    const d = new Date(date.dateStr)
-    const key = `${d.getFullYear()}-${d.getMonth()}`
-    const label = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
-    if (key !== curMonthKey) {
-      monthSpans.push({ label: label.charAt(0).toUpperCase() + label.slice(1), colspan: 1 })
-      curMonthKey = key
-    } else {
-      monthSpans[monthSpans.length - 1]!.colspan++
-    }
-  }
+  const monthSpans = groupMonths(dates).map((month) => ({
+    label: month.label,
+    colspan: month.span,
+  }))
 
   // Dimensions adaptées au nombre de jours
   const nDays = dates.length
@@ -132,10 +127,10 @@ export function buildExportHtml({
   // En-tête des jours
   h += `<tr>`
   h += `<th style="border:${BB};padding:4px 8px;background:#f2f2f2;text-align:left;font-weight:700;">Employé</th>`
-  let prevM = -1
+  let prevM = ''
   for (const date of dates) {
-    const m = new Date(date.dateStr).getMonth()
-    const lb = m !== prevM && prevM !== -1 ? BB : B
+    const m = date.monthKey
+    const lb = m !== prevM && prevM !== '' ? BB : B
     prevM = m
     let bg = '#f2f2f2'
     let clr = '#222'
@@ -158,27 +153,34 @@ export function buildExportHtml({
   // Lignes des employés (fond alterné pour la lisibilité en noir et blanc)
   users.forEach((user, i) => {
     const rowBg = i % 2 === 0 ? '#fff' : '#f9f9f9'
+    const dayMap = buildAbsenceDayMap(user.absences, dates)
     h += `<tr>`
     h += `<td style="border:${BB};padding:4px 8px;background:${rowBg};font-weight:600;white-space:nowrap;height:${rowH}px;">`
     h += escapeHtml(`${user.firstName} ${user.lastName}`)
     h += `</td>`
 
-    prevM = -1
+    prevM = ''
     for (const date of dates) {
-      const m = new Date(date.dateStr).getMonth()
-      const lb = m !== prevM && prevM !== -1 ? BB : B
+      const m = date.monthKey
+      const lb = m !== prevM && prevM !== '' ? BB : B
       prevM = m
 
-      const absence = findAbsenceForDate(user.absences, date.dateStr)
+      const day = dayMap.get(date.dateStr)
+      const absence = day?.absence
       let bg = rowBg
       let txt = ''
       let clr = '#333'
       let fw = 'normal'
       let bdr = `border:${B};border-left:${lb};`
 
-      if (!absence) {
+      if (!absence || day?.kind === 'non-decompte') {
         if (date.isWeekend) bg = '#ececec'
         if (date.isHoliday) bg = '#fde8e8'
+        if (absence) {
+          // Jour non décompté d'une absence : fond du jour, à peine teinté
+          const color = absence.absenceType?.color || '#888888'
+          bg = `linear-gradient(${hexToRgba(color, 0.12)}, ${hexToRgba(color, 0.12)}), ${bg}`
+        }
       } else {
         const info = absence.absenceType?.uuid ? abbrMap.get(absence.absenceType.uuid) : null
         // Abréviation issue du nom de type ou de customType : échappée à l'insertion (B-02)
@@ -197,7 +199,10 @@ export function buildExportHtml({
           txt = abbr + '?'
           bdr = `border:1px dashed #999;border-left:${lb};`
         }
-        if (absence.period === 'MORNING') txt += '↑'
+        if (day?.kind === 'reprise') {
+          bg = hexToRgba(color, 0.15)
+          bdr = `border:1px dashed #999;border-left:${lb};`
+        } else if (absence.period === 'MORNING') txt += '↑'
         else if (absence.period === 'AFTERNOON') txt += '↓'
       }
 
@@ -218,7 +223,7 @@ export function buildExportHtml({
     h += `</span>`
   }
   h += `</div>`
-  h += `<div style="margin-top:6px;font-size:${Math.max(fs - 1, 7)}px;color:#777;">? = En attente · ↑ = Matin · ↓ = Après-midi · ● = Jour férié · Lignes alternées pour lisibilité N&B</div>`
+  h += `<div style="margin-top:6px;font-size:${Math.max(fs - 1, 7)}px;color:#777;">? = En attente · ↑ = Matin · ↓ = Après-midi · ● = Jour férié · Pointillé = samedi décompté (veille de la reprise) · Case pâle = jour non décompté (dimanche, férié) · Lignes alternées pour lisibilité N&B</div>`
   h += `</div>`
 
   return h
