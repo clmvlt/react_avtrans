@@ -22,23 +22,12 @@ import { useUnreadNotifications } from '../hooks/useUnreadNotifications'
 import { getNotificationDestination } from '../lib/notificationMeta'
 import { NotificationItem } from './NotificationItem'
 
-type NotificationsPopoverProps = {
-  /**
-   * Popover modal : à utiliser dans le menu mobile (Sheet). Le verrouillage du défilement du
-   * Sheet bloquerait sinon le défilement de la liste, rendue hors du Sheet (portail).
-   */
-  modal?: boolean
-  /** Appelé quand une notification ou « Voir tout » emmène ailleurs (le menu mobile se ferme) */
-  onNavigate?: () => void
-}
-
 /**
- * Cloche de la navbar : compteur, liste des non-lues, « Tout lu », « Voir tout », son.
- * Popover Radix au-dessus de tout, y compris du menu mobile (le Vue la rendait sous l'overlay
- * du Sheet). Les effets de bord (polling, son, favicon, titre) sont dans
- * useNotificationSideEffects, monté une seule fois : cette cloche peut être rendue deux fois.
+ * Cloche de l'en-tête de l'app : compteur, liste des non-lues, « Tout lu », « Voir tout », son.
+ * Les effets de bord (polling, son, favicon, titre) sont dans useNotificationSideEffects, monté
+ * une seule fois par AppLayout.
  */
-export function NotificationsPopover({ modal = false, onNavigate }: NotificationsPopoverProps) {
+export function NotificationsPopover() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
   const isAdmin = useAuthStore(selectIsAdmin)
@@ -50,7 +39,6 @@ export function NotificationsPopover({ modal = false, onNavigate }: Notification
 
   const leaveTo = (to: string) => {
     setOpen(false)
-    onNavigate?.()
     navigate(to)
   }
 
@@ -68,7 +56,6 @@ export function NotificationsPopover({ modal = false, onNavigate }: Notification
     const destination = getNotificationDestination(notification, isAdmin)
     if (destination?.kind === 'service-history') {
       setOpen(false)
-      onNavigate?.()
       openServiceHistory(destination.serviceUuid)
     } else {
       leaveTo(destination?.to ?? '/notifications')
@@ -77,7 +64,7 @@ export function NotificationsPopover({ modal = false, onNavigate }: Notification
 
   return (
     <div className="relative inline-block">
-      <Popover open={open} onOpenChange={setOpen} modal={modal}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="icon" title="Notifications" className="relative">
             <Bell className="size-5 text-muted-foreground" />

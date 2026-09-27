@@ -107,11 +107,12 @@
   --chart-4: oklch(0.5 0.22 300);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  --sidebar: oklch(0.985 0 0);
+  /* Fond de la coquille (barre latérale « inset ») : gris très légèrement violet */
+  --sidebar: oklch(0.975 0.003 286);
   --sidebar-foreground: oklch(0.141 0.005 286);
   --sidebar-primary: oklch(0.42 0.195 285);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286);
+  --sidebar-accent: oklch(0.935 0.008 286);
   --sidebar-accent-foreground: oklch(0.21 0.006 286);
   --sidebar-border: oklch(0.92 0.004 286);
   --sidebar-ring: oklch(0.42 0.195 285);
@@ -203,6 +204,10 @@
   /* Tailwind v4 ne met plus cursor:pointer sur les boutons : on le rétablit */
   button:not(:disabled),
   [role='button']:not(:disabled),
+  [role='menuitem']:not([data-disabled]),
+  [role='menuitemradio']:not([data-disabled]),
+  [role='menuitemcheckbox']:not([data-disabled]),
+  [role='option']:not([data-disabled]),
   label:has(> input[type='checkbox']),
   label:has(> input[type='radio']) {
     cursor: pointer;
@@ -222,6 +227,16 @@
     display: block;
     min-width: 0;
     max-width: 100%;
+  }
+  /* Hauteur de la barre d'onglets mobile (AppLayout) : réservée en bas des pages ; la barre
+     d'actions du pointage se place au-dessus. Nulle sans barre ou à partir de md. */
+  [data-bottom-nav='true'] {
+    --bottom-nav-h: calc(4rem + env(safe-area-inset-bottom));
+  }
+  @media (width >= 48rem) {
+    [data-bottom-nav='true'] {
+      --bottom-nav-h: 0px;
+    }
   }
   input::-webkit-date-and-time-value {
     text-align: left;

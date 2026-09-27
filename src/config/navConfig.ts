@@ -1,36 +1,35 @@
 import type { LucideIcon } from 'lucide-react'
 import { UserRole } from '@/enums'
 import {
-  Car,
-  Wrench,
-  Users,
-  CalendarX2,
-  CalendarDays,
-  Coins,
   BedDouble,
+  CalendarDays,
+  CalendarX2,
+  Car,
   Clock,
-  Building2,
+  Coins,
   CreditCard,
-  BarChart3,
-  UserCircle,
-  ListChecks,
-  Smartphone,
-  Package,
   FileUp,
-  PenLine,
-  Download,
-  Scale,
   History,
+  ListChecks,
+  Package,
+  PenLine,
+  Scale,
+  Smartphone,
+  Timer,
+  UserCheck,
+  Users,
+  Wrench,
 } from 'lucide-react'
 
 /**
- * Interface pour un lien de navigation avec permissions
+ * Lien de navigation avec ses conditions d'accès
  */
 export interface NavLinkConfig {
   to: string
   label: string
-  icon?: string
-  lucideIcon?: LucideIcon
+  /** Libellé court de la barre d'onglets mobile (par défaut `label`) */
+  shortLabel?: string
+  lucideIcon: LucideIcon
   requiredRoles?: UserRole[]
   requiredPermissions?: string[]
   /** If set, only users with one of these emails can see this link */
@@ -38,307 +37,109 @@ export interface NavLinkConfig {
 }
 
 /**
- * Interface pour une section de navigation
+ * Section de la barre latérale (titre vide : liens sans en-tête, en haut du menu)
  */
 export interface NavSectionConfig {
   title: string
-  lucideIcon: LucideIcon
   links: NavLinkConfig[]
-  /** Sections with the same group key share a single grid column */
-  group?: string
 }
 
-/**
- * Configuration des liens de navigation principaux (navbar)
- */
-export const mainNavLinks: NavLinkConfig[] = [
-  // --- Pages accessibles aux MECANICIEN et ADMIN ---
-  {
-    to: '/vehicules',
-    label: 'Véhicules',
-    lucideIcon: Car,
-    requiredRoles: [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN],
-  },
-  {
-    to: '/entretiens',
-    label: 'Entretiens',
-    lucideIcon: Wrench,
-    requiredRoles: [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN],
-  },
-  // --- Pages réservées aux ADMIN ---
-  {
-    to: '/users',
-    label: 'Utilisateurs',
-    lucideIcon: Users,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/absences',
-    label: 'Absences',
-    lucideIcon: CalendarX2,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/planning',
-    label: 'Planning',
-    lucideIcon: CalendarDays,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/acomptes',
-    label: 'Acomptes',
-    lucideIcon: Coins,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/heures',
-    label: 'Heures',
-    lucideIcon: Clock,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/contract-hours',
-    label: 'Contrats',
-    lucideIcon: Scale,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/services',
-    label: 'Services',
-    lucideIcon: Building2,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/cartes',
-    label: 'Cartes',
-    lucideIcon: CreditCard,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-  {
-    to: '/couchettes',
-    label: 'Couchettes',
-    lucideIcon: BedDouble,
-    requiredRoles: [UserRole.ADMINISTRATEUR],
-  },
-
-  // --- Pages réservées aux UTILISATEUR uniquement ---
-  {
-    to: '/pointage',
-    label: 'Pointage',
-    lucideIcon: Clock,
-    requiredRoles: [UserRole.UTILISATEUR],
-  },
-  {
-    to: '/myabsences',
-    label: 'Mes absences',
-    lucideIcon: CalendarX2,
-    requiredRoles: [UserRole.UTILISATEUR],
-  },
-  {
-    to: '/myacomptes',
-    label: 'Mes acomptes',
-    lucideIcon: Coins,
-    requiredRoles: [UserRole.UTILISATEUR],
-  },
-  {
-    to: '/mycouchettes',
-    label: 'Mes couchettes',
-    lucideIcon: BedDouble,
-    requiredRoles: [UserRole.UTILISATEUR],
-    requiredPermissions: ['couchette'],
-  },
-]
+const ADMIN = [UserRole.ADMINISTRATEUR]
+const ADMIN_OR_MECHANIC = [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN]
+const USER_OR_ADMIN = [UserRole.UTILISATEUR, UserRole.ADMINISTRATEUR]
 
 /**
- * Configuration du panneau de navigation complet (full-nav)
- * Organisé en sections logiques
+ * Navigation de l'application authentifiée : une seule source pour la barre latérale, la barre
+ * d'onglets mobile (section « Mon espace ») et le fil d'Ariane. Les liens sont filtrés par rôle
+ * (vue utilisateur comprise, voir usePermissions) ; une section sans lien visible disparaît.
  */
-export const fullNavSections: NavSectionConfig[] = [
-  // Lien À faire (sans catégorie)
+export const navSections: NavSectionConfig[] = [
   {
     title: '',
-    lucideIcon: ListChecks,
     links: [
-      {
-        to: '/todos',
-        label: 'À faire',
-        lucideIcon: ListChecks,
-        requiredRoles: [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN],
-      },
+      { to: '/todos', label: 'À faire', lucideIcon: ListChecks, requiredRoles: ADMIN_OR_MECHANIC },
     ],
   },
-
-  // Section Mon espace (UTILISATEUR + ADMIN)
   {
     title: 'Mon espace',
-    lucideIcon: UserCircle,
     links: [
-      {
-        to: '/pointage',
-        label: 'Pointage',
-        lucideIcon: Clock,
-        requiredRoles: [UserRole.UTILISATEUR, UserRole.ADMINISTRATEUR],
-      },
+      { to: '/pointage', label: 'Pointage', lucideIcon: Timer, requiredRoles: USER_OR_ADMIN },
       {
         to: '/myabsences',
         label: 'Mes absences',
+        shortLabel: 'Absences',
         lucideIcon: CalendarX2,
-        requiredRoles: [UserRole.UTILISATEUR, UserRole.ADMINISTRATEUR],
+        requiredRoles: USER_OR_ADMIN,
       },
       {
         to: '/myacomptes',
         label: 'Mes acomptes',
+        shortLabel: 'Acomptes',
         lucideIcon: Coins,
-        requiredRoles: [UserRole.UTILISATEUR, UserRole.ADMINISTRATEUR],
+        requiredRoles: USER_OR_ADMIN,
       },
       {
         to: '/mycouchettes',
         label: 'Mes couchettes',
+        shortLabel: 'Couchettes',
         lucideIcon: BedDouble,
-        requiredRoles: [UserRole.UTILISATEUR, UserRole.ADMINISTRATEUR],
+        requiredRoles: USER_OR_ADMIN,
         requiredPermissions: ['couchette'],
       },
     ],
   },
-
-  // Section Véhicules (ADMIN + MECANICIEN)
   {
-    title: 'Véhicules',
-    lucideIcon: Car,
+    title: 'Personnel',
     links: [
-      {
-        to: '/vehicules',
-        label: 'Parc véhicules',
-        lucideIcon: Car,
-        requiredRoles: [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN],
-      },
-      {
-        to: '/entretiens',
-        label: 'Entretiens',
-        lucideIcon: Wrench,
-        requiredRoles: [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN],
-      },
-      {
-        to: '/stock',
-        label: 'Stock',
-        lucideIcon: Package,
-        requiredRoles: [UserRole.ADMINISTRATEUR, UserRole.MECANICIEN],
-      },
+      { to: '/users', label: 'Utilisateurs', lucideIcon: Users, requiredRoles: ADMIN },
+      { to: '/services', label: 'Présences', lucideIcon: UserCheck, requiredRoles: ADMIN },
+      { to: '/planning', label: 'Planning', lucideIcon: CalendarDays, requiredRoles: ADMIN },
+      { to: '/absences', label: 'Absences', lucideIcon: CalendarX2, requiredRoles: ADMIN },
+      { to: '/acomptes', label: 'Acomptes', lucideIcon: Coins, requiredRoles: ADMIN },
+      { to: '/couchettes', label: 'Couchettes', lucideIcon: BedDouble, requiredRoles: ADMIN },
     ],
   },
-
-  // Section Gestion (ADMIN)
-  {
-    title: 'Gestion',
-    lucideIcon: BarChart3,
-    links: [
-      {
-        to: '/users',
-        label: 'Utilisateurs',
-        lucideIcon: Users,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/services',
-        label: 'Services',
-        lucideIcon: Building2,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/planning',
-        label: 'Planning',
-        lucideIcon: CalendarDays,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/absences',
-        label: 'Absences',
-        lucideIcon: CalendarX2,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/couchettes',
-        label: 'Couchettes',
-        lucideIcon: BedDouble,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/acomptes',
-        label: 'Acomptes',
-        lucideIcon: Coins,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/cartes',
-        label: 'Cartes',
-        lucideIcon: CreditCard,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-    ],
-  },
-
-  // Section Heures (ADMIN)
   {
     title: 'Heures',
-    lucideIcon: Clock,
     links: [
-      {
-        to: '/heures',
-        label: 'Heures',
-        lucideIcon: Clock,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/contract-hours',
-        label: 'Heures contrat',
-        lucideIcon: Scale,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
+      { to: '/heures', label: 'Heures travaillées', lucideIcon: Clock, requiredRoles: ADMIN },
+      { to: '/contract-hours', label: 'Heures contrat', lucideIcon: Scale, requiredRoles: ADMIN },
       {
         to: '/journal-pointages',
         label: 'Journal des pointages',
         lucideIcon: History,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
+        requiredRoles: ADMIN,
       },
-      {
-        to: '/export-hours',
-        label: 'Exportation',
-        lucideIcon: FileUp,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
-      {
-        to: '/signatures',
-        label: 'Signatures',
-        lucideIcon: PenLine,
-        requiredRoles: [UserRole.ADMINISTRATEUR],
-      },
+      { to: '/signatures', label: 'Signatures', lucideIcon: PenLine, requiredRoles: ADMIN },
+      { to: '/export-hours', label: 'Export des heures', lucideIcon: FileUp, requiredRoles: ADMIN },
     ],
   },
-
-  // Section Application (accessible à tous)
+  {
+    title: 'Flotte',
+    links: [
+      { to: '/vehicules', label: 'Véhicules', lucideIcon: Car, requiredRoles: ADMIN_OR_MECHANIC },
+      {
+        to: '/entretiens',
+        label: 'Entretiens',
+        lucideIcon: Wrench,
+        requiredRoles: ADMIN_OR_MECHANIC,
+      },
+      { to: '/stock', label: 'Stock', lucideIcon: Package, requiredRoles: ADMIN_OR_MECHANIC },
+      { to: '/cartes', label: 'Cartes', lucideIcon: CreditCard, requiredRoles: ADMIN },
+    ],
+  },
   {
     title: 'Application',
-    lucideIcon: Smartphone,
-    group: 'extra',
     links: [
       {
         to: '/app-versions',
-        label: 'Versions App',
+        label: "Versions de l'app",
         lucideIcon: Smartphone,
         requiredEmails: ['clementveillet@gmail.com'],
-      },
-      {
-        to: '/download',
-        label: "Télécharger l'app",
-        lucideIcon: Download,
-        // Pas de requiredRoles = accessible à tous
       },
     ],
   },
 ]
 
-/**
- * Liste plate pour compatibilité (deprecated)
- * @deprecated Utiliser fullNavSections à la place
- */
-export const fullNavLinks: NavLinkConfig[] = fullNavSections.flatMap((section) => section.links)
+/** Section des pages personnelles : barre d'onglets mobile des utilisateurs */
+export const MY_SPACE_SECTION_TITLE = 'Mon espace'
