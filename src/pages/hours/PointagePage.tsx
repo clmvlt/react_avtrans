@@ -1,9 +1,12 @@
+import { Gauge } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { HistoryFiltersSheet } from '@/features/pointage/components/HistoryFiltersSheet'
 import { KilometrageDialog } from '@/features/pointage/components/KilometrageDialog'
 import { MobileActionBar } from '@/features/pointage/components/MobileActionBar'
 import { PointageActions } from '@/features/pointage/components/PointageActions'
-import { PointageHeader } from '@/features/pointage/components/PointageHeader'
 import { PointageSkeleton } from '@/features/pointage/components/PointageSkeleton'
 import { ServiceHistorySection } from '@/features/pointage/components/ServiceHistorySection'
 import { StatusHeroCard } from '@/features/pointage/components/StatusHeroCard'
@@ -91,10 +94,25 @@ export default function PointagePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8">
-      <PointageHeader onOpenKilometrage={() => kilometrage.openDialog(false)} />
+    // Place réservée sous `md` à la barre d'actions fixe (au-dessus de la barre d'onglets)
+    <PageContainer size="md" className="max-md:pb-[calc(7rem+env(safe-area-inset-bottom))]">
+      <PageHeader
+        title="Pointage"
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-label="Saisir le kilométrage"
+            onClick={() => kilometrage.openDialog(false)}
+          >
+            <Gauge className="size-4" />
+            Kilométrage
+          </Button>
+        }
+      />
 
-      <main className="mx-auto max-w-[1100px] px-3 py-3 sm:px-6 sm:py-6">{renderContent()}</main>
+      {renderContent()}
 
       {/* Masquée pendant le chargement initial et en cas d'erreur de chargement */}
       {isReady && <MobileActionBar>{actionButtons}</MobileActionBar>}
@@ -117,6 +135,6 @@ export default function PointagePage() {
         errorMessage={kilometrage.saveErrorMessage}
         onSubmit={(values) => kilometrage.save(values, actions.startNow)}
       />
-    </div>
+    </PageContainer>
   )
 }

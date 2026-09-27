@@ -1,5 +1,6 @@
 import { toast } from 'sonner'
-import { BackButton } from '@/components/shared/BackButton'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { useCreateMyCouchetteMutation } from '@/features/couchettes/api/useCreateMyCouchetteMutation'
 import { useDeleteMyCouchetteMutation } from '@/features/couchettes/api/useDeleteMyCouchetteMutation'
@@ -47,16 +48,13 @@ export default function MesCouchettesPage() {
   }
 
   return (
-    <>
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="mx-auto flex max-w-[1100px] items-center gap-2 px-3 py-3 sm:gap-4 sm:px-6 sm:py-4">
-          {/* Retour vers la landing sans historique : bug B-13 conservé */}
-          <BackButton fallback="/" />
-          <h1 className="flex-1 text-lg font-bold text-foreground sm:text-xl">Mes couchettes</h1>
-        </div>
-      </header>
+    <PageContainer size="md">
+      <PageHeader
+        title="Mes couchettes"
+        description="Déclarez vos nuits en couchette et retrouvez votre historique."
+      />
 
-      <main className="mx-auto max-w-[1100px] px-3 py-3 sm:px-6 sm:py-6">
+      <div>
         {query.isPending ? (
           <MesCouchettesSkeleton />
         ) : query.isError ? (
@@ -98,7 +96,7 @@ export default function MesCouchettesPage() {
             />
           </div>
         )}
-      </main>
+      </div>
 
       <MyCouchetteDeleteDialog
         open={deleteDialog.isOpen('delete')}
@@ -107,6 +105,6 @@ export default function MesCouchettesPage() {
         isPending={deleteCouchette.isPending}
         onConfirm={handleDelete}
       />
-    </>
+    </PageContainer>
   )
 }

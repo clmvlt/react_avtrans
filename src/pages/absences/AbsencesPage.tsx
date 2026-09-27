@@ -1,5 +1,7 @@
-import { Plus, Settings } from 'lucide-react'
-import { useNavigate } from 'react-router'
+import { Plus } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { PageTabs } from '@/components/layout/PageTabs'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { SearchFilters, type FilterConfig } from '@/components/shared/SearchFilters'
 import { SimplePagination } from '@/components/shared/SimplePagination'
@@ -20,6 +22,7 @@ import {
   adminAbsenceFiltersHint,
   filterText,
 } from '@/features/absences/lib/absenceFilters'
+import { ABSENCE_TABS } from '@/features/absences/lib/absenceTabs'
 import { errorMessage } from '@/features/absences/lib/errorMessage'
 import { useUsersQuery } from '@/features/users/api/useUsersQuery'
 import { useDialogState } from '@/hooks/useDialogState'
@@ -36,7 +39,6 @@ const ACTION_DIALOG: Record<AbsenceAction, AbsenceDialogType> = {
 
 /** Gestion des absences (admin) : filtres, liste paginée, actions par ligne (port d'`Absences.vue`). */
 export default function AbsencesPage() {
-  const navigate = useNavigate()
   const { filters, setFilters, params, loadPage, apply, reset } = useAdminAbsenceFilters()
   const absencesQuery = useAdminAbsencesQuery(params)
   const { data: users = [] } = useUsersQuery()
@@ -83,72 +85,63 @@ export default function AbsencesPage() {
     dialogs.open(ACTION_DIALOG[action], absence)
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px] space-y-4">
-          <div className="flex items-center justify-end gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              title="Gérer les types d'absence"
-              onClick={() => void navigate('/absence-types')}
-            >
-              <Settings className="size-4" />
-              Types
-            </Button>
-            <Button size="sm" onClick={() => dialogs.open('create')}>
-              <Plus className="size-4" />
-              Nouvelle absence
-            </Button>
+    <PageContainer>
+      <PageHeader
+        title="Absences"
+        description="Validez ou refusez les demandes et saisissez les absences des employés."
+        actions={
+          <Button size="sm" onClick={() => dialogs.open('create')}>
+            <Plus className="size-4" />
+            Nouvelle absence
+          </Button>
+        }
+      >
+        <PageTabs tabs={ABSENCE_TABS} />
+      </PageHeader>
+
+      <div className="space-y-4">
+        <SearchFilters
+          value={filters}
+          onChange={setFilters}
+          filters={filterConfig}
+          loading={absencesQuery.isFetching}
+          columns={5}
+          hint={adminAbsenceFiltersHint(filters, users, absenceTypes)}
+          onSearch={apply}
+          onReset={reset}
+        />
+
+        {absencesQuery.isPending ? (
+          <div className="space-y-3" aria-busy="true">
+            <span className="sr-only">Chargement des absences...</span>
+            {Array.from({ length: 5 }, (_, index) => (
+              <Skeleton key={index} className="h-16 w-full rounded-lg" />
+            ))}
           </div>
-
-          <SearchFilters
-            value={filters}
-            onChange={setFilters}
-            filters={filterConfig}
-            loading={absencesQuery.isFetching}
-            columns={5}
-            hint={adminAbsenceFiltersHint(filters, users, absenceTypes)}
-            onSearch={apply}
-            onReset={reset}
+        ) : absencesQuery.isError ? (
+          <ErrorState
+            message={errorMessage(absencesQuery.error, 'Erreur lors du chargement des absences')}
+            onRetry={() => void absencesQuery.refetch()}
+            isRetrying={absencesQuery.isRefetching}
           />
-
-          {absencesQuery.isPending ? (
-            <div className="space-y-3" aria-busy="true">
-              <span className="sr-only">Chargement des absences...</span>
-              {Array.from({ length: 5 }, (_, index) => (
-                <Skeleton key={index} className="h-16 w-full rounded-lg" />
-              ))}
-            </div>
-          ) : absencesQuery.isError ? (
-            <ErrorState
-              message={errorMessage(absencesQuery.error, 'Erreur lors du chargement des absences')}
-              onRetry={() => void absencesQuery.refetch()}
-              isRetrying={absencesQuery.isRefetching}
+        ) : (
+          <>
+            <AbsenceMobileList
+              absences={absences}
+              totalElements={totalElements}
+              onAction={handleAction}
             />
-          ) : (
-            <>
-              <AbsenceMobileList
-                absences={absences}
-                totalElements={totalElements}
-                onAction={handleAction}
-              />
-              <AbsencesDataTable
-                absences={absences}
-                totalElements={totalElements}
-                onAction={handleAction}
-              />
-              <SimplePagination
-                page={currentPage}
-                totalPages={totalPages}
-                onPageChange={loadPage}
-              />
-            </>
-          )}
-        </div>
-      </main>
+            <AbsencesDataTable
+              absences={absences}
+              totalElements={totalElements}
+              onAction={handleAction}
+            />
+            <SimplePagination page={currentPage} totalPages={totalPages} onPageChange={loadPage} />
+          </>
+        )}
+      </div>
 
       <AbsenceDialogs dialogs={dialogs} onChanged={() => loadPage(currentPage)} />
-    </div>
+    </PageContainer>
   )
 }

@@ -38,7 +38,7 @@ export function CouchetteMobileList({
       )}
 
       {couchettes.map((couchette, index) => (
-        <div key={couchette.uuid ?? index} className="rounded-lg border bg-card p-4 shadow-sm">
+        <div key={couchette.uuid ?? index} className="rounded-xl border bg-card p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <UserAvatar user={couchette.user} />
@@ -54,7 +54,7 @@ export function CouchetteMobileList({
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button type="button" variant="ghost" size="icon-sm" aria-label="Actions">
+                <Button type="button" variant="ghost" size="icon" aria-label="Actions">
                   <EllipsisVertical className="size-4" />
                 </Button>
               </DropdownMenuTrigger>

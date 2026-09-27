@@ -1,7 +1,8 @@
 import { Banknote, Plus, RotateCcw, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { BackButton } from '@/components/shared/BackButton'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { SimplePagination } from '@/components/shared/SimplePagination'
@@ -72,23 +73,19 @@ export default function MyAcomptesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="mx-auto flex max-w-[1100px] items-center gap-2 px-3 py-3 sm:gap-4 sm:px-6 sm:py-4">
-          <BackButton fallback="/" />
-          <h1 className="flex-1 text-lg font-bold text-foreground sm:text-xl">Mes acomptes</h1>
-          <Button
-            size="sm"
-            aria-label="Nouvelle demande d'acompte"
-            onClick={() => dialogs.open('create')}
-          >
+    <PageContainer size="md">
+      <PageHeader
+        title="Mes acomptes"
+        description="Demandez une avance sur salaire et suivez vos demandes."
+        actions={
+          <Button size="sm" onClick={() => dialogs.open('create')}>
             <Plus className="size-4" />
-            <span className="max-sm:sr-only">Nouvelle demande</span>
+            Nouvelle demande
           </Button>
-        </div>
-      </header>
+        }
+      />
 
-      <main className="mx-auto max-w-[1100px] px-3 py-3 sm:px-6 sm:py-6">
+      <div>
         <div className="flex items-center gap-2">
           <StatusChips
             options={MY_ACOMPTE_STATUS_CHIPS}
@@ -183,7 +180,7 @@ export default function MyAcomptesPage() {
             />
           </>
         )}
-      </main>
+      </div>
 
       <MyAcompteFiltersSheet
         open={showFilters}
@@ -220,6 +217,6 @@ export default function MyAcomptesPage() {
       >
         <MyAcompteCancelSummary acompte={dialogs.item} />
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   )
 }

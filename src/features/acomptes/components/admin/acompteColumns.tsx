@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
+import { Banknote, Check, Undo2, X } from 'lucide-react'
 import { DataTableColumnHeader } from '@/components/shared/DataTableColumnHeader'
 import { UserAvatar } from '@/components/shared/UserAvatar'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import type { AcompteDTO } from '@/models'
 import { formatMontantAdmin } from '../../lib/formatMontantAdmin'
 import { AcompteStatusBadge } from '../AcompteStatusBadge'
 import { PaymentStatusBadge } from '../PaymentStatusBadge'
+import { AcompteActionsDropdown } from './AcompteActionsDropdown'
 import type { AcompteActionHandler } from './acompteRowActions'
 
 /**
@@ -104,55 +106,52 @@ export function getAcompteColumns(
       enableSorting: false,
       meta: { headerClassName: 'text-right', cellClassName: 'text-right' },
       cell: ({ row: { original: acompte } }) => (
-        <div className="flex flex-wrap justify-end gap-1.5">
+        // Action du moment visible (validation, puis paiement ; icône sous 2xl) ; le reste dans « ⋮ »
+        <div className="flex items-center justify-end gap-1">
           {acompte.status === 'PENDING' && (
             <>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-green-500/50 text-green-600 hover:bg-green-500/10"
+                className="border-success/40 text-success hover:bg-success/10 hover:text-success max-2xl:size-8"
                 title="Approuver"
                 onClick={() => onAction('approve', acompte)}
               >
-                Approuver
+                <Check className="size-4" />
+                <span className="max-2xl:sr-only">Approuver</span>
               </Button>
               <Button
                 size="sm"
-                variant="destructive"
+                variant="outline"
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive max-2xl:size-8"
                 title="Refuser"
                 onClick={() => onAction('reject', acompte)}
               >
-                Refuser
+                <X className="size-4" />
+                <span className="max-2xl:sr-only">Refuser</span>
               </Button>
             </>
           )}
           {acompte.status === 'APPROVED' && (
             <Button
               size="sm"
-              variant={acompte.isPaid ? 'outline' : 'default'}
+              variant="outline"
+              className="max-2xl:size-8"
               title={acompte.isPaid ? 'Marquer comme non payé' : 'Marquer comme payé'}
               disabled={isPaymentPending(acompte)}
               onClick={() => onAction('togglePayment', acompte)}
             >
-              {acompte.isPaid ? 'Non payé' : 'Payé'}
+              {acompte.isPaid ? <Undo2 className="size-4" /> : <Banknote className="size-4" />}
+              <span className="max-2xl:sr-only">
+                {acompte.isPaid ? 'Marquer non payé' : 'Marquer payé'}
+              </span>
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="outline"
-            title="Détails"
-            onClick={() => onAction('details', acompte)}
-          >
-            Détails
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            title="Supprimer"
-            onClick={() => onAction('delete', acompte)}
-          >
-            Supprimer
-          </Button>
+          <AcompteActionsDropdown
+            acompte={acompte}
+            onAction={onAction}
+            paymentPending={isPaymentPending(acompte)}
+          />
         </div>
       ),
     },

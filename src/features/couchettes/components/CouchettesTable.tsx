@@ -88,7 +88,8 @@ export function CouchettesTable({
           <Button
             type="button"
             size="sm"
-            variant="destructive"
+            variant="ghost"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             title="Supprimer"
             onClick={(event) => {
               event.stopPropagation()

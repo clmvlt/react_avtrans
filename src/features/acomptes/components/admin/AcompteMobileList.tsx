@@ -34,7 +34,7 @@ export function AcompteMobileList({
       )}
 
       {acomptes.map((acompte) => (
-        <div key={acompte.uuid} className="rounded-lg border bg-card p-4 shadow-sm">
+        <div key={acompte.uuid} className="rounded-xl border bg-card p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <UserAvatar user={acompte.user} />

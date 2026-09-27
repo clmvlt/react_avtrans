@@ -1,6 +1,8 @@
 import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
-import { BackButton } from '@/components/shared/BackButton'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { PageTabs } from '@/components/layout/PageTabs'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
@@ -10,6 +12,7 @@ import { useDeleteAbsenceTypeMutation } from '@/features/absences/api/useDeleteA
 import { AbsenceTypeFormDialog } from '@/features/absences/components/types/AbsenceTypeFormDialog'
 import { AbsenceTypeMobileList } from '@/features/absences/components/types/AbsenceTypeMobileList'
 import { AbsenceTypesTable } from '@/features/absences/components/types/AbsenceTypesTable'
+import { ABSENCE_TABS } from '@/features/absences/lib/absenceTabs'
 import { errorMessage } from '@/features/absences/lib/errorMessage'
 import { useDialogState } from '@/hooks/useDialogState'
 import type { AbsenceTypeDTO } from '@/models'
@@ -35,54 +38,52 @@ export default function AbsenceTypesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 md:px-6 md:py-4">
-          <BackButton fallback="/absences" />
-          <h1 className="text-lg font-bold text-foreground md:text-xl">Types d&apos;absence</h1>
-          <div className="ml-auto">
-            <Button size="sm" aria-label="Nouveau type" onClick={() => dialogs.open('form')}>
-              <Plus className="size-4 md:mr-2" />
-              <span className="hidden md:inline">Nouveau type</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+    <PageContainer>
+      <PageHeader
+        title="Absences"
+        description="Les types d'absence proposés aux employés, avec leur couleur."
+        actions={
+          <Button size="sm" onClick={() => dialogs.open('form')}>
+            <Plus className="size-4" />
+            Nouveau type
+          </Button>
+        }
+      >
+        <PageTabs tabs={ABSENCE_TABS} />
+      </PageHeader>
 
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">
-          {typesQuery.isPending ? (
-            <div className="space-y-3" aria-busy="true">
-              <span className="sr-only">Chargement des types d&apos;absence...</span>
-              {Array.from({ length: 4 }, (_, index) => (
-                <Skeleton key={index} className="h-16 w-full rounded-lg" />
-              ))}
-            </div>
-          ) : typesQuery.isError ? (
-            <ErrorState
-              message={errorMessage(
-                typesQuery.error,
-                "Erreur lors du chargement des types d'absence",
-              )}
-              onRetry={() => void typesQuery.refetch()}
-              isRetrying={typesQuery.isRefetching}
+      <div>
+        {typesQuery.isPending ? (
+          <div className="space-y-3" aria-busy="true">
+            <span className="sr-only">Chargement des types d&apos;absence...</span>
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-16 w-full rounded-lg" />
+            ))}
+          </div>
+        ) : typesQuery.isError ? (
+          <ErrorState
+            message={errorMessage(
+              typesQuery.error,
+              "Erreur lors du chargement des types d'absence",
+            )}
+            onRetry={() => void typesQuery.refetch()}
+            isRetrying={typesQuery.isRefetching}
+          />
+        ) : (
+          <div className="space-y-4">
+            <AbsenceTypeMobileList
+              types={types}
+              onEdit={(type) => dialogs.open('form', type)}
+              onDelete={(type) => dialogs.open('delete', type)}
             />
-          ) : (
-            <div className="space-y-4">
-              <AbsenceTypeMobileList
-                types={types}
-                onEdit={(type) => dialogs.open('form', type)}
-                onDelete={(type) => dialogs.open('delete', type)}
-              />
-              <AbsenceTypesTable
-                types={types}
-                onEdit={(type) => dialogs.open('form', type)}
-                onDelete={(type) => dialogs.open('delete', type)}
-              />
-            </div>
-          )}
-        </div>
-      </main>
+            <AbsenceTypesTable
+              types={types}
+              onEdit={(type) => dialogs.open('form', type)}
+              onDelete={(type) => dialogs.open('delete', type)}
+            />
+          </div>
+        )}
+      </div>
 
       <AbsenceTypeFormDialog
         open={dialogs.isOpen('form')}
@@ -117,6 +118,6 @@ export default function AbsenceTypesPage() {
           )}
         </div>
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   )
 }

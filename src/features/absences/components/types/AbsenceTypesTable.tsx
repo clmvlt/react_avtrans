@@ -59,10 +59,16 @@ export function AbsenceTypesTable({ types, onEdit, onDelete }: AbsenceTypesTable
       meta: { headerClassName: 'text-right', cellClassName: 'text-right' },
       cell: ({ row: { original: type } }) => (
         <div className="flex flex-wrap justify-end gap-1.5">
-          <Button size="sm" title="Modifier" onClick={() => onEdit(type)}>
+          <Button size="sm" variant="outline" title="Modifier" onClick={() => onEdit(type)}>
             Modifier
           </Button>
-          <Button size="sm" variant="destructive" title="Supprimer" onClick={() => onDelete(type)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            title="Supprimer"
+            onClick={() => onDelete(type)}
+          >
             Supprimer
           </Button>
         </div>

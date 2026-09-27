@@ -17,7 +17,7 @@ type AcompteActionsDropdownProps = {
   paymentPending?: boolean
 }
 
-/** Menu « ⋮ » d'une carte d'acompte (liste mobile). */
+/** Menu « ⋮ » d'un acompte (carte mobile et colonne Actions du tableau). */
 export function AcompteActionsDropdown({
   acompte,
   onAction,
@@ -26,7 +26,7 @@ export function AcompteActionsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Actions">
+        <Button variant="ghost" size="icon" aria-label="Actions">
           <MoreVertical className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -38,7 +38,7 @@ export function AcompteActionsDropdown({
             <DropdownMenuItem
               key={entry.action}
               variant={entry.tone === 'destructive' ? 'destructive' : 'default'}
-              className={entry.tone === 'success' ? 'text-green-600' : undefined}
+              className={entry.tone === 'success' ? 'text-success focus:text-success' : undefined}
               disabled={entry.action === 'togglePayment' && paymentPending}
               onSelect={() => onAction(entry.action, acompte)}
             >

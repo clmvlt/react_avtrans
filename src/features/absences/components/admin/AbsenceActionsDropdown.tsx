@@ -15,7 +15,7 @@ type AbsenceActionsDropdownProps = {
   onAction: AbsenceActionHandler
 }
 
-/** Menu « ⋮ » d'une carte d'absence (liste mobile). */
+/** Menu « ⋮ » d'une absence (carte mobile et colonne Actions du tableau). */
 export function AbsenceActionsDropdown({ absence, onAction }: AbsenceActionsDropdownProps) {
   return (
     <DropdownMenu>
@@ -32,7 +32,7 @@ export function AbsenceActionsDropdown({ absence, onAction }: AbsenceActionsDrop
             <DropdownMenuItem
               key={entry.action}
               variant={entry.tone === 'destructive' ? 'destructive' : 'default'}
-              className={entry.tone === 'success' ? 'text-green-600' : undefined}
+              className={entry.tone === 'success' ? 'text-success focus:text-success' : undefined}
               onSelect={() => onAction(entry.action, absence)}
             >
               <entry.icon className="mr-2 size-4 text-current" />

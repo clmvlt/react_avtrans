@@ -29,33 +29,20 @@ export function TodayCouchetteCard({
   return (
     <section
       className={cn(
-        'relative overflow-hidden rounded-2xl border p-5 shadow-sm transition-colors sm:p-6',
-        declared
-          ? 'border-green-500/30 bg-linear-to-br from-green-500/10 via-card to-card'
-          : 'bg-card',
+        'relative overflow-hidden rounded-xl border p-5 transition-colors sm:p-6',
+        declared ? 'border-success/30 bg-linear-to-br from-success/10 via-card to-card' : 'bg-card',
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-            Aujourd'hui · <span className="capitalize">{todayLabel}</span>
-          </p>
-          <h2 className="mt-2 text-xl font-bold text-foreground sm:text-2xl">
-            {declared ? 'Couchette déclarée' : 'Couchette du jour'}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {todayCouchette
-              ? `Déclarée le ${formatDeclaredAt(todayCouchette.createdAt)}`
-              : 'Vous dormez en couchette ce soir ? Déclarez-la en un appui.'}
-          </p>
-        </div>
-
-        {/* Pastille d'état */}
+      {/* Date et pastille d'état sur une ligne : le titre garde toute la largeur */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          Aujourd'hui · <span className="capitalize">{todayLabel}</span>
+        </p>
         <span
           className={cn(
             'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold',
             declared
-              ? 'border-green-500/40 bg-green-500/10 text-green-700 dark:text-green-400'
+              ? 'border-success/40 bg-success/10 text-success'
               : 'border-border bg-muted text-muted-foreground',
           )}
         >
@@ -63,6 +50,14 @@ export function TodayCouchetteCard({
           {declared ? 'Déclarée' : 'Non déclarée'}
         </span>
       </div>
+      <h2 className="mt-3 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+        {declared ? 'Couchette déclarée' : 'Couchette du jour'}
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {todayCouchette
+          ? `Déclarée le ${formatDeclaredAt(todayCouchette.createdAt)}`
+          : 'Vous dormez en couchette ce soir ? Déclarez-la en un appui.'}
+      </p>
 
       <div className="mt-5">
         {todayCouchette ? (

@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
+import { Check, X } from 'lucide-react'
 import { DataTableColumnHeader } from '@/components/shared/DataTableColumnHeader'
 import { UserAvatar } from '@/components/shared/UserAvatar'
 import { Button } from '@/components/ui/button'
@@ -8,7 +9,8 @@ import { formatDateLong, formatDateTime } from '../../lib/dateFormat'
 import { legacySortingFn } from '../../lib/legacySortCompare'
 import { AbsenceStatusBadge } from '../AbsenceStatusBadge'
 import { AbsenceTypeBadge } from '../AbsenceTypeBadge'
-import { canEditAbsence, type AbsenceActionHandler } from './absenceRowActions'
+import { AbsenceActionsDropdown } from './AbsenceActionsDropdown'
+import type { AbsenceActionHandler } from './absenceRowActions'
 
 /**
  * Colonnes de la table admin des absences (desktop). Tri client sur la page affichée avec le
@@ -100,54 +102,33 @@ export function getAbsenceColumns(
       enableSorting: false,
       meta: { headerClassName: 'text-right', cellClassName: 'text-right' },
       cell: ({ row: { original: absence } }) => (
-        <div className="flex flex-wrap justify-end gap-1.5">
+        // En attente : Approuver / Refuser visibles (icônes sous 2xl) ; le reste dans le menu « ⋮ »
+        <div className="flex items-center justify-end gap-1">
           {absence.status === 'PENDING' && (
             <>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-green-500/50 text-green-600 hover:bg-green-500/10"
+                className="border-success/40 text-success hover:bg-success/10 hover:text-success max-2xl:size-8"
                 title="Approuver"
                 onClick={() => onAction('approve', absence)}
               >
-                Approuver
+                <Check className="size-4" />
+                <span className="max-2xl:sr-only">Approuver</span>
               </Button>
               <Button
                 size="sm"
-                variant="destructive"
+                variant="outline"
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive max-2xl:size-8"
                 title="Refuser"
                 onClick={() => onAction('reject', absence)}
               >
-                Refuser
+                <X className="size-4" />
+                <span className="max-2xl:sr-only">Refuser</span>
               </Button>
             </>
           )}
-          <Button
-            size="sm"
-            variant="outline"
-            title="Détails"
-            onClick={() => onAction('details', absence)}
-          >
-            Détails
-          </Button>
-          {canEditAbsence(absence) && (
-            <Button
-              size="sm"
-              variant="outline"
-              title="Modifier"
-              onClick={() => onAction('edit', absence)}
-            >
-              Modifier
-            </Button>
-          )}
-          <Button
-            size="sm"
-            variant="destructive"
-            title="Supprimer"
-            onClick={() => onAction('delete', absence)}
-          >
-            Supprimer
-          </Button>
+          <AbsenceActionsDropdown absence={absence} onAction={onAction} />
         </div>
       ),
     },
