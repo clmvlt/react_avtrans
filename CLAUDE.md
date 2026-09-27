@@ -81,7 +81,7 @@ src/
 - Boutons dans un `<form>` qui ne soumettent pas : **`type="button"`** (piège : les « Annuler » du Profil Vue n'en avaient pas).
 
 ## Structure des pages (refonte D7)
-- Toute page protégée : `<PageContainer size="sm|md|lg|full">` (défaut `lg`) puis `<PageHeader title description actions back>` puis le contenu. **Pas de `<main>`** (AppLayout le rend déjà), pas de `min-h-screen`, pas d'en-tête collant propre à la page, pas de bouton « Retour » générique : une page de détail passe `back={{ to: '/parent', label: 'Parent' }}`.
+- Toute page protégée : `<PageContainer size="sm|md|lg|full">` (défaut `lg`) puis `<PageHeader title description actions back>` puis le contenu. **Pas de `<main>`** (AppLayout le rend déjà), pas de `min-h-screen`, pas d'en-tête collant propre à la page, pas de bouton « Retour » générique : une page de détail passe `back={{ to: '/parent', label: 'Parent' }}`. **Exception voulue** : `/planning` n'a pas de `PageHeader` (demande du propriétaire) ; `h1` en `sr-only`, export dans sa barre d'outils.
 - `size` : `sm` formulaires / profil, `md` pages personnelles (« Mes … », Pointage), `lg` listes et tableaux d'admin, `full` planning, kanban, vues avec panneau interne.
 - Titre = nom de la page (celui du menu), description = une phrase qui dit à quoi sert la page. Action principale dans `actions`, libellé explicite (« Ajouter un véhicule »), secondaires en `outline` avant elle. Les barres d'outils ne contiennent que recherche et filtres.
 - Pages sœurs (une liste et sa configuration) : `<PageTabs>` dans `children` du `PageHeader`, même titre sur les deux pages, constante `XXX_TABS` dans `features/<domaine>/lib/`.
