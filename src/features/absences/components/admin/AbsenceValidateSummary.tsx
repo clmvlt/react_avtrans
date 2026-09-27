@@ -1,5 +1,6 @@
 import type { AbsenceDTO } from '@/models'
 import { getPeriodLabel, isHalfDay } from '@/utils/absenceFormatters'
+import { formatHeures, formatJoursDecomptes } from '../../lib/absenceDecompte'
 import { formatDateLong } from '../../lib/dateFormat'
 import { SummaryRow } from '../SummaryRow'
 
@@ -26,6 +27,10 @@ export function AbsenceValidateSummary({ absence }: AbsenceValidateSummaryProps)
       {isHalfDay(absence.period) && (
         <SummaryRow label="Période">{getPeriodLabel(absence.period)}</SummaryRow>
       )}
+      <SummaryRow label="Heures créditées">
+        {formatJoursDecomptes(absence.joursDecomptes, absence.modeDecompte)} ·{' '}
+        {formatHeures(absence.heures)}
+      </SummaryRow>
       <SummaryRow label="Motif">{absence.reason || '-'}</SummaryRow>
     </div>
   )

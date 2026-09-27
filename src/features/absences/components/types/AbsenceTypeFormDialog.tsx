@@ -17,9 +17,11 @@ import { Input } from '@/components/ui/input'
 import type { AbsenceTypeDTO } from '@/models'
 import { cn } from '@/lib/utils'
 import { useSaveAbsenceTypeMutation } from '../../api/useSaveAbsenceTypeMutation'
+import { DEFAULT_MODE_DECOMPTE } from '../../lib/absenceDecompte'
 import { errorMessage } from '../../lib/errorMessage'
-import { absenceTypeSchema } from '../../schemas/absenceType'
+import { absenceTypeSchema, type AbsenceTypeFormValues } from '../../schemas/absenceType'
 import { FormErrorAlert } from '../FormErrorAlert'
+import { AbsenceTypeHoursFields } from './AbsenceTypeHoursFields'
 
 type AbsenceTypeFormDialogProps = {
   open: boolean
@@ -50,7 +52,10 @@ const COLOR_PRESETS = [
   '#EC4899',
 ]
 
-/** Création ou modification d'un type d'absence (port d'`AbsenceTypeEditModal.vue`). */
+/**
+ * Création ou modification d'un type d'absence (port d'`AbsenceTypeEditModal.vue`), avec les
+ * réglages d'heures (D8).
+ */
 export function AbsenceTypeFormDialog({
   open,
   onOpenChange,
@@ -89,15 +94,17 @@ function AbsenceTypeFormBody({ absenceType, onClose }: AbsenceTypeFormBodyProps)
   const saveType = useSaveAbsenceTypeMutation()
   const saving = saveType.isPending
 
-  const form = useForm({
+  const form = useForm<AbsenceTypeFormValues>({
     resolver: zodResolver(absenceTypeSchema),
     defaultValues: {
       name: absenceType?.name || '',
       color: absenceType?.color || DEFAULT_COLOR,
+      modeDecompte: absenceType?.modeDecompte ?? DEFAULT_MODE_DECOMPTE,
+      compteHeures: absenceType?.compteHeures ?? true,
     },
   })
 
-  const onSubmit = (values: { name: string; color: string }) =>
+  const onSubmit = (values: AbsenceTypeFormValues) =>
     saveType.mutate(
       { uuid: isEditing ? absenceType?.uuid : undefined, data: values },
       {
@@ -200,6 +207,8 @@ function AbsenceTypeFormBody({ absenceType, onClose }: AbsenceTypeFormBodyProps)
           </>
         )}
       />
+
+      <AbsenceTypeHoursFields control={form.control} disabled={saving} />
 
       <DialogFooter>
         <Button type="button" variant="outline" disabled={saving} onClick={onClose}>

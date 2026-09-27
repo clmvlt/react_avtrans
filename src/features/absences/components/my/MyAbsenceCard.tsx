@@ -2,6 +2,7 @@ import { ChevronRight, CircleX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { AbsenceDTO } from '@/models'
 import { cn } from '@/lib/utils'
+import { formatHeures } from '../../lib/absenceDecompte'
 import {
   calculateAbsenceDuration,
   getAbsenceStatusClasses,
@@ -28,8 +29,8 @@ const formatLong = (date: Date | null) =>
 
 /**
  * Carte d'une demande d'absence (port de `MyAbsenceCard.vue`) : tuile de date teintée de la
- * couleur du type, type, statut, période et durée, motif, motif du refus ; pied « Annuler » pour
- * une demande en attente.
+ * couleur du type, type, statut, période et durée, heures créditées (D8), motif, motif du refus ;
+ * pied « Annuler » pour une demande en attente.
  */
 export function MyAbsenceCard({ absence, onOpen, onCancel }: MyAbsenceCardProps) {
   const start = parseDate(absence.startDate)
@@ -80,6 +81,7 @@ export function MyAbsenceCard({ absence, onOpen, onCancel }: MyAbsenceCardProps)
           <p className="mt-0.5 truncate text-sm text-muted-foreground">
             <span className="capitalize">{rangeLabel}</span> ·{' '}
             {calculateAbsenceDuration(absence.startDate, absence.endDate, absence.period)}
+            {(absence.heures ?? 0) > 0 && ` · ${formatHeures(absence.heures)}`}
           </p>
           {absence.reason && (
             <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{absence.reason}</p>

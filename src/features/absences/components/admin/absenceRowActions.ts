@@ -1,8 +1,8 @@
-import { Check, Eye, Pencil, Trash2, X, type LucideIcon } from 'lucide-react'
+import { Check, Clock, Eye, Pencil, Trash2, X, type LucideIcon } from 'lucide-react'
 import type { AbsenceDTO } from '@/models'
 
 /** Actions possibles sur une ligne de la liste admin. */
-export type AbsenceAction = 'approve' | 'reject' | 'details' | 'edit' | 'delete'
+export type AbsenceAction = 'approve' | 'reject' | 'details' | 'edit' | 'hours' | 'delete'
 
 export type AbsenceActionHandler = (action: AbsenceAction, absence: AbsenceDTO) => void
 
@@ -22,7 +22,8 @@ export const canEditAbsence = (absence: AbsenceDTO) => absence.status !== 'APPRO
 
 /**
  * Entrées des menus d'une absence, dans l'ordre du Vue (menu déroulant mobile et menu contextuel
- * identiques) : Approuver / Refuser si en attente, Détails, Modifier si non approuvée, Supprimer.
+ * identiques) : Approuver / Refuser si en attente, Détails, Modifier si non approuvée, Modifier
+ * les heures (D8, tout statut), Supprimer.
  */
 export function getAbsenceMenuEntries(absence: AbsenceDTO): AbsenceMenuEntry[] {
   const entries: AbsenceMenuEntry[] = []
@@ -37,6 +38,7 @@ export function getAbsenceMenuEntries(absence: AbsenceDTO): AbsenceMenuEntry[] {
   if (canEditAbsence(absence)) {
     entries.push({ kind: 'item', action: 'edit', label: 'Modifier', icon: Pencil })
   }
+  entries.push({ kind: 'item', action: 'hours', label: 'Modifier les heures', icon: Clock })
   entries.push(
     { kind: 'separator', key: 'separator-delete' },
     { kind: 'item', action: 'delete', label: 'Supprimer', icon: Trash2, tone: 'destructive' },

@@ -11,6 +11,7 @@ import {
 import type { AbsenceDTO } from '@/models'
 import { calculateAbsenceDuration, getPeriodLabel, isHalfDay } from '@/utils/absenceFormatters'
 import { formatDateLong, formatDateTime } from '../../lib/dateFormat'
+import { AbsenceDecompteDetail } from '../AbsenceDecompteDetail'
 import { AbsenceStatusBadge } from '../AbsenceStatusBadge'
 import { AbsenceTypeBadge } from '../AbsenceTypeBadge'
 import { DetailItem } from '../DetailItem'
@@ -24,7 +25,10 @@ type MyAbsenceDetailDialogProps = {
 
 const LABEL = 'font-medium tracking-wide'
 
-/** Détail d'une de mes demandes d'absence (port de `MyAbsenceDetailModal.vue`). */
+/**
+ * Détail d'une de mes demandes d'absence (port de `MyAbsenceDetailModal.vue`), avec les heures
+ * créditées et leur détail jour par jour (D8).
+ */
 export function MyAbsenceDetailDialog({
   open,
   onOpenChange,
@@ -76,6 +80,10 @@ export function MyAbsenceDetailDialog({
                 <AbsenceStatusBadge status={absence.status} unknownAsPending />
               </DetailItem>
             </div>
+
+            <DetailItem label="Heures créditées" labelClassName={LABEL}>
+              <AbsenceDecompteDetail absence={absence} scope="my" />
+            </DetailItem>
 
             {absence.reason && (
               <DetailItem label="Motif" labelClassName={LABEL}>

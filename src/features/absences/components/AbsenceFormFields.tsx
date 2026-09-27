@@ -9,6 +9,7 @@ import { AbsencePeriod } from '@/enums/AbsencePeriod'
 import type { AbsenceTypeDTO } from '@/models'
 import { cn } from '@/lib/utils'
 import { CUSTOM_ABSENCE_TYPE, type AbsenceFormValues } from '../schemas/absence'
+import { AbsenceDecomptePreview } from './AbsenceDecomptePreview'
 
 type AbsenceFormFieldsProps = {
   control: Control<AbsenceFormValues>
@@ -29,7 +30,7 @@ const PERIOD_OPTIONS = [
 
 /**
  * Champs communs aux formulaires d'absence (admin et employé) : dates, période, type (avec
- * « Autre (personnalisé) »), type personnalisé et motif.
+ * « Autre (personnalisé) »), type personnalisé, aperçu des heures créditées (D8) et motif.
  */
 export function AbsenceFormFields({
   control,
@@ -165,6 +166,9 @@ export function AbsenceFormFields({
           )}
         />
       )}
+
+      {/* Heures créditées (D8) */}
+      <AbsenceDecomptePreview control={control} scope={isAdmin ? 'admin' : 'my'} />
 
       {/* Motif */}
       <Controller

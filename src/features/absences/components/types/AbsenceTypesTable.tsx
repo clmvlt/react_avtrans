@@ -3,6 +3,7 @@ import { CalendarX } from 'lucide-react'
 import { DataTable } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import type { AbsenceTypeDTO } from '@/models'
+import { getModeDecompteOption } from '../../lib/absenceDecompte'
 import { formatDateLong } from '../../lib/dateFormat'
 
 type AbsenceTypesTableProps = {
@@ -11,7 +12,10 @@ type AbsenceTypesTableProps = {
   onDelete: (type: AbsenceTypeDTO) => void
 }
 
-/** Table desktop (md+) des types d'absence : nom, couleur, date de création, actions. Pas de tri. */
+/**
+ * Table desktop (md+) des types d'absence : nom, couleur, décompte des heures (D8), date de
+ * création, actions. Pas de tri.
+ */
 export function AbsenceTypesTable({ types, onEdit, onDelete }: AbsenceTypesTableProps) {
   const columns: ColumnDef<AbsenceTypeDTO>[] = [
     {
@@ -41,6 +45,21 @@ export function AbsenceTypesTable({ types, onEdit, onDelete }: AbsenceTypesTable
           <code className="rounded bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground">
             {type.color}
           </code>
+        </div>
+      ),
+    },
+    {
+      id: 'decompte',
+      header: 'Décompte',
+      enableSorting: false,
+      cell: ({ row: { original: type } }) => (
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm text-foreground">
+            {getModeDecompteOption(type.modeDecompte).label}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {type.compteHeures === false ? "Ne compte pas d'heures" : 'Compte dans les heures'}
+          </span>
         </div>
       ),
     },

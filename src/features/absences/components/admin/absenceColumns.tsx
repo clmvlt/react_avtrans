@@ -7,6 +7,7 @@ import type { AbsenceDTO } from '@/models'
 import { calculateAbsenceDuration, getPeriodLabel, isHalfDay } from '@/utils/absenceFormatters'
 import { formatDateLong, formatDateTime } from '../../lib/dateFormat'
 import { legacySortingFn } from '../../lib/legacySortCompare'
+import { AbsenceHeuresValue } from '../AbsenceHeuresValue'
 import { AbsenceStatusBadge } from '../AbsenceStatusBadge'
 import { AbsenceTypeBadge } from '../AbsenceTypeBadge'
 import { AbsenceActionsDropdown } from './AbsenceActionsDropdown'
@@ -16,6 +17,7 @@ import type { AbsenceActionHandler } from './absenceRowActions'
  * Colonnes de la table admin des absences (desktop). Tri client sur la page affichée avec le
  * comparateur du Vue (B-19 reproduit). « Période » : durée suivie de « · Matin/Après-midi » pour
  * une demi-journée, d'où « 3 jours · Matin · Matin » sur plusieurs jours (B-29 reproduit).
+ * « Heures » (D8) : heures créditées et jours décomptés, tri numérique simple.
  */
 export function getAbsenceColumns(
   totalElements: number,
@@ -70,6 +72,13 @@ export function getAbsenceColumns(
           </span>
         </div>
       ),
+    },
+    {
+      id: 'heures',
+      accessorFn: (absence) => absence.heures ?? 0,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Heures" />,
+      sortingFn: 'basic',
+      cell: ({ row: { original: absence } }) => <AbsenceHeuresValue absence={absence} />,
     },
     {
       id: 'status',

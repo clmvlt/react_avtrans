@@ -1,5 +1,5 @@
 import { apiClient } from '@/api'
-import type { AbsenceDTO } from '@/models'
+import type { AbsenceDecompteDTO, AbsenceDTO } from '@/models'
 
 /**
  * Absence status enum
@@ -43,6 +43,35 @@ export interface AdminAbsenceUpdateRequest {
   absenceTypeUuid?: string | null
   customType?: string | null
   period?: string
+}
+
+/**
+ * Absence count preview request (D8) — POST /absences/decompte (userUuid ignoré)
+ * et POST /absences/admin/decompte (userUuid obligatoire)
+ */
+export interface AbsenceDecompteRequest {
+  startDate: string
+  endDate: string
+  period?: string
+  /** Absent : type personnalisé (jours ouvrables, crédite des heures) */
+  absenceTypeUuid?: string
+  userUuid?: string
+}
+
+/**
+ * API response for an absence count preview (D8)
+ */
+export interface AbsenceDecompteResponse {
+  success: boolean
+  message?: string | null
+  data: AbsenceDecompteDTO
+}
+
+/**
+ * Forced hours of an absence (D8) — PUT /absences/admin/{uuid}/heures ; null = calcul automatique
+ */
+export interface AbsenceHeuresRequest {
+  heures: number | null
 }
 
 /**
@@ -185,6 +214,15 @@ export class AbsencesService {
     return apiClient.delete<AbsenceDeleteResponse>(`absences/${uuid}`)
   }
 
+  /**
+   * Preview the day and hour count of an absence for the current user (D8)
+   * @param data - Dates, period and type
+   * @returns Promise with the count
+   */
+  async getDecompte(data: AbsenceDecompteRequest): Promise<AbsenceDecompteResponse> {
+    return apiClient.post<AbsenceDecompteResponse>('absences/decompte', data)
+  }
+
   // Admin methods
 
   /**
@@ -251,6 +289,25 @@ export class AbsencesService {
    */
   async deleteAbsence(uuid: string): Promise<AbsenceResponse> {
     return apiClient.delete<AbsenceResponse>(`absences/admin/${uuid}`)
+  }
+
+  /**
+   * [ADMIN] Preview the day and hour count of an absence for a user (D8)
+   * @param data - Dates, period, type and userUuid
+   * @returns Promise with the count
+   */
+  async getDecompteForUser(data: AbsenceDecompteRequest): Promise<AbsenceDecompteResponse> {
+    return apiClient.post<AbsenceDecompteResponse>('absences/admin/decompte', data)
+  }
+
+  /**
+   * [ADMIN] Set the hours credited by an absence, or null to go back to the automatic count (D8)
+   * @param uuid - Absence UUID
+   * @param data - Hours
+   * @returns Promise with updated absence
+   */
+  async setHeuresForcees(uuid: string, data: AbsenceHeuresRequest): Promise<AbsenceResponse> {
+    return apiClient.put<AbsenceResponse>(`absences/admin/${uuid}/heures`, data)
   }
 
   /**

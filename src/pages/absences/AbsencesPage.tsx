@@ -34,6 +34,7 @@ const ACTION_DIALOG: Record<AbsenceAction, AbsenceDialogType> = {
   reject: 'reject',
   details: 'detail',
   edit: 'edit',
+  hours: 'hours',
   delete: 'delete',
 }
 

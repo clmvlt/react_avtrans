@@ -33,6 +33,7 @@ export * from './CouchetteDTO';
 // Absence and AbsenceType models
 export * from './AbsenceTypeDTO';
 export * from './AbsenceDTO';
+export * from './AbsenceDecompteDTO';
 
 // Acompte models
 export * from './AcompteDTO';

@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { AbsenceHeuresValue } from '@/features/absences/components/AbsenceHeuresValue'
 import type { AbsenceDetailDialogController } from '../hooks/useAbsenceDetailDialog'
 import {
   calculateAbsenceDuration,
@@ -36,7 +37,10 @@ function DetailItem({ label, children }: { label: string; children: ReactNode })
   )
 }
 
-/** Détails d'une absence cliquée dans le planning, avec validation si elle est en attente. */
+/**
+ * Détails d'une absence cliquée dans le planning, avec validation si elle est en attente et les
+ * heures créditées (D8).
+ */
 export function AbsenceDetailDialog({ controller }: AbsenceDetailDialogProps) {
   const { absence } = controller
 
@@ -106,6 +110,9 @@ export function AbsenceDetailDialog({ controller }: AbsenceDetailDialogProps) {
                   <Badge variant={getAbsenceStatusVariant(absence.status)} className="w-fit">
                     {getAbsenceStatusText(absence.status)}
                   </Badge>
+                </DetailItem>
+                <DetailItem label="Heures créditées">
+                  <AbsenceHeuresValue absence={absence} layout="inline" />
                 </DetailItem>
               </div>
             </div>

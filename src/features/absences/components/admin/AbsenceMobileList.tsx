@@ -3,6 +3,7 @@ import { UserAvatar } from '@/components/shared/UserAvatar'
 import type { AbsenceDTO } from '@/models'
 import { calculateAbsenceDuration, getPeriodLabel, isHalfDay } from '@/utils/absenceFormatters'
 import { formatDateLong, formatDateTime } from '../../lib/dateFormat'
+import { AbsenceHeuresValue } from '../AbsenceHeuresValue'
 import { AbsenceStatusBadge } from '../AbsenceStatusBadge'
 import { AbsenceTypeBadge } from '../AbsenceTypeBadge'
 import { AbsenceActionsDropdown } from './AbsenceActionsDropdown'
@@ -61,6 +62,8 @@ export function AbsenceMobileList({ absences, totalElements, onAction }: Absence
               {isHalfDay(absence.period) && ` · ${getPeriodLabel(absence.period)}`})
             </span>
           </div>
+
+          <AbsenceHeuresValue absence={absence} layout="inline" className="mt-1 text-sm" />
         </div>
       ))}
     </div>

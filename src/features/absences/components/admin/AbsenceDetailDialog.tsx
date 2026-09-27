@@ -11,6 +11,7 @@ import {
 import type { AbsenceDTO } from '@/models'
 import { calculateAbsenceDuration, getPeriodLabel, isHalfDay } from '@/utils/absenceFormatters'
 import { formatDateLong, formatDateTime } from '../../lib/dateFormat'
+import { AbsenceDecompteDetail } from '../AbsenceDecompteDetail'
 import { AbsenceStatusBadge } from '../AbsenceStatusBadge'
 import { AbsenceTypeBadge } from '../AbsenceTypeBadge'
 import { DetailItem } from '../DetailItem'
@@ -22,12 +23,13 @@ type AbsenceDetailDialogProps = {
   onApprove: (absence: AbsenceDTO) => void
   onReject: (absence: AbsenceDTO) => void
   onEdit: (absence: AbsenceDTO) => void
+  onEditHours: (absence: AbsenceDTO) => void
 }
 
 /**
  * Détail d'une absence côté admin (port d'`AbsenceDetailModal.vue`), avec Modifier (si non
  * approuvée) et Approuver / Refuser (si en attente). « Validé par » s'affiche aussi pour un refus
- * (B-29 reproduit).
+ * (B-29 reproduit). Heures créditées et « Modifier les heures » : D8.
  */
 export function AbsenceDetailDialog({
   open,
@@ -36,6 +38,7 @@ export function AbsenceDetailDialog({
   onApprove,
   onReject,
   onEdit,
+  onEditHours,
 }: AbsenceDetailDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,6 +95,25 @@ export function AbsenceDetailDialog({
 
             <DetailItem label="Motif">
               <span className="font-medium text-foreground">{absence.reason || '-'}</span>
+            </DetailItem>
+
+            <DetailItem
+              label={
+                <span className="flex items-center justify-between gap-2">
+                  Heures créditées
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-auto p-0 text-xs tracking-normal normal-case"
+                    onClick={() => onEditHours(absence)}
+                  >
+                    Modifier les heures
+                  </Button>
+                </span>
+              }
+            >
+              <AbsenceDecompteDetail absence={absence} scope="admin" />
             </DetailItem>
 
             {absence.validatedBy && (

@@ -18,6 +18,7 @@ import { getTodayDate } from '@/utils/timeFormatters'
 import { useAbsenceTypesQuery } from '../../api/useAbsenceTypesQuery'
 import { useCreateAbsenceForUserMutation } from '../../api/useCreateAbsenceForUserMutation'
 import { useUpdateAbsenceByAdminMutation } from '../../api/useUpdateAbsenceByAdminMutation'
+import { formatHeures, hasHeuresForcees } from '../../lib/absenceDecompte'
 import { errorMessage } from '../../lib/errorMessage'
 import {
   CUSTOM_ABSENCE_TYPE,
@@ -249,6 +250,14 @@ function AbsenceFormBody({ absence, onClose, onSaved }: AbsenceFormBodyProps) {
             />
           )}
         />
+      )}
+
+      {isEditMode && absence && hasHeuresForcees(absence) && (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 p-3 text-sm text-muted-foreground">
+          <CircleAlert className="size-4 shrink-0" />
+          Heures fixées à la main ({formatHeures(absence.heuresForcees)}) : elles repasseront au
+          calcul automatique si vous changez les dates, la période ou le type.
+        </div>
       )}
 
       {isEditMode && absence?.status === 'REJECTED' && (

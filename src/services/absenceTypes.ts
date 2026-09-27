@@ -1,5 +1,5 @@
 import { apiClient } from '@/api'
-import type { AbsenceTypeDTO } from '@/models'
+import type { AbsenceTypeDTO, ModeDecompte } from '@/models'
 
 /**
  * Absence type create/update request
@@ -7,6 +7,10 @@ import type { AbsenceTypeDTO } from '@/models'
 export interface AbsenceTypeCreateRequest {
   name: string
   color: string
+  /** D8 : création → JOURS_OUVRABLES par défaut ; modification → inchangé si absent */
+  modeDecompte?: ModeDecompte
+  /** D8 : création → true par défaut ; modification → inchangé si absent */
+  compteHeures?: boolean
 }
 
 /**

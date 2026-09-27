@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import type { AbsenceTypeDTO } from '@/models'
+import { getModeDecompteOption } from '../../lib/absenceDecompte'
 import { formatDateLong } from '../../lib/dateFormat'
 
 type AbsenceTypeMobileListProps = {
@@ -65,7 +66,14 @@ export function AbsenceTypeMobileList({ types, onEdit, onDelete }: AbsenceTypeMo
             </DropdownMenu>
           </div>
 
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="mt-3 text-sm text-foreground">
+            {getModeDecompteOption(type.modeDecompte).label}
+            <span className="text-muted-foreground">
+              {' · '}
+              {type.compteHeures === false ? "ne compte pas d'heures" : 'compte dans les heures'}
+            </span>
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
             Créé le {formatDateLong(type.createdAt)}
           </p>
         </div>
