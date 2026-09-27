@@ -39,7 +39,7 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 | 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | **vérifié** (25/09/2026) |
 | 4. Domaines | voir l'ordre ci-dessous | **vérifié** (26/09/2026) : les 43 routes sont portées |
 | 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | **vérifié** (26/09/2026) : build + pré-rendu strict + lint + format sans erreur ni warning |
-| 6. Refonte du design (D7) | coquille à barre latérale, en-têtes de page, onglets, barre d'onglets mobile, harmonisation des pages ; voir section 11 | **fait** (27/09/2026, branche `refonte-design`) : build, lint et captures OK ; reste le contrôle du propriétaire |
+| 6. Refonte du design (D7) | coquille à rail d'icônes, en-têtes de page, onglets, barre d'onglets mobile, harmonisation des pages ; voir section 11 | **fait** (27/09/2026, branche `refonte-design`) : build, lint et captures OK ; reste le contrôle du propriétaire |
 
 Ordre des domaines en phase 4 (celui du brief) :
 
@@ -219,7 +219,7 @@ src/
 
 *Fin de migration* : `alert-dialog`, `card`, `input-group`, `scroll-area`, `toggle` et `toggle-group` ont été retirés, aucun écran ne les utilisant (`ConfirmDialog` repose sur `dialog`).
 
-- *Refonte D7 (27/09/2026)* : `sidebar` et `breadcrumb` ajoutés pour la nouvelle coquille (section 11).
+- *Refonte D7 (27/09/2026)* : `breadcrumb` ajouté ; `sidebar` essayé puis retiré au profit d'un rail d'icônes maison (section 11).
 - **Non installés** (avant D7) : `sidebar` (seul usage : `AppSidebar.vue`, mort), `form` (remplacé par `field`), `calendar` (sauf Q-DATES), `pagination` (une `SimplePagination` maison sur Button suffit ; le Vue a trois variantes de pagination, voir 4.2).
 - `accordion` : historique de Pointage uniquement. **Pas** pour la FAQ de la landing : Radix démonte le contenu fermé, les réponses disparaîtraient du HTML pré-rendu. La FAQ garde `<details>`.
 - Hook `use-mobile` (livré avec certains composants) : breakpoint 768 px, cohérent avec `md`.
@@ -268,7 +268,7 @@ Seules 13 icônes FA sont réellement rendues (pages auth, et `getFileIcon` d'En
 | `Combobox` | `ui/select/Select.vue` (**maison**, 469 l. : recherche par défaut, `clearable`, pas de multi) | ~20 fichiers ; `select` shadcn quand la recherche est inutile |
 | `AddressAutocomplete` | `ui/address-autocomplete` | UserEdit, ProfileCompletion (requête géocodage via `useQuery`, debounce) |
 | `SearchFilters` | `ui/search-filters` (panneau repliable, configuration par tableau) | Absences, Acomptes, Couchettes, Journal, Entretiens ×2 |
-| ~~`BackButton`~~ | `ui/retour/Retour.vue` | supprimé par la refonte (D7) : retour par `PageHeader` (`back`) ou la barre latérale |
+| ~~`BackButton`~~ | `ui/retour/Retour.vue` | supprimé par la refonte (D7) : retour par `PageHeader` (`back`) ou le menu |
 | `FileDropzone`, `FileCard`, `ImageLightbox`, `PdfPreview`, `PdfViewerDialog` | `ui/file-dropzone`, `ui/file-card`, `ui/image-lightbox`, `ui/pdf-preview`, visionneuses PDF recopiées dans 2 vues | Véhicules, Entretiens ×2, Profil, Versions |
 | `SignaturePad` | `ui/signature-pad` | SignatureReminderDialog |
 | `MapboxMap` | `useMapModal` | UserServices |
@@ -280,7 +280,7 @@ Seules 13 icônes FA sont réellement rendues (pages auth, et `getFileIcon` d'En
 | `StatCard`, `StatusChips`, `ResponsiveFilterSheet` | cartes de stats, puces de statut, Sheet de filtres des pages « mes » | Pointage, Heures, Contrats, MyAbsences, MyAcomptes |
 | `BrandLogo` | logo recopié dans 6 fichiers (`/src/assets/favicon.png`) | auth, légal, Navbar |
 
-**`components/layout/`** : `RootLayout` (Outlet + UpdateBanner + ScrollRestoration), `AppLayout` (Navbar + Outlet + dialogs globaux), `GlobalDialogs`, `Navbar` (+ `NavbarLinks`, `UserMenu`, `MobileNavSheet`), `UpdateBanner`, `LegalLayout`. *Refonte D7 : la navbar est remplacée par `AppSidebar` + `AppHeader` + `NavUser` + `MobileBottomNav`, et les pages utilisent `PageContainer` / `PageHeader` / `PageTabs` (section 11).*
+**`components/layout/`** : `RootLayout` (Outlet + UpdateBanner + ScrollRestoration), `AppLayout` (Navbar + Outlet + dialogs globaux), `GlobalDialogs`, `Navbar` (+ `NavbarLinks`, `UserMenu`, `MobileNavSheet`), `UpdateBanner`, `LegalLayout`. *Refonte D7 : la navbar est remplacée par `AppSideRail` + `MobileNavSheet` + `AppHeader` + `NavUser` + `MobileBottomNav`, et les pages utilisent `PageContainer` / `PageHeader` / `PageTabs` (section 11).*
 
 **`src/hooks/`** : `useMediaQuery` (ou `use-mobile` shadcn), `useDebouncedValue`, `useNow` (horloge à la seconde via `useSyncExternalStore`), `useLocalStorage`, `usePermissions`, `useTheme` (+ `providers/ThemeProvider`), `useVersionCheck`, `useDialogState`, `useMapboxMap`, `usePdfPreview` (`useQuery`), `usePageMeta` (si D2 = B), `useDragAndDrop` (si pas de dnd-kit).
 
@@ -436,7 +436,7 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `ui/image-lightbox/ImageLightbox.vue` (305 l.) | `components/shared/ImageLightbox.tsx` + hooks `useZoom`/`useSwipe` | vérifié |
 | `ui/input-field/InputField.vue` | `components/shared/InputField.tsx` | vérifié |
 | `ui/messages/Messages.vue` | — : `ui/sonner` | vérifié |
-| `ui/navbar/Navbar.vue` (448 l.) | ~~`Navbar.tsx`, `NavbarLinks.tsx`, `UserMenu.tsx`, `MobileNavSheet.tsx`~~ → refonte D7 : `components/layout/{AppSidebar, AppHeader, NavUser, MobileBottomNav}.tsx` + `src/lib/filterNav.ts`, `src/lib/routeMeta.ts` | vérifié (D7 : en cours) |
+| `ui/navbar/Navbar.vue` (448 l.) | ~~`Navbar.tsx`, `NavbarLinks.tsx`, `UserMenu.tsx`, `MobileNavSheet.tsx`~~ → refonte D7 : `components/layout/{AppSideRail, MobileNavSheet, AppHeader, NavUser, MobileBottomNav}.tsx`, `useNavSections.ts` + `src/lib/filterNav.ts`, `src/lib/routeMeta.ts` | vérifié (D7 : en cours) |
 | `ui/notifications/Notifications.vue` (550 l.) | `features/notifications/components/NotificationsPopover.tsx`, `NotificationItem.tsx`, `hooks/useNotificationSideEffects.ts`, `lib/notificationMeta.ts` (partagé avec la page) | vérifié |
 | `ui/pdf-preview/PdfPreview.vue` | `components/shared/PdfPreview.tsx` | vérifié |
 | `ui/profile-completion/ProfileCompletionDialog.vue` | `features/profile/components/ProfileCompletionDialog.tsx` | vérifié |
@@ -838,7 +838,7 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 | 2026-09-25 / 26 | 1 | Phases 2 et 3 : couche agnostique copiée (seules adaptations : icônes lucide, intercepteur 401 découplé, `import type`) ; coquille (store Zustand hydraté depuis les clés du Vue, router data mode et gardes, ThemeProvider, navbar, notifications, bannière de version, changelog, historique d'un pointage) ; composants partagés. Phase 4 par sous-agents parallèles : auth, pointage, heures/planning/journal, véhicules, absences, acomptes, signatures, couchettes, versions, notifications, profil, landing et légal portés ; B-02 corrigé (échappement, règle de sécurité du brief). Phase 5 amorcée : version.json, sitemap, en-tête SEO, pré-rendu porté, deploy/. Vérifié visuellement contre la prod Vue : login (360 px clair et sombre), landing (desktop identique, même hauteur à 360 px). Utilisateurs, entretiens, stock, cartes et todos : reprise en cours après une coupure de l'API. | `9161c08` à `8e593ca` |
 | 2026-09-26 | 1 | Fin de la phase 4 : utilisateurs (liste, pointages d'un employé, suivi des présences), entretiens (flotte, véhicule, types), stock, cartes et todos portés et relus ; bugs du Vue reproduits (B-01, B-04 à B-07, B-16 à B-27, B-30, B-31, 8.3). Phase 5 : compression gzip + brotli, `AppLayout` chargé à la demande et chunk `react-vendor` (bundle initial de la landing : 505 ko au lieu de 805 ko + coquille), limite de taille relevée pour mapbox-gl seul ; `MigrationPlaceholder` et 6 composants shadcn inutilisés retirés ; aucun module orphelin ni `any` ; libellés d'`InputField` alignés sur le Vue (login identique au pixel près). Vérifié : `npm run build` avec `PRERENDER_STRICT=1`, lint, format, parité des 43 routes et des gardes. Reste : contrôle visuel des écrans connectés (session requise). | `c534637` à ce commit |
 | 2026-09-26 | 1 | Contrôle visuel des écrans (rôles, 360 px et desktop, clair et sombre) validé par le propriétaire : toutes les lignes passent à `vérifié`. Migration terminée ; reste au propriétaire le premier déploiement avec `deploy.py --minor` (bump de version pour que les clients Vue détectent la bascule). | ce commit |
-| 2026-09-27 | 2 | Refonte du design (D7), branche `refonte-design` : nouvelle coquille (barre latérale groupée par rôle, en-tête à fil d'Ariane, barre d'onglets mobile des chauffeurs), primitives de page (`PageContainer`, `PageHeader`, `PageTabs`), 43 routes harmonisées par 3 sous-agents puis relues ; tableaux compactés (actions en menu « ⋮ »), filtres en carte, catégories défilantes sur mobile, pages publiques restylées. Vérifié : build strict, lint, format ; ~50 captures Edge headless sur une fausse API locale (3 rôles, 360 px et 1366 px, clair et sombre), sans débordement horizontal. Reste : contrôle du propriétaire sur la vraie API. | voir `git log refonte-design` |
+| 2026-09-27 | 2 | Refonte du design (D7), branche `refonte-design` : nouvelle coquille (menu latéral groupé par rôle, en-tête à fil d'Ariane, barre d'onglets mobile des chauffeurs), primitives de page (`PageContainer`, `PageHeader`, `PageTabs`), 43 routes harmonisées par 3 sous-agents puis relues ; tableaux compactés (actions en menu « ⋮ »), filtres en carte, catégories défilantes sur mobile, pages publiques restylées. Vérifié : build strict, lint, format ; ~50 captures Edge headless sur une fausse API locale (3 rôles, 360 px et 1366 px, clair et sombre), sans débordement horizontal. Reste : contrôle du propriétaire sur la vraie API. | voir `git log refonte-design` |
 
 ## 11. Refonte du design (D7)
 
@@ -848,9 +848,9 @@ Demande du propriétaire (27/09/2026) : « revoir intégralement le design de l'
 Routes et URL, gardes, appels API, services et hooks de données, données affichées, actions, dialogs, comportement par rôle, clés de stockage du Vue. Les bugs B-xx restent reproduits sauf mention ci-dessous. La landing et les pages légales (publiques, SEO, pré-rendu) ne sont pas touchées.
 
 ### 11.2 Coquille (`src/components/layout`)
-- **Ordinateur** : barre latérale shadcn (`AppSidebar`, variante `inset`), repliable en icônes (bouton de l'en-tête ou Ctrl/Cmd+B ; état mémorisé par le cookie `sidebar_state` que pose le composant shadcn). Sections : « À faire » (admin, mécanicien), Mon espace, Personnel, Heures, Flotte, Application. Source unique : `navSections` (`src/config/navConfig.ts`), filtrée par `canAccess` (vue utilisateur comprise). Badge des comptes en attente sur « Utilisateurs ». Pied `NavUser` : profil, notifications, thème, vue admin / utilisateur, nouveautés, installation sur l'écran d'accueil, téléchargement de l'APK, déconnexion, version.
-- **En-tête** (`AppHeader`, collant) : bouton du menu, fil d'Ariane section › parent › page (`src/lib/routeMeta.ts`), rappel « Vue utilisateur » cliquable, cloche des notifications.
-- **Téléphone** : menu « hamburger » (panneau coulissant), logo dans l'en-tête ; pour le rôle Utilisateur (ou la vue utilisateur), **barre d'onglets en bas** (`MobileBottomNav`) : Pointage, Absences, Acomptes, Couchettes (si autorisé). Sa hauteur est réservée par la variable CSS `--bottom-nav-h` ; la barre d'actions du pointage se pose au-dessus.
+- **Ordinateur** : rail d'icônes permanent (`AppSideRail`, 56 px, inspiré du rail de react_movix). Au survol (après 100 ms), au clavier ou tant que le menu du compte est ouvert, il se déplie à 256 px **par-dessus la page**, sans la décaler, avec les libellés et les titres de section en fondu. Pas de bouton pour l'étirer ou le replier (demande du propriétaire, 27/09/2026 ; une première version avec la `sidebar` de shadcn, repliable et qui poussait la page, a été abandonnée). Sections : « À faire » (admin, mécanicien), Mon espace, Personnel, Heures, Flotte, Application. Source unique : `navSections` (`src/config/navConfig.ts`), filtrée par `canAccess` (vue utilisateur comprise) via `useNavSections`. Pastille des comptes en attente sur « Utilisateurs ». Pied `NavUser` : profil, notifications, thème, vue admin / utilisateur, nouveautés, installation sur l'écran d'accueil, téléchargement de l'APK, déconnexion, version.
+- **En-tête** (`AppHeader`, collant) : fil d'Ariane section › parent › page (`src/lib/routeMeta.ts`), rappel « Vue utilisateur » cliquable, cloche des notifications.
+- **Téléphone** : menu « hamburger » (`MobileNavSheet`, panneau à gauche avec les mêmes sections et le compte), logo dans l'en-tête ; pour le rôle Utilisateur (ou la vue utilisateur), **barre d'onglets en bas** (`MobileBottomNav`) : Pointage, Absences, Acomptes, Couchettes (si autorisé). Sa hauteur est réservée par la variable CSS `--bottom-nav-h` ; la barre d'actions du pointage se pose au-dessus.
 - Titre d'onglet : « (3) Mes absences · AVTRANS » (le Vue affichait le titre de la landing sur toutes les pages protégées).
 - Changer de vue (admin ↔ utilisateur) emmène sur l'accueil de la vue choisie (`/pointage` ou la route par défaut du rôle).
 - Supprimés : `Navbar`, `NavbarLinks` (liens qui apparaissaient ou disparaissaient selon la largeur), `UserMenu`, `MobileNavSheet`.
@@ -866,8 +866,8 @@ Routes et URL, gardes, appels API, services et hooks de données, données affic
 - Clarifications de libellés et d'ergonomie faites au passage (exemples) : échéances écrites en toutes lettres sur la fiche véhicule, légende du planning, aide au glisser-déposer écrite en clair, « Jours travaillés » au lieu de « Jours trav. », titres de sections (« Total de l'équipe », « Heures travaillées »), menus « ⋮ » à la place de boutons icône de 32 px.
 
 ### 11.4 Composants et tokens
-- Ajoutés par le CLI : `sidebar`, `breadcrumb`. `src/hooks/use-mobile.ts` (livré avec la sidebar) réécrit sur `useMediaQuery` ; `sidebar.tsx` modifié pour le lint (squelette tiré dans `useState`). Commentaires en tête des fichiers.
-- Personnalisations de 4.2 revues : squelettes neutres (`bg-accent`), overlays `bg-black/50`. Fond de la coquille (`--sidebar`) légèrement teinté en clair.
+- Ajouté par le CLI : `breadcrumb`. La `sidebar` de shadcn (et son hook `use-mobile`) a été retirée avec le passage au rail d'icônes.
+- Personnalisations de 4.2 revues : squelettes neutres (`bg-accent`), overlays `bg-black/50`. Fond du rail et du panneau mobile (`--sidebar`) légèrement teinté en clair. Bouton des devtools de TanStack Query déplacé en bas à droite (il cachait le compte du rail).
 - `StatCard` allégée (sans ombre ni survol, icône masquée sous `sm`), conteneurs de tableaux et cartes en `rounded-xl border bg-card`, couleurs vertes/orange brutes remplacées par les tokens `success` / `warning` là où elles ont été touchées.
 
 ### 11.5 Vérification

@@ -8,7 +8,7 @@ Ce projet est la **migration de l'app Vue 3** `D:\3_PROJET\AVTRANS\pointage2026\
 
 **Objectif** : parité fonctionnelle stricte. Mêmes routes et URL, mêmes appels API, mêmes données et actions, même comportement par rôle. Le code doit être du React idiomatique, pas du Vue transcrit ligne à ligne. Un bug repéré dans le Vue est noté dans `MIGRATION.md` et **reproduit à l'identique** tant que le propriétaire n'a pas autorisé sa correction (section 8 de `MIGRATION.md`).
 
-**Design : refondu à la demande du propriétaire (décision D7, 27/09/2026, `MIGRATION.md` section 11)**. Le rendu ne suit plus le Vue : coquille à barre latérale, structure de page unique, tableaux compacts (voir « Structure des pages » et « Coquille »). Rester simple et lisible pour un utilisateur non technique. La landing et les pages légales ne sont pas concernées.
+**Design : refondu à la demande du propriétaire (décision D7, 27/09/2026, `MIGRATION.md` section 11)**. Le rendu ne suit plus le Vue : coquille à rail d'icônes, structure de page unique, tableaux compacts (voir « Structure des pages » et « Coquille »). Rester simple et lisible pour un utilisateur non technique. La landing et les pages légales ne sont pas concernées.
 
 ## Commandes
 - Dev : `npm run dev` (port 5173, `host 0.0.0.0`). Pour lancer le Vue à côté : `npx vite --port 5174` depuis `vue_avtrans` (le CORS de l'API accepte toutes les origines).
@@ -58,7 +58,7 @@ src/
 ├── components/
 │   ├── ui/         # UNIQUEMENT les composants générés par le CLI shadcn
 │   ├── shared/     # composants maison réutilisables (InputField, Combobox, FileDropzone, SignaturePad, ConfirmDialog…)
-│   └── layout/     # RootLayout, AppLayout, AppSidebar, AppHeader, NavUser, MobileBottomNav, PageContainer, PageHeader, PageTabs, UpdateBanner, LegalLayout…
+│   └── layout/     # RootLayout, AppLayout, AppSideRail, MobileNavSheet, AppHeader, NavUser, MobileBottomNav, PageContainer, PageHeader, PageTabs, UpdateBanner, LegalLayout…
 ├── pages/<domaine>/<Nom>Page.tsx     # une page par route, mêmes sous-dossiers que src/views du Vue
 ├── router/         # routes + composants de garde
 ├── providers/      # QueryClientProvider, ThemeProvider, Toaster…
@@ -81,7 +81,7 @@ src/
 - Boutons dans un `<form>` qui ne soumettent pas : **`type="button"`** (piège : les « Annuler » du Profil Vue n'en avaient pas).
 
 ## Structure des pages (refonte D7)
-- Toute page protégée : `<PageContainer size="sm|md|lg|full">` (défaut `lg`) puis `<PageHeader title description actions back>` puis le contenu. **Pas de `<main>`** (SidebarInset l'est déjà), pas de `min-h-screen`, pas d'en-tête collant propre à la page, pas de bouton « Retour » générique : une page de détail passe `back={{ to: '/parent', label: 'Parent' }}`.
+- Toute page protégée : `<PageContainer size="sm|md|lg|full">` (défaut `lg`) puis `<PageHeader title description actions back>` puis le contenu. **Pas de `<main>`** (AppLayout le rend déjà), pas de `min-h-screen`, pas d'en-tête collant propre à la page, pas de bouton « Retour » générique : une page de détail passe `back={{ to: '/parent', label: 'Parent' }}`.
 - `size` : `sm` formulaires / profil, `md` pages personnelles (« Mes … », Pointage), `lg` listes et tableaux d'admin, `full` planning, kanban, vues avec panneau interne.
 - Titre = nom de la page (celui du menu), description = une phrase qui dit à quoi sert la page. Action principale dans `actions`, libellé explicite (« Ajouter un véhicule »), secondaires en `outline` avant elle. Les barres d'outils ne contiennent que recherche et filtres.
 - Pages sœurs (une liste et sa configuration) : `<PageTabs>` dans `children` du `PageHeader`, même titre sur les deux pages, constante `XXX_TABS` dans `features/<domaine>/lib/`.
@@ -91,7 +91,9 @@ src/
 - Nouvelle page protégée : l'ajouter aussi dans `navSections` (`src/config/navConfig.ts`) ou, si elle n'est pas dans le menu, dans `EXTRA_ROUTES` de `src/lib/routeMeta.ts` (fil d'Ariane et titre d'onglet).
 
 ## Coquille (refonte D7)
-- `AppLayout` = `SidebarProvider` + `AppSidebar` (variante `inset`, repliable en icônes, panneau coulissant sur téléphone) + `SidebarInset` (`AppHeader` collant de 56 px, `z-30`, puis la page) + `MobileBottomNav` + dialogs globaux. Un élément collant d'une page se place sous l'en-tête : `top-14`.
+- `AppLayout` = `AppSideRail` (ordinateur) + colonne `AppHeader` collant (56 px, `z-30`) + `<main>` (la page) + `MobileBottomNav` + dialogs globaux. Un élément collant d'une page se place sous l'en-tête : `top-14`.
+- **Rail d'icônes** (à partir de `md`, inspiré du rail de react_movix) : toujours replié (56 px), il se **déplie au survol par-dessus la page** (`fixed`, `z-40`, largeur 256 px, ombre) sans la décaler ; pas de bouton pour l'étirer ou le replier. Il reste déplié au clavier (`:focus-visible`) et tant qu'un menu qu'il contient est ouvert (`data-state=open`). Libellés et titres de section en fondu (classes `LABEL_CLASS` / `DIVIDER_CLASS`). Aucun composant `sidebar` de shadcn.
+- **Téléphone** : bouton « hamburger » de l'en-tête → `MobileNavSheet` (Sheet à gauche, mêmes sections via `useNavSections`, compte en pied).
 - Menu : une seule source, `navSections`, filtrée par `usePermissions().canAccess` (vue utilisateur comprise) et `requiredEmails`.
 - Barre d'onglets mobile : rôle Utilisateur ou vue utilisateur, liens de « Mon espace ». Sa hauteur est dans la variable CSS `--bottom-nav-h` (0 sans barre ou à partir de `md`) ; un élément fixé en bas utilise `bottom-[var(--bottom-nav-h,0px)]`.
 - Titre d'onglet : `AppLayout` rend `PageMeta` avec « (n) Page · AVTRANS » d'après `getRouteMeta`.
@@ -171,7 +173,6 @@ src/
 
 ## Stockage navigateur (clés identiques au Vue : l'app React remplace la Vue sur le même domaine)
 - localStorage : `auth_token`, `user`, `theme-preference`, `changelog_last_seen_version`, `notifications_sound_enabled`.
-- Cookie `sidebar_state` (barre latérale ouverte ou repliée), posé par le composant `sidebar` de shadcn (refonte D7).
 - sessionStorage : `version_check_reloaded_for`, `version_check_dismissed`.
 
 ## Thème
