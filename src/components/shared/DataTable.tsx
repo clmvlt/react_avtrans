@@ -139,9 +139,9 @@ export function DataTable<TData, TValue>({
   const rows = table.getRowModel().rows
 
   return (
-    <div className={cn('overflow-hidden rounded-lg border shadow-sm', className)}>
+    <div className={cn('overflow-hidden rounded-xl border bg-card', className)}>
       <Table className={tableClassName}>
-        <TableHeader>
+        <TableHeader className="bg-muted/50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {

@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils'
 const statCardVariants = cva('flex items-center border bg-card', {
   variants: {
     variant: {
-      /** Heures, Contrats : grande carte, icône 48 px, valeur en `text-2xl`. */
-      default: 'gap-4 rounded-lg p-5 shadow-sm transition-shadow hover:shadow-md',
+      /** Heures, Contrats : icône 40 px masquée sous `sm` (deux cartes par ligne), valeur en `text-2xl`. */
+      default: 'gap-3 rounded-xl p-3 sm:p-4',
       /** Pointage : compteur compact mobile, icône masquée sous `sm`, valeur en police mono. */
       compact: 'gap-2.5 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3',
     },
@@ -49,11 +49,11 @@ export function StatCard({
       <div
         className={cn(
           'shrink-0 items-center justify-center',
-          compact ? 'hidden size-9 rounded-md sm:flex' : 'flex size-12 rounded-lg',
+          compact ? 'hidden size-9 rounded-md sm:flex' : 'hidden size-10 rounded-lg sm:flex',
           iconClassName,
         )}
       >
-        <Icon className={compact ? 'size-4' : 'size-6'} />
+        <Icon className={compact ? 'size-4' : 'size-5'} />
       </div>
       {compact ? (
         <div className="flex min-w-0 flex-col gap-0.5">
@@ -65,9 +65,11 @@ export function StatCard({
           </span>
         </div>
       ) : (
-        <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
+        <div className="min-w-0">
+          <p className="truncate text-sm text-muted-foreground">{label}</p>
+          <p className="text-2xl font-semibold tracking-tight text-foreground tabular-nums">
+            {value}
+          </p>
         </div>
       )}
     </div>

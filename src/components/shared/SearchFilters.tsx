@@ -1,5 +1,5 @@
-import { useId, useState, type ComponentProps, type ReactNode } from 'react'
-import { LoaderCircle, RotateCcw, Search, SlidersHorizontal } from 'lucide-react'
+import { useId, useState, type ComponentProps } from 'react'
+import { ChevronDown, LoaderCircle, RotateCcw, Search, SlidersHorizontal } from 'lucide-react'
 import { Combobox } from '@/components/shared/Combobox'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -39,12 +39,10 @@ type SearchFiltersProps = Omit<ComponentProps<'div'>, 'onChange'> & {
   loading?: boolean
   /** Colonnes de la grille à partir de `lg` (1 à 6, 4 par défaut) ; 2 sous `lg`, 1 sous `sm`. */
   columns?: number
-  /** Panneau de filtres ouvert au départ. */
+  /** Panneau ouvert au départ (par défaut : ouvert sur grand écran, replié sur téléphone). */
   defaultExpanded?: boolean
-  /** Texte en italique à gauche des boutons (remplacé par `count` s'il est fourni). */
+  /** Résumé des filtres actifs (ou nombre de résultats), sous le titre « Filtres ». */
   hint?: string
-  /** Contenu à gauche des boutons (slot `count` du Vue). */
-  count?: ReactNode
   onSearch?: () => void
   onReset?: () => void
 }
@@ -61,7 +59,8 @@ const GRID_COLUMNS: Record<number, string> = {
 const toText = (raw: unknown) => (raw === undefined || raw === null ? '' : String(raw))
 
 /**
- * Panneau de filtres repliable, configuré par un tableau (port de `SearchFilters.vue`).
+ * Carte de filtres repliable, configurée par un tableau : en-tête « Filtres » + résumé, champs en
+ * grille, pied « Réinitialiser » / « Rechercher ». Ouverte d'office sur grand écran.
  * Contrôlé : `value` + `onChange` (objet complet). « Rechercher » appelle `onSearch`, Entrée dans
  * un champ texte aussi ; « Réinitialiser » appelle `onReset` (la page remet ses valeurs par défaut).
  *
@@ -83,16 +82,17 @@ export function SearchFilters({
   filters,
   loading = false,
   columns = 4,
-  defaultExpanded = false,
+  defaultExpanded,
   hint,
-  count,
   onSearch,
   onReset,
   className,
   ...props
 }: SearchFiltersProps) {
   const idPrefix = useId()
-  const [showFilters, setShowFilters] = useState(defaultExpanded)
+  const [showFilters, setShowFilters] = useState(
+    () => defaultExpanded ?? window.matchMedia('(min-width: 1024px)').matches,
+  )
   const hasFilters = filters.length > 0
 
   const updateFilter = (key: string, next: unknown) => onChange({ ...value, [key]: next })
@@ -177,39 +177,41 @@ export function SearchFilters({
     <Collapsible
       open={showFilters && hasFilters}
       onOpenChange={setShowFilters}
-      className={cn('w-full', className)}
+      className={cn('w-full rounded-xl border bg-card', className)}
       {...props}
     >
-      <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <div className="flex items-baseline gap-2">
-          {count ??
-            (hint ? <span className="text-xs text-muted-foreground italic">{hint}</span> : null)}
+      <div className="flex items-center gap-3 px-4 py-3">
+        <SlidersHorizontal className="size-4 shrink-0 text-muted-foreground" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-foreground">Filtres</p>
+          {hint && <p className="truncate text-xs text-muted-foreground">{hint}</p>}
         </div>
-        <div className="flex items-center gap-3">
-          {hasFilters && (
-            <CollapsibleTrigger asChild>
-              <Button type="button" variant={showFilters ? 'secondary' : 'outline'} size="sm">
-                <SlidersHorizontal className="size-3.5" />
-                {showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
-              </Button>
-            </CollapsibleTrigger>
-          )}
+        {hasFilters ? (
+          <CollapsibleTrigger asChild>
+            <Button type="button" variant="ghost" size="sm" className="shrink-0">
+              {showFilters ? 'Masquer' : 'Modifier'}
+              <ChevronDown
+                className={cn('size-4 transition-transform', showFilters && 'rotate-180')}
+              />
+            </Button>
+          </CollapsibleTrigger>
+        ) : (
           <Button type="button" size="sm" disabled={loading} onClick={onSearch}>
             {loading ? (
-              <LoaderCircle className="size-3.5 animate-spin" />
+              <LoaderCircle className="size-4 animate-spin" />
             ) : (
-              <Search className="size-3.5" />
+              <Search className="size-4" />
             )}
-            {loading ? 'Recherche...' : 'Rechercher'}
+            Actualiser
           </Button>
-        </div>
+        )}
       </div>
 
       <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-        <div className="mb-6 rounded-lg border bg-card p-5">
+        <div className="border-t p-4">
           <div
             className={cn(
-              'mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2',
+              'grid grid-cols-1 gap-4 sm:grid-cols-2',
               GRID_COLUMNS[columns] ?? GRID_COLUMNS[4],
             )}
           >
@@ -229,10 +231,18 @@ export function SearchFilters({
             ))}
           </div>
 
-          <div className="flex justify-end">
+          <div className="mt-4 flex flex-wrap justify-end gap-2">
             <Button type="button" variant="ghost" size="sm" disabled={loading} onClick={onReset}>
-              <RotateCcw className="size-3.5" />
+              <RotateCcw className="size-4" />
               Réinitialiser
+            </Button>
+            <Button type="button" size="sm" disabled={loading} onClick={onSearch}>
+              {loading ? (
+                <LoaderCircle className="size-4 animate-spin" />
+              ) : (
+                <Search className="size-4" />
+              )}
+              {loading ? 'Recherche...' : 'Rechercher'}
             </Button>
           </div>
         </div>
