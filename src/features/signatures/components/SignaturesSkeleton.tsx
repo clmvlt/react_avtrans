@@ -4,9 +4,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 export function SignaturesSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true" aria-label="Chargement des signatures...">
-      <Skeleton className="h-9 w-full" />
-      <div className="overflow-hidden rounded-lg border shadow-sm">
-        <div className="border-b px-2 py-3">
+      <Skeleton className="h-9 w-full max-w-md" />
+      <div className="overflow-hidden rounded-xl border bg-card">
+        <div className="border-b bg-muted/50 px-2 py-3">
           <Skeleton className="h-4 w-32" />
         </div>
         {Array.from({ length: 6 }, (_, index) => (
@@ -14,11 +14,11 @@ export function SignaturesSkeleton() {
             <Skeleton className="size-10 shrink-0 rounded-full" />
             <div className="flex flex-1 flex-col gap-1.5">
               <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-3 w-56" />
+              <Skeleton className="h-3 w-56 max-w-full" />
             </div>
             <Skeleton className="hidden h-5 w-24 rounded-full md:block" />
             <Skeleton className="hidden h-4 w-32 sm:block" />
-            <Skeleton className="h-8 w-8 sm:w-56" />
+            <Skeleton className="size-9 sm:h-8 sm:w-64" />
           </div>
         ))}
       </div>

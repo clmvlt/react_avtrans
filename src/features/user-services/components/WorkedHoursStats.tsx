@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { Calendar, CalendarDays, CalendarRange, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -34,31 +35,35 @@ const STATS: StatItem[] = [
 
 /** Heures travaillées de l'employé : aujourd'hui, semaine, mois, mois dernier. */
 export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
+  const titleId = useId()
+
   return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
-      {STATS.map(({ key, label, icon: Icon, iconClass }) => (
-        <div
-          key={key}
-          className="flex items-center gap-3 rounded-lg border bg-card p-3 shadow-sm transition-shadow hover:shadow-md sm:gap-4 sm:p-5"
-        >
-          <div
-            className={cn(
-              'flex size-9 shrink-0 items-center justify-center rounded-lg sm:size-10',
-              iconClass,
-            )}
-          >
-            <Icon className="size-4 sm:size-5" />
+    <section aria-labelledby={titleId} className="space-y-3">
+      <h2 id={titleId} className="text-sm font-semibold text-foreground">
+        Heures travaillées
+      </h2>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        {STATS.map(({ key, label, icon: Icon, iconClass }) => (
+          <div key={key} className="flex items-center gap-3 rounded-xl border bg-card p-3 sm:p-4">
+            <div
+              className={cn(
+                'flex size-9 shrink-0 items-center justify-center rounded-lg sm:size-10',
+                iconClass,
+              )}
+            >
+              <Icon className="size-4 sm:size-5" />
+            </div>
+            <div>
+              <p className="text-[10px] tracking-wide text-muted-foreground uppercase sm:text-xs">
+                {label}
+              </p>
+              <p className="font-mono text-lg font-bold text-foreground sm:text-xl">
+                {formatHoursMinutes(hours[key])}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] tracking-wide text-muted-foreground uppercase sm:text-xs">
-              {label}
-            </p>
-            <p className="font-mono text-lg font-bold text-foreground sm:text-xl">
-              {formatHoursMinutes(hours[key])}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </section>
   )
 }

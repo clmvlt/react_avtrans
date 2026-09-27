@@ -10,6 +10,7 @@ import { LastVehicleInfo } from './LastVehicleInfo'
 import { MailVerifiedBadge } from './MailVerifiedBadge'
 import { PresenceBadge } from './PresenceBadge'
 import { RoleBadge } from './RoleBadge'
+import { UserActionsDropdown } from './UserActionsDropdown'
 import { UserIdentityCell } from './UserIdentityCell'
 
 type UserColumnsOptions = {
@@ -93,47 +94,13 @@ export function getUserColumns({
       header: 'Actions',
       meta: { headerClassName: 'text-right', cellClassName: 'text-right' },
       cell: ({ row }) => (
-        <div className="flex flex-wrap justify-end gap-1.5">
-          <Button
-            variant="outline"
-            size="sm"
-            title="Voir les services"
-            onClick={() => actions.goToServices(row.original)}
-          >
-            Services
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            title="Détails des heures"
-            onClick={() => actions.openHours(row.original)}
-          >
-            Heures
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            title="Voir les absences"
-            onClick={() => actions.goToAbsences(row.original)}
-          >
-            Absences
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            title="Modifier l'utilisateur"
-            onClick={() => actions.openEdit(row.original)}
-          >
+        // Action courante visible, les autres dans le menu « ⋮ » (mêmes entrées que sur mobile)
+        <div className="flex items-center justify-end gap-1">
+          <Button variant="outline" size="sm" onClick={() => actions.openEdit(row.original)}>
+            <Pencil className="size-4" />
             Modifier
           </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            title="Supprimer l'utilisateur"
-            onClick={() => actions.confirmDelete(row.original)}
-          >
-            Supprimer
-          </Button>
+          <UserActionsDropdown user={row.original} actions={actions} />
         </div>
       ),
     },

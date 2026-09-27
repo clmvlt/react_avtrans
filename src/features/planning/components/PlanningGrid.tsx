@@ -29,7 +29,7 @@ export function PlanningGrid({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-lg border bg-card shadow-sm transition-opacity',
+        'overflow-hidden rounded-xl border bg-card transition-opacity',
         isStale && 'opacity-60',
       )}
     >

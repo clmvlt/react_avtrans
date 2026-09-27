@@ -12,23 +12,50 @@ type ExportPeriodFieldsProps = {
   onPreset: (preset: ExportPeriodPreset) => void
 }
 
-/** Section « Période » : dates de début et de fin (natives, bornées l'une par l'autre), préréglages. */
+/**
+ * Carte « Période » : raccourcis (ce mois, mois dernier…) puis dates de début et de fin
+ * (natives, bornées l'une par l'autre).
+ */
 export function ExportPeriodFields({ control, disabled, onPreset }: ExportPeriodFieldsProps) {
   const id = useId()
   const [startDate, endDate] = useWatch({ control, name: ['startDate', 'endDate'] })
 
   return (
-    <div className="border-b pb-6">
-      <h3 className="mb-4 text-lg font-semibold text-foreground">Période</h3>
+    <section
+      aria-labelledby={`${id}-title`}
+      className="space-y-4 rounded-xl border bg-card p-4 sm:p-6"
+    >
+      <div className="space-y-1">
+        <h2 id={`${id}-title`} className="text-base font-semibold text-foreground">
+          Période
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Choisissez un raccourci ou saisissez les dates.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {EXPORT_PERIOD_PRESETS.map((preset) => (
+          <Button
+            key={preset.value}
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={disabled}
+            onClick={() => onPreset(preset.value)}
+          >
+            {preset.label}
+          </Button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Controller
           name="startDate"
           control={control}
           render={({ field, fieldState }) => (
             <Field className="gap-2" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={`${id}-start`} className="text-muted-foreground">
-                Date de début *
-              </FieldLabel>
+              <FieldLabel htmlFor={`${id}-start`}>Date de début *</FieldLabel>
               <Input
                 {...field}
                 id={`${id}-start`}
@@ -48,9 +75,7 @@ export function ExportPeriodFields({ control, disabled, onPreset }: ExportPeriod
           rules={{ deps: 'startDate' }}
           render={({ field, fieldState }) => (
             <Field className="gap-2" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={`${id}-end`} className="text-muted-foreground">
-                Date de fin *
-              </FieldLabel>
+              <FieldLabel htmlFor={`${id}-end`}>Date de fin *</FieldLabel>
               <Input
                 {...field}
                 id={`${id}-end`}
@@ -64,21 +89,6 @@ export function ExportPeriodFields({ control, disabled, onPreset }: ExportPeriod
           )}
         />
       </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {EXPORT_PERIOD_PRESETS.map((preset) => (
-          <Button
-            key={preset.value}
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={disabled}
-            onClick={() => onPreset(preset.value)}
-          >
-            {preset.label}
-          </Button>
-        ))}
-      </div>
-    </div>
+    </section>
   )
 }

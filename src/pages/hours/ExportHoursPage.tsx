@@ -1,3 +1,5 @@
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { ExportHoursForm } from '@/features/hours/components/ExportHoursForm'
 import { ExportHoursSkeleton } from '@/features/hours/components/ExportHoursSkeleton'
@@ -29,10 +31,12 @@ export default function ExportHoursPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 sm:px-6 sm:py-6">
-        <div className="mx-auto max-w-[1200px]">{renderContent()}</div>
-      </main>
-    </div>
+    <PageContainer size="sm">
+      <PageHeader
+        title="Export des heures"
+        description="Téléchargez au format Excel les heures des employés choisis sur une période, pour la paie."
+      />
+      {renderContent()}
+    </PageContainer>
   )
 }

@@ -25,9 +25,9 @@ export function PresenceUserDropdown({ user, actions }: PresenceUserDropdownProp
       <DropdownMenuTrigger asChild>
         <Button
           variant="secondary"
-          size="icon-sm"
+          size="icon"
           aria-label={`Actions pour ${user.firstName ?? ''} ${user.lastName ?? ''}`}
-          className="absolute top-1.5 right-1.5 transition-opacity md:top-2 md:right-2 pointer-fine:opacity-0 pointer-fine:group-focus-within:opacity-100 pointer-fine:group-hover:opacity-100 pointer-fine:data-[state=open]:opacity-100"
+          className="absolute top-1 right-1 transition-opacity md:top-1.5 md:right-1.5 pointer-fine:opacity-0 pointer-fine:group-focus-within:opacity-100 pointer-fine:group-hover:opacity-100 pointer-fine:data-[state=open]:opacity-100"
         >
           <MoreVertical className="size-4" />
         </Button>

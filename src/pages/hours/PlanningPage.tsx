@@ -1,4 +1,6 @@
 import { CalendarX2 } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useAbsenceTypesQuery } from '@/features/absences/api/useAbsenceTypesQuery'
@@ -16,7 +18,10 @@ import type { AbsenceTypeDTO } from '@/models'
 
 const NO_ABSENCE_TYPES: AbsenceTypeDTO[] = []
 
-/** Planning des absences (admin) : semaine, mois ou plage personnalisée, export PDF / PNG. */
+/**
+ * Planning des absences (admin) : semaine, mois ou plage personnalisée, export PDF / PNG.
+ * L'export, dans l'en-tête, n'est actif que lorsque la grille de la période choisie est affichée.
+ */
 export default function PlanningPage() {
   const period = usePlanningPeriod()
   const planningQuery = usePlanningQuery(period.params)
@@ -33,6 +38,8 @@ export default function PlanningPage() {
     startDate: planning?.startDate,
     endDate: planning?.endDate,
   })
+  // Même condition d'affichage que la grille (le bouton était dans la grille dans le Vue)
+  const hasGrid = planningQuery.isSuccess && users.length > 0
 
   const renderContent = () => {
     if (planningQuery.isPending) return <PlanningSkeleton />
@@ -54,7 +61,7 @@ export default function PlanningPage() {
 
     if (users.length === 0) {
       return (
-        <Empty className="py-16">
+        <Empty className="rounded-xl border py-16 md:py-16">
           <EmptyHeader>
             <EmptyMedia className="size-16 rounded-full bg-muted">
               <CalendarX2 className="size-7 text-muted-foreground" />
@@ -62,7 +69,7 @@ export default function PlanningPage() {
             <EmptyTitle className="text-base font-semibold text-foreground">
               Aucun utilisateur
             </EmptyTitle>
-            <EmptyDescription className="text-base">
+            <EmptyDescription>
               Aucun employé n&apos;est disponible pour cette période.
             </EmptyDescription>
           </EmptyHeader>
@@ -71,14 +78,30 @@ export default function PlanningPage() {
     }
 
     return (
-      <>
-        <div className="mb-4 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {users.length} employé{users.length > 1 ? 's' : ''} · {dates.length} jours
-          </span>
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          {users.length} employé{users.length > 1 ? 's' : ''} · {dates.length} jours
+        </p>
+        <PlanningGrid
+          users={users}
+          dates={dates}
+          absenceTypes={absenceTypes}
+          onAbsenceClick={absenceDialog.openAbsence}
+          isStale={planningQuery.isPlaceholderData}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <PageContainer size="full">
+      <PageHeader
+        title="Planning"
+        description="Les absences de l'équipe, jour par jour."
+        actions={
           <PlanningExportMenu
             isExporting={isExporting}
-            disabled={planningQuery.isPlaceholderData}
+            disabled={!hasGrid || planningQuery.isPlaceholderData}
             onExport={(format) =>
               void exportPlanning(format, {
                 users,
@@ -89,23 +112,15 @@ export default function PlanningPage() {
               })
             }
           />
-        </div>
-        <PlanningGrid
-          users={users}
-          dates={dates}
-          absenceTypes={absenceTypes}
-          onAbsenceClick={absenceDialog.openAbsence}
-          isStale={planningQuery.isPlaceholderData}
-        />
-      </>
-    )
-  }
+        }
+      />
 
-  return (
-    <div className="min-h-screen bg-background">
-      <PlanningToolbar period={period} periodLabel={periodLabel} />
-      <main className="px-4 py-4 md:px-6 md:py-6">{renderContent()}</main>
+      <div className="space-y-4">
+        <PlanningToolbar period={period} periodLabel={periodLabel} />
+        {renderContent()}
+      </div>
+
       <AbsenceDetailDialog controller={absenceDialog} />
-    </div>
+    </PageContainer>
   )
 }

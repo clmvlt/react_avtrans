@@ -9,7 +9,7 @@ type UserHoursCardProps = {
 
 function HoursTile({ label, hours }: { label: string; hours: number }) {
   return (
-    <div className="rounded bg-muted/50 p-2">
+    <div className="rounded-lg bg-muted/50 p-2">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className={cn('text-lg font-bold', getHoursClass(hours))}>{formatDecimalHours(hours)}</p>
     </div>
@@ -19,7 +19,7 @@ function HoursTile({ label, hours }: { label: string; hours: number }) {
 /** Carte mobile d'un employé : identité, présence, puis ses cinq compteurs d'heures. */
 export function UserHoursCard({ row }: UserHoursCardProps) {
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm">
+    <div className="rounded-xl border bg-card p-4">
       <UserIdentity user={row.user} showEmail={false}>
         <HoursPresenceBadge status={row.user?.status} className="mt-1 w-fit" />
       </UserIdentity>

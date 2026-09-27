@@ -80,7 +80,7 @@ const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
   {
     id: 'joursTravailles',
     accessorFn: (row) => row.joursTravailles,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Jours trav." />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Jours travaillés" />,
     cell: ({ row }) => (
       <>
         <span className="font-medium text-foreground">{row.original.joursTravailles}</span>
@@ -109,7 +109,7 @@ const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
   {
     id: 'moyenneHeuresParJour',
     accessorFn: (row) => row.moyenneHeuresParJour,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Moy/jour" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Moyenne / jour" />,
     cell: ({ row }) =>
       row.original.moyenneHeuresParJour != null ? (
         <span className="font-medium text-foreground">

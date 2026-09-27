@@ -1,4 +1,5 @@
-import { History } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { SimplePagination } from '@/components/shared/SimplePagination'
 import { useServiceModificationsSearchQuery } from '@/features/service-history/api/useServiceModificationsSearchQuery'
@@ -52,7 +53,19 @@ export default function JournalPointagesPage() {
 
     return (
       <div className={cn('space-y-4 transition-opacity', searchLoading && 'opacity-60')}>
-        <p className="text-sm text-muted-foreground">{totalElements} action(s)</p>
+        <p className="text-sm text-muted-foreground">
+          {totalElements} action(s)
+          {/* Les lignes (et les cartes) sont cliquables : on le dit */}
+          {modifications.length > 0 && (
+            <>
+              <span className="md:hidden"> · touchez une carte pour voir son historique</span>
+              <span className="max-md:hidden">
+                {' '}
+                · cliquez sur une ligne pour voir l&apos;historique du pointage
+              </span>
+            </>
+          )}
+        </p>
 
         <ServiceModificationList
           modifications={modifications}
@@ -70,40 +83,30 @@ export default function JournalPointagesPage() {
           totalPages={totalPages}
           onPageChange={(nextPage) => journal.search(nextPage)}
           disabled={searchLoading}
-          className="pt-2"
         />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px] space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <History className="size-5" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold text-foreground">Journal des pointages</h1>
-              <p className="text-sm text-muted-foreground">
-                Ajouts, modifications et suppressions de pointages par les administrateurs
-              </p>
-            </div>
-          </div>
+    <PageContainer>
+      <PageHeader
+        title="Journal des pointages"
+        description="Les ajouts, modifications et suppressions de pointages faits par les administrateurs."
+      />
 
-          <JournalFilters
-            value={journal.draft}
-            onChange={journal.setDraft}
-            users={users}
-            loading={searchLoading}
-            onSearch={() => journal.search(0)}
-            onReset={journal.reset}
-          />
+      <div className="space-y-4">
+        <JournalFilters
+          value={journal.draft}
+          onChange={journal.setDraft}
+          users={users}
+          loading={searchLoading}
+          onSearch={() => journal.search(0)}
+          onReset={journal.reset}
+        />
 
-          {renderContent()}
-        </div>
-      </main>
-    </div>
+        {renderContent()}
+      </div>
+    </PageContainer>
   )
 }

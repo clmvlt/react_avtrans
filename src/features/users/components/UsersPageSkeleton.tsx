@@ -32,7 +32,7 @@ export function UsersPageSkeleton() {
         ))}
       </div>
 
-      <div className="hidden overflow-hidden rounded-lg border shadow-sm md:block">
+      <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
         <div className="border-b px-4 py-3">
           <Skeleton className="h-4 w-full" />
         </div>

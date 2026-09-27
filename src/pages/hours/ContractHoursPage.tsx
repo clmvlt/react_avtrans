@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { SortingState } from '@tanstack/react-table'
 import { FileText, RefreshCw } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
 import { useContractComparisonQuery } from '@/features/hours/api/useContractComparisonQuery'
@@ -22,8 +24,8 @@ import { sortRowsLikeVue } from '@/features/hours/lib/legacySort'
 import { cn } from '@/lib/utils'
 
 /**
- * Heures contrat / heures effectuées par employé pour un mois (admin). La navigation de mois
- * reste disponible pendant le chargement et après une erreur (le Vue la masquait, sans
+ * Heures contrat / heures effectuées par employé pour un mois (admin). Le choix du mois, sous
+ * l'en-tête, reste disponible pendant le chargement et après une erreur (le Vue le masquait, sans
  * « Réessayer » : corrigé par construction, MIGRATION.md 8.1).
  */
 export default function ContractHoursPage() {
@@ -67,62 +69,64 @@ export default function ContractHoursPage() {
     return (
       <div
         className={cn(
-          'space-y-4 transition-opacity',
+          'space-y-6 transition-opacity',
           comparisonQuery.isPlaceholderData && 'opacity-60',
         )}
       >
         <ContractStatsGrid totals={computeContractTotals(comparisons)} />
 
-        <HoursSearchInput
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Rechercher un employé..."
-        />
+        <div className="space-y-4">
+          <HoursSearchInput
+            className="max-w-md"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Rechercher un employé..."
+            aria-label="Rechercher un employé"
+          />
 
-        <div className="space-y-3 md:hidden">
-          <p className="text-sm text-muted-foreground">{rows.length} employé(s)</p>
-          {rows.length === 0 && <ListEmptyState icon={FileText} message="Aucun employé trouvé" />}
-          {rows.map((row, index) => (
-            <ContractComparisonCard key={row.user.uuid ?? index} row={row} />
-          ))}
+          <div className="space-y-3 md:hidden">
+            <p className="text-sm text-muted-foreground">{rows.length} employé(s)</p>
+            {rows.length === 0 && <ListEmptyState icon={FileText} message="Aucun employé trouvé" />}
+            {rows.map((row, index) => (
+              <ContractComparisonCard key={row.user.uuid ?? index} row={row} />
+            ))}
+          </div>
+
+          <ContractComparisonTable rows={rows} sorting={sorting} onSortingChange={setSorting} />
         </div>
-
-        <ContractComparisonTable rows={rows} sorting={sorting} onSortingChange={setSorting} />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px] space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <MonthYearPicker
-              month={period.month}
-              year={period.year}
-              yearOptions={getYearOptions(current.year)}
-              onChange={setPeriod}
-              onCurrentMonth={() => setPeriod(current)}
-              disabled={comparisonQuery.isFetching}
-            />
+    <PageContainer>
+      <PageHeader
+        title="Heures contrat"
+        description="Comparez les heures travaillées aux heures prévues au contrat, mois par mois."
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={comparisonQuery.isFetching}
+            onClick={() => void comparisonQuery.refetch()}
+          >
+            <RefreshCw className={cn('size-4', comparisonQuery.isFetching && 'animate-spin')} />
+            Actualiser
+          </Button>
+        }
+      >
+        <MonthYearPicker
+          month={period.month}
+          year={period.year}
+          yearOptions={getYearOptions(current.year)}
+          onChange={setPeriod}
+          onCurrentMonth={() => setPeriod(current)}
+          disabled={comparisonQuery.isFetching}
+        />
+      </PageHeader>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={comparisonQuery.isFetching}
-              onClick={() => void comparisonQuery.refetch()}
-            >
-              <RefreshCw
-                className={cn('mr-2 size-4', comparisonQuery.isFetching && 'animate-spin')}
-              />
-              Actualiser
-            </Button>
-          </div>
-
-          {renderContent()}
-        </div>
-      </main>
-    </div>
+      {renderContent()}
+    </PageContainer>
   )
 }

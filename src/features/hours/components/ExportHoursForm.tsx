@@ -28,9 +28,9 @@ const createDefaultValues = (): ExportHoursFormValues => ({
 })
 
 /**
- * Carte « Paramètres d'export » : période, utilisateurs, export Excel. Le résultat s'affiche en
- * bandeau en tête de la carte, comme le Vue (succès masqué au bout de 5 s ; erreur conservée
- * jusqu'au prochain export).
+ * Formulaire d'export : carte « Période », carte « Employés », puis bouton d'export Excel. Le
+ * résultat s'affiche en bandeau au-dessus des cartes (succès masqué au bout de 5 s ; erreur
+ * conservée jusqu'au prochain export).
  */
 export function ExportHoursForm({ users }: ExportHoursFormProps) {
   const exportHours = useExportHoursMutation()
@@ -66,9 +66,7 @@ export function ExportHoursForm({ users }: ExportHoursFormProps) {
   }
 
   return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <h2 className="mb-5 text-xl font-semibold text-foreground">Paramètres d&apos;export</h2>
-
+    <form noValidate className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       {exportHours.isSuccess && (
         <ExportStatusMessage variant="success">
           Export réussi ! Le fichier a été téléchargé.
@@ -82,38 +80,42 @@ export function ExportHoursForm({ users }: ExportHoursFormProps) {
         </ExportStatusMessage>
       )}
 
-      <form noValidate className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <ExportPeriodFields control={form.control} disabled={exporting} onPreset={applyPreset} />
+      <ExportPeriodFields control={form.control} disabled={exporting} onPreset={applyPreset} />
 
-        <Controller
-          name="userUuids"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <UserMultiSelectList
-              users={users}
-              value={field.value}
-              onChange={field.onChange}
-              disabled={exporting}
-              error={fieldState.error?.message}
-            />
+      <Controller
+        name="userUuids"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <UserMultiSelectList
+            users={users}
+            value={field.value}
+            onChange={field.onChange}
+            disabled={exporting}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+        {/* Pourquoi le bouton est grisé */}
+        {selectedUuids.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            Sélectionnez au moins un employé pour exporter.
+          </p>
+        )}
+        <Button
+          type="submit"
+          className="w-full sm:w-auto"
+          disabled={selectedUuids.length === 0 || exporting}
+        >
+          {exporting ? (
+            <LoaderCircle className="size-4 animate-spin" />
+          ) : (
+            <Download className="size-4" />
           )}
-        />
-
-        <div>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={selectedUuids.length === 0 || exporting}
-          >
-            {exporting ? (
-              <LoaderCircle className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 size-4" />
-            )}
-            {exporting ? 'Export en cours...' : 'Exporter en Excel'}
-          </Button>
-        </div>
-      </form>
-    </div>
+          {exporting ? 'Export en cours...' : 'Exporter en Excel'}
+        </Button>
+      </div>
+    </form>
   )
 }

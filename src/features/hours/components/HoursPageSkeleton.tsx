@@ -14,19 +14,25 @@ type HoursPageSkeletonProps = {
 export function HoursPageSkeleton({ statCount, statsClassName, label }: HoursPageSkeletonProps) {
   return (
     <div className="space-y-4" aria-busy="true" aria-label={label}>
-      <div className={cn('grid gap-4', statsClassName)}>
-        {Array.from({ length: statCount }, (_, index) => (
-          <div key={index} className="flex items-center gap-4 rounded-lg border bg-card p-5">
-            <Skeleton className="size-12 shrink-0 rounded-lg" />
-            <div className="flex flex-1 flex-col gap-2">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-7 w-16" />
+      <div className="space-y-3">
+        <Skeleton className="h-4 w-32" />
+        <div className={cn('grid gap-3 sm:gap-4', statsClassName)}>
+          {Array.from({ length: statCount }, (_, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 rounded-xl border bg-card p-3 sm:p-4"
+            >
+              <Skeleton className="size-10 shrink-0 rounded-lg max-sm:hidden" />
+              <div className="flex flex-1 flex-col gap-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-7 w-16" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <Skeleton className="h-9 w-full" />
-      <div className="space-y-3 rounded-lg border p-4">
+      <Skeleton className="h-9 w-full max-w-md" />
+      <div className="space-y-3 rounded-xl border bg-card p-4">
         {Array.from({ length: 5 }, (_, index) => (
           <div key={index} className="flex items-center gap-3">
             <Skeleton className="size-10 shrink-0 rounded-full" />

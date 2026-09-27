@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { SortingState } from '@tanstack/react-table'
 import { Clock, RefreshCw } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
 import { useUsersWithHoursQuery } from '@/features/hours/api/useUsersWithHoursQuery'
@@ -30,7 +32,7 @@ export default function HeuresPage() {
       return (
         <HoursPageSkeleton
           statCount={5}
-          statsClassName="grid-cols-2 lg:grid-cols-5"
+          statsClassName="grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
           label="Chargement des heures..."
         />
       )
@@ -59,8 +61,38 @@ export default function HeuresPage() {
     })
 
     return (
-      <div className="space-y-4">
-        <div className="flex justify-end">
+      <div className="space-y-6">
+        <HoursStatsGrid totals={computeHoursTotals(entries)} />
+
+        <div className="space-y-4">
+          <HoursSearchInput
+            className="max-w-md"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Rechercher un employé..."
+            aria-label="Rechercher un employé"
+          />
+
+          <div className="space-y-3 md:hidden">
+            <p className="text-sm text-muted-foreground">{rows.length} employé(s)</p>
+            {rows.length === 0 && <ListEmptyState icon={Clock} message="Aucun employé trouvé" />}
+            {rows.map((row, index) => (
+              <UserHoursCard key={row.user?.uuid ?? index} row={row} />
+            ))}
+          </div>
+
+          <UsersHoursTable rows={rows} sorting={sorting} onSortingChange={setSorting} />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title="Heures travaillées"
+        description="Les heures de chaque employé : aujourd'hui, cette semaine, ce mois et cette année."
+        actions={
           <Button
             type="button"
             variant="outline"
@@ -68,37 +100,12 @@ export default function HeuresPage() {
             disabled={hoursQuery.isFetching}
             onClick={() => void hoursQuery.refetch()}
           >
-            <RefreshCw className={cn('mr-2 size-4', hoursQuery.isFetching && 'animate-spin')} />
+            <RefreshCw className={cn('size-4', hoursQuery.isFetching && 'animate-spin')} />
             Actualiser
           </Button>
-        </div>
-
-        <HoursStatsGrid totals={computeHoursTotals(entries)} />
-
-        <HoursSearchInput
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Rechercher un employé..."
-        />
-
-        <div className="space-y-3 md:hidden">
-          <p className="text-sm text-muted-foreground">{rows.length} employé(s)</p>
-          {rows.length === 0 && <ListEmptyState icon={Clock} message="Aucun employé trouvé" />}
-          {rows.map((row, index) => (
-            <UserHoursCard key={row.user?.uuid ?? index} row={row} />
-          ))}
-        </div>
-
-        <UsersHoursTable rows={rows} sorting={sorting} onSortingChange={setSorting} />
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">{renderContent()}</div>
-      </main>
-    </div>
+        }
+      />
+      {renderContent()}
+    </PageContainer>
   )
 }

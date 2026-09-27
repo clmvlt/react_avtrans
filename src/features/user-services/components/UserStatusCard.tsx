@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { LoaderCircle, Pause, Play, Square } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -21,7 +22,7 @@ type UserStatusCardProps = {
 }
 
 /**
- * Statut actuel de l'employé et boutons pour pointer à sa place.
+ * Statut actuel de l'employé et boutons pour pointer à sa place (pleine largeur sur téléphone).
  * Bug B-26 reproduit : la durée du pointage en cours est calculée au rendu, sans minuterie
  * (elle reste figée tant que la carte n'est pas redessinée).
  */
@@ -33,20 +34,23 @@ export function UserStatusCard({
   onEndService,
   onEndBreak,
 }: UserStatusCardProps) {
+  const titleId = useId()
   const { status, activeServiceStart } = statusInfo
-  const spinner = <LoaderCircle className="mr-2 size-4 animate-spin" />
+  const spinner = <LoaderCircle className="size-4 animate-spin" />
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+    <section aria-labelledby={titleId} className="rounded-xl border bg-card p-4 sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">Statut actuel</span>
+          <h2 id={titleId} className="text-sm font-semibold text-foreground">
+            Statut actuel
+          </h2>
           <Badge
             variant={status === 'ABSENT' ? 'secondary' : 'outline'}
             className={getStatusBadgeClass(status)}
           >
             <span
-              className={cn('mr-2 inline-block size-2 rounded-full', getStatusDotClass(status))}
+              className={cn('mr-1 inline-block size-2 rounded-full', getStatusDotClass(status))}
             />
             {getStatusText(status)}
           </Badge>
@@ -55,21 +59,25 @@ export function UserStatusCard({
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Play className="size-4 text-green-500" />
             <span>Depuis {formatTime(activeServiceStart)}</span>
-            <span className="rounded bg-muted px-2 py-0.5 font-mono font-medium">
+            <span className="rounded-md bg-muted px-2 py-0.5 font-mono font-medium">
               {calculateDuration(activeServiceStart)}
             </span>
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <p className="mt-1 text-sm text-muted-foreground">
+        Ces boutons pointent à la place de l&apos;employé.
+      </p>
+
+      <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:gap-3">
         {status === 'ABSENT' && (
           <Button
             className="bg-green-600 text-white hover:bg-green-700"
             onClick={onStartService}
             disabled={isPending}
           >
-            {isPending ? spinner : <Play className="mr-2 size-4" />}
+            {isPending ? spinner : <Play className="size-4" />}
             Démarrer le service
           </Button>
         )}
@@ -81,11 +89,11 @@ export function UserStatusCard({
               onClick={onStartBreak}
               disabled={isPending}
             >
-              {isPending ? spinner : <Pause className="mr-2 size-4" />}
+              {isPending ? spinner : <Pause className="size-4" />}
               Démarrer une pause
             </Button>
             <Button variant="destructive" onClick={onEndService} disabled={isPending}>
-              {isPending ? spinner : <Square className="mr-2 size-4" />}
+              {isPending ? spinner : <Square className="size-4" />}
               Terminer le service
             </Button>
           </>
@@ -97,11 +105,11 @@ export function UserStatusCard({
             onClick={onEndBreak}
             disabled={isPending}
           >
-            {isPending ? spinner : <Play className="mr-2 size-4" />}
+            {isPending ? spinner : <Play className="size-4" />}
             Terminer la pause
           </Button>
         )}
       </div>
-    </div>
+    </section>
   )
 }

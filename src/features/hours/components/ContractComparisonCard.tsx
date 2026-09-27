@@ -17,7 +17,7 @@ type ContractComparisonCardProps = {
 
 function Tile({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="rounded bg-muted/50 p-2">
+    <div className="rounded-lg bg-muted/50 p-2">
       <p className="text-xs text-muted-foreground">{label}</p>
       {children}
     </div>
@@ -27,7 +27,7 @@ function Tile({ label, children }: { label: string; children: ReactNode }) {
 /** Carte mobile : contrat, heures effectuées, écart, réalisation, jours et moyenne. */
 export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm">
+    <div className="rounded-xl border bg-card p-4">
       <UserIdentity user={row.user} showEmail={false}>
         {row.heureContrat != null ? (
           <span className="text-xs text-muted-foreground">Contrat : {row.heureContrat}h/mois</span>
@@ -60,13 +60,16 @@ export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
       </div>
 
       <div className="mt-2 grid grid-cols-3 gap-2 text-center">
-        <Tile label="Jours trav.">
-          <p className="text-sm font-semibold text-foreground">{row.joursTravailles}</p>
+        <Tile label="Jours travaillés">
+          <p className="text-sm font-semibold text-foreground">
+            {row.joursTravailles}
+            <span className="font-normal text-muted-foreground"> / {row.joursOuvres}</span>
+          </p>
         </Tile>
         <Tile label="Absences">
           <p className="text-sm font-semibold text-foreground">{row.joursAbsence}j</p>
         </Tile>
-        <Tile label="Moy/jour">
+        <Tile label="Moyenne / jour">
           <p className="text-sm font-semibold text-foreground">
             {row.moyenneHeuresParJour != null ? formatContractHours(row.moyenneHeuresParJour) : '-'}
           </p>

@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { Search, Users } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Empty } from '@/components/ui/empty'
 import { Input } from '@/components/ui/input'
 import { AbsentSection } from '@/features/monitoring/components/AbsentSection'
-import { MonitoringHeader } from '@/features/monitoring/components/MonitoringHeader'
 import { MonitoringSkeleton } from '@/features/monitoring/components/MonitoringSkeleton'
 import { PresenceSection } from '@/features/monitoring/components/PresenceSection'
+import { PresenceStatsPills } from '@/features/monitoring/components/PresenceStatsPills'
 import { useMonitoringActions } from '@/features/monitoring/hooks/useMonitoringActions'
 import { useMonitoringUsers } from '@/features/monitoring/hooks/useMonitoringUsers'
 import { filterPresenceGroups, groupByPresence } from '@/features/monitoring/lib/groupByPresence'
@@ -43,75 +45,79 @@ function ServicesMonitoringContent({ onRetry }: ServicesMonitoringContentProps) 
     filtered.present.length === 0 && filtered.onBreak.length === 0 && filtered.absent.length === 0
 
   return (
-    <div className="min-h-screen bg-background">
-      <MonitoringHeader
-        present={groups.present.length}
-        onBreak={groups.onBreak.length}
-        absent={groups.absent.length}
-      />
+    <PageContainer>
+      <PageHeader
+        title="Présences"
+        description="Qui est en service, en pause ou absent en ce moment (mis à jour toutes les 10 secondes)."
+      >
+        {/* Compteurs de toute l'équipe (sans la recherche), mis à jour même après une erreur (B-16) */}
+        {!isLoading && (
+          <PresenceStatsPills
+            present={groups.present.length}
+            onBreak={groups.onBreak.length}
+            absent={groups.absent.length}
+          />
+        )}
+      </PageHeader>
 
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">
-          {isLoading ? (
-            <MonitoringSkeleton />
-          ) : error ? (
-            <ErrorState message={error} onRetry={onRetry} />
-          ) : (
-            <div className="space-y-6">
-              <div className="relative">
-                <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Rechercher un employé..."
-                  aria-label="Rechercher un employé"
-                  className="pl-9"
-                />
-              </div>
+      {isLoading ? (
+        <MonitoringSkeleton />
+      ) : error ? (
+        <ErrorState message={error} onRetry={onRetry} />
+      ) : (
+        <div className="space-y-6">
+          <div className="relative max-w-md">
+            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Rechercher un employé..."
+              aria-label="Rechercher un employé"
+              className="pl-9"
+            />
+          </div>
 
-              <PresenceSection
-                title="Présents"
-                dotClass="bg-green-500"
-                users={filtered.present}
-                color="green"
-                actions={actions}
-              />
-              <PresenceSection
-                title="En pause"
-                dotClass="bg-amber-500"
-                users={filtered.onBreak}
-                color="amber"
-                actions={actions}
-              />
-              <AbsentSection
-                users={filtered.absent}
-                open={showAbsent}
-                onOpenChange={setShowAbsent}
-                actions={actions}
-              />
+          <PresenceSection
+            title="Présents"
+            dotClass="bg-green-500"
+            users={filtered.present}
+            color="green"
+            actions={actions}
+          />
+          <PresenceSection
+            title="En pause"
+            dotClass="bg-amber-500"
+            users={filtered.onBreak}
+            color="amber"
+            actions={actions}
+          />
+          <AbsentSection
+            users={filtered.absent}
+            open={showAbsent}
+            onOpenChange={setShowAbsent}
+            actions={actions}
+          />
 
-              {isEmpty && (
-                <Empty className="gap-3 p-0 py-16 text-muted-foreground md:p-0 md:py-16">
-                  <Users className="size-12 opacity-50" />
-                  <p className="text-lg">Aucun employé trouvé</p>
-                  {search && (
-                    <Button variant="outline" size="sm" onClick={() => setSearch('')}>
-                      Effacer la recherche
-                    </Button>
-                  )}
-                </Empty>
+          {isEmpty && (
+            <Empty className="gap-3 rounded-xl border px-4 py-16 text-muted-foreground md:px-4 md:py-16">
+              <Users className="size-10 opacity-50" />
+              <p>Aucun employé trouvé</p>
+              {search && (
+                <Button variant="outline" size="sm" onClick={() => setSearch('')}>
+                  Effacer la recherche
+                </Button>
               )}
-            </div>
+            </Empty>
           )}
         </div>
-      </main>
+      )}
 
       <UserHoursDialog
         open={hoursDialog.isOpen('hours')}
         onOpenChange={hoursDialog.onOpenChange}
         user={hoursDialog.item}
       />
-    </div>
+    </PageContainer>
   )
 }

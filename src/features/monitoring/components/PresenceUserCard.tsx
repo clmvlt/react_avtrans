@@ -36,7 +36,7 @@ type PresenceUserCardProps = {
 
 /**
  * Carte d'un employé : lien vers ses pointages, avatar avec pastille de présence, heure de début
- * et heures du jour ; menu « ⋮ » et clic droit.
+ * et heures du jour (aussi sur téléphone) ; menu « ⋮ » et clic droit.
  */
 export function PresenceUserCard({ user, color, actions }: PresenceUserCardProps) {
   const statusText = getStatusText(user.status)
@@ -47,7 +47,7 @@ export function PresenceUserCard({ user, color, actions }: PresenceUserCardProps
       <div className="group relative animate-in duration-200 fade-in-0 zoom-in-95">
         <Link
           to={`/users/${user.uuid}/services`}
-          className="flex flex-col items-center gap-2 rounded-lg border bg-card p-3 text-center transition-all hover:shadow-md md:gap-3 md:p-4"
+          className="flex h-full flex-col items-center gap-2 rounded-xl border bg-card p-3 text-center transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:gap-3 md:p-4"
         >
           <div className="relative">
             <Avatar className="size-12 shrink-0 bg-muted md:size-14">
@@ -78,11 +78,11 @@ export function PresenceUserCard({ user, color, actions }: PresenceUserCardProps
 
           <div className="w-full text-xs text-muted-foreground">
             <span className={statusText.className}>{statusText.label}</span>
-            {start && <span className="hidden sm:inline"> · {formatTime(start)}</span>}
+            {start && <span> · {formatTime(start)}</span>}
           </div>
 
           {user.hoursToday !== undefined && user.hoursToday > 0 && (
-            <div className="hidden rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground sm:block">
+            <div className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
               {formatHoursToday(user.hoursToday)}
             </div>
           )}

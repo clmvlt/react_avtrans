@@ -1,3 +1,5 @@
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { useUsersLastVehiclesQuery } from '@/features/users/api/useUsersLastVehiclesQuery'
 import { useDeleteUserMutation } from '@/features/users/api/useDeleteUserMutation'
@@ -49,47 +51,49 @@ export default function UsersPage() {
   const isLoading = usersQuery.isPending || lastVehiclesQuery.isPending
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">
-          {isLoading ? (
-            <UsersPageSkeleton />
-          ) : usersQuery.isError ? (
-            <ErrorState
-              message={usersQuery.error.message || 'Erreur lors du chargement des utilisateurs'}
-              onRetry={() => void usersQuery.refetch()}
-              isRetrying={usersQuery.isFetching}
+    <PageContainer>
+      <PageHeader
+        title="Utilisateurs"
+        description="Activez les nouveaux comptes, modifiez les rôles et les heures contractuelles."
+      />
+      <div>
+        {isLoading ? (
+          <UsersPageSkeleton />
+        ) : usersQuery.isError ? (
+          <ErrorState
+            message={usersQuery.error.message || 'Erreur lors du chargement des utilisateurs'}
+            onRetry={() => void usersQuery.refetch()}
+            isRetrying={usersQuery.isFetching}
+          />
+        ) : (
+          <div className="space-y-4">
+            <PendingActivationSection
+              users={users.filter((user) => isPendingActivation(user))}
+              activatingUuid={activatingUuid}
+              onActivate={activate}
             />
-          ) : (
-            <div className="space-y-4">
-              <PendingActivationSection
-                users={users.filter((user) => isPendingActivation(user))}
-                activatingUuid={activatingUuid}
-                onActivate={activate}
-              />
-              <UsersToolbar
-                search={filters.search}
-                onSearchChange={filters.setSearch}
-                showHidden={filters.showHidden}
-                onShowHiddenChange={filters.setShowHidden}
-                hiddenCount={filters.hiddenCount}
-              />
-              <UserMobileList
-                users={filters.visibleUsers}
-                lastVehicles={lastVehiclesQuery.data}
-                actions={actions}
-              />
-              <UsersDataTable
-                users={filters.visibleUsers}
-                lastVehicles={lastVehiclesQuery.data}
-                actions={actions}
-                sorting={filters.sorting}
-                onSortingChange={filters.setSorting}
-              />
-            </div>
-          )}
-        </div>
-      </main>
+            <UsersToolbar
+              search={filters.search}
+              onSearchChange={filters.setSearch}
+              showHidden={filters.showHidden}
+              onShowHiddenChange={filters.setShowHidden}
+              hiddenCount={filters.hiddenCount}
+            />
+            <UserMobileList
+              users={filters.visibleUsers}
+              lastVehicles={lastVehiclesQuery.data}
+              actions={actions}
+            />
+            <UsersDataTable
+              users={filters.visibleUsers}
+              lastVehicles={lastVehiclesQuery.data}
+              actions={actions}
+              sorting={filters.sorting}
+              onSortingChange={filters.setSorting}
+            />
+          </div>
+        )}
+      </div>
 
       <DeleteUserDialog
         open={dialogs.isOpen('delete')}
@@ -113,6 +117,6 @@ export default function UsersPage() {
         onOpenChange={dialogs.onOpenChange}
         user={dialogs.item}
       />
-    </div>
+    </PageContainer>
   )
 }

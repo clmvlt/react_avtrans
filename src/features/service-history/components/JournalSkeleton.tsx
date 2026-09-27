@@ -5,7 +5,7 @@ export function JournalSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true" aria-label="Chargement du journal...">
       <Skeleton className="h-4 w-24" />
-      <div className="space-y-3 rounded-lg border p-4">
+      <div className="space-y-3 rounded-xl border bg-card p-4">
         {Array.from({ length: 6 }, (_, index) => (
           <div key={index} className="flex items-center gap-3">
             <Skeleton className="size-6 shrink-0 rounded-full" />

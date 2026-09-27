@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 
 const CUSTOM_PRESETS = [
@@ -8,9 +9,6 @@ const CUSTOM_PRESETS = [
   { label: '3 mois', months: 3 },
   { label: '6 mois', months: 6 },
 ]
-
-const DATE_INPUT_CLASS =
-  'h-8 rounded-md border border-input bg-background px-2 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-ring/20 focus:outline-none'
 
 type CustomRangeControlsProps = {
   startDate: string
@@ -24,7 +22,10 @@ type CustomRangeControlsProps = {
   error?: string
 }
 
-/** Mode « Personnalisé » : dates natives Du / Au, « Afficher » et préréglages 2, 3 et 6 mois. */
+/**
+ * Mode « Personnalisé » : dates natives Du / Au et « Afficher », puis raccourcis de 2, 3 et 6 mois
+ * à partir du début du mois courant.
+ */
 export function CustomRangeControls({
   startDate,
   endDate,
@@ -40,49 +41,52 @@ export function CustomRangeControls({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="flex items-center gap-2">
-        <label htmlFor={`${id}-start`} className="text-xs font-medium text-muted-foreground">
+        <label htmlFor={`${id}-start`} className="text-sm font-medium text-muted-foreground">
           Du
         </label>
-        <input
+        <Input
           id={`${id}-start`}
           type="date"
           value={startDate}
           onChange={(event) => onStartDateChange(event.target.value)}
-          className={DATE_INPUT_CLASS}
+          className="w-auto"
         />
       </div>
       <div className="flex items-center gap-2">
-        <label htmlFor={`${id}-end`} className="text-xs font-medium text-muted-foreground">
+        <label htmlFor={`${id}-end`} className="text-sm font-medium text-muted-foreground">
           Au
         </label>
-        <input
+        <Input
           id={`${id}-end`}
           type="date"
           value={endDate}
           onChange={(event) => onEndDateChange(event.target.value)}
-          className={DATE_INPUT_CLASS}
+          className="w-auto"
         />
       </div>
-      <Button type="button" size="sm" disabled={!isValid} aria-label="Afficher" onClick={onApply}>
-        <Search className="size-3.5" />
-        <span className="hidden sm:inline">Afficher</span>
+      <Button type="button" disabled={!isValid} onClick={onApply}>
+        <Search className="size-4" />
+        Afficher
       </Button>
-      <Separator orientation="vertical" className="mx-1 hidden h-6 md:block" />
-      <div className="flex items-center gap-1">
+      <Separator
+        orientation="vertical"
+        className="mx-1 hidden data-[orientation=vertical]:h-6 md:block"
+      />
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-sm text-muted-foreground">À partir de ce mois :</span>
         {CUSTOM_PRESETS.map((preset) => (
           <Button
             key={preset.label}
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 px-2 text-xs"
             onClick={() => onPreset(preset.months)}
           >
             {preset.label}
           </Button>
         ))}
       </div>
-      {error && <p className="w-full text-xs text-destructive">{error}</p>}
+      {error && <p className="w-full text-sm text-destructive">{error}</p>}
     </div>
   )
 }

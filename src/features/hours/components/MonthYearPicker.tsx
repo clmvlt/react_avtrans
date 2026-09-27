@@ -37,24 +37,25 @@ export function MonthYearPicker({
     onChange(month === 12 ? { month: 1, year: year + 1 } : { month: month + 1, year })
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        aria-label="Mois précédent"
-        disabled={disabled}
-        onClick={goToPrevious}
-      >
-        <ChevronLeft className="size-4" />
-      </Button>
+    <div className="flex flex-wrap items-center gap-2">
+      {/* Flèches et listes sur une ligne ; « Mois actuel » passe dessous sur téléphone */}
+      <div className="flex w-full items-center gap-2 sm:w-auto">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          aria-label="Mois précédent"
+          disabled={disabled}
+          onClick={goToPrevious}
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
 
-      <div className="flex items-center gap-2">
         <Select
           value={String(month)}
           onValueChange={(value) => onChange({ month: parseInt(value) || 1, year })}
         >
-          <SelectTrigger className="w-[140px]" aria-label="Mois">
+          <SelectTrigger className="min-w-0 flex-1 sm:w-[140px] sm:flex-none" aria-label="Mois">
             <SelectValue placeholder="Mois" />
           </SelectTrigger>
           <SelectContent>
@@ -69,7 +70,7 @@ export function MonthYearPicker({
           value={String(year)}
           onValueChange={(value) => onChange({ month, year: parseInt(value) || year })}
         >
-          <SelectTrigger className="w-[100px]" aria-label="Année">
+          <SelectTrigger className="w-[92px] shrink-0" aria-label="Année">
             <SelectValue placeholder="Année" />
           </SelectTrigger>
           <SelectContent>
@@ -80,26 +81,20 @@ export function MonthYearPicker({
             ))}
           </SelectContent>
         </Select>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          aria-label="Mois suivant"
+          disabled={disabled}
+          onClick={goToNext}
+        >
+          <ChevronRight className="size-4" />
+        </Button>
       </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        aria-label="Mois suivant"
-        disabled={disabled}
-        onClick={goToNext}
-      >
-        <ChevronRight className="size-4" />
-      </Button>
-
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={disabled}
-        onClick={onCurrentMonth}
-      >
+      <Button type="button" variant="outline" disabled={disabled} onClick={onCurrentMonth}>
         Mois actuel
       </Button>
     </div>

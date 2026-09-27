@@ -2,15 +2,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 const SKELETON_ROWS = 6
 
-/** Chargement initial du planning : barre d'export et grille fantômes. */
+/** Chargement initial du planning : compteur et grille fantômes. */
 export function PlanningSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Chargement du planning...">
-      <div className="mb-4 flex items-center justify-between">
-        <Skeleton className="h-4 w-40" />
-        <Skeleton className="h-8 w-28" />
-      </div>
-      <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
+    <div className="space-y-4" aria-busy="true" aria-label="Chargement du planning...">
+      <Skeleton className="h-4 w-40" />
+      <div className="overflow-hidden rounded-xl border bg-card">
         <div className="flex border-b bg-muted/50 px-4 py-3">
           <Skeleton className="h-8 w-full" />
         </div>

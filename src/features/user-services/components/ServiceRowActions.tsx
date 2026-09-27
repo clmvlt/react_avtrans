@@ -40,6 +40,7 @@ export function ServiceRowActions({ service, handlers }: ServiceRowActionsProps)
             size="icon-sm"
             onClick={() => handlers.onLocation(service)}
             title="Localisation"
+            aria-label="Localisation"
             className={invalidLocation ? 'text-destructive hover:text-destructive' : ''}
           >
             <MapPin className="size-3.5" />
@@ -50,6 +51,7 @@ export function ServiceRowActions({ service, handlers }: ServiceRowActionsProps)
           size="icon-sm"
           onClick={() => handlers.onHistory(service.uuid)}
           title="Historique"
+          aria-label="Historique"
         >
           <History className="size-3.5" />
         </Button>
@@ -58,6 +60,7 @@ export function ServiceRowActions({ service, handlers }: ServiceRowActionsProps)
           size="icon-sm"
           onClick={() => handlers.onEdit(service)}
           title="Modifier"
+          aria-label="Modifier"
         >
           <Pencil className="size-3.5" />
         </Button>
@@ -67,6 +70,7 @@ export function ServiceRowActions({ service, handlers }: ServiceRowActionsProps)
           className="hover:text-destructive"
           onClick={() => handlers.onDelete(service)}
           title="Supprimer"
+          aria-label="Supprimer"
         >
           <Trash2 className="size-3.5" />
         </Button>
@@ -74,7 +78,12 @@ export function ServiceRowActions({ service, handlers }: ServiceRowActionsProps)
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-sm" className="md:hidden" aria-label="Actions">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-label="Actions du pointage"
+          >
             <MoreVertical className="size-4" />
           </Button>
         </DropdownMenuTrigger>

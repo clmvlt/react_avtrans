@@ -25,7 +25,7 @@ export function ServiceModificationCard({ modification, onOpen }: ServiceModific
     <div
       role="button"
       tabIndex={0}
-      className="flex cursor-pointer flex-col gap-3 rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="flex cursor-pointer flex-col gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
       onClick={open}
       onKeyDown={handleKeyDown}
     >

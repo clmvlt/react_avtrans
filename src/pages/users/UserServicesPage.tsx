@@ -1,4 +1,9 @@
+import { Plus } from 'lucide-react'
 import { useParams } from 'react-router'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { UserAvatar } from '@/components/shared/UserAvatar'
+import { Button } from '@/components/ui/button'
 import { useServiceHistory } from '@/features/service-history/hooks/useServiceHistory'
 import { useDeleteAdminServiceMutation } from '@/features/user-services/api/useAdminServiceMutations'
 import { useUserActiveServiceQuery } from '@/features/user-services/api/useUserActiveServiceQuery'
@@ -9,7 +14,6 @@ import { ServiceLocationDialog } from '@/features/user-services/components/Servi
 import type { ServiceRowHandlers } from '@/features/user-services/components/ServiceRowActions'
 import { ServicesDayList } from '@/features/user-services/components/ServicesDayList'
 import { ServicesFilters } from '@/features/user-services/components/ServicesFilters'
-import { UserServicesHeader } from '@/features/user-services/components/UserServicesHeader'
 import { UserStatusCard } from '@/features/user-services/components/UserStatusCard'
 import { WorkedHoursStats } from '@/features/user-services/components/WorkedHoursStats'
 import { useAdminServiceActions } from '@/features/user-services/hooks/useAdminServiceActions'
@@ -22,9 +26,10 @@ import { useUserQuery } from '@/features/users/api/useUserQuery'
 const ALL_HOURS_PARAMS = {}
 
 /**
- * `/users/:uuid/services` (admin) : pointages d'un employé (UserServices.vue). Un changement
- * d'employé sans quitter la page (« Voir ses pointages » de l'historique) remonte le contenu :
- * filtres, page et dialogs repartent de zéro, comme le watcher du Vue.
+ * `/users/:uuid/services` (admin) : pointages d'un employé (UserServices.vue). En-tête au nom de
+ * l'employé (squelette pendant son chargement, « Employé » s'il échoue), retour vers Utilisateurs.
+ * Un changement d'employé sans quitter la page (« Voir ses pointages » de l'historique) remonte
+ * le contenu : filtres, page et dialogs repartent de zéro, comme le watcher du Vue.
  */
 export default function UserServicesPage() {
   const { uuid = '' } = useParams()
@@ -53,7 +58,7 @@ function UserServicesContent({ userUuid }: UserServicesContentProps) {
   )
 
   const user = userQuery.data
-  const userName = user ? `${user.firstName || ''} ${user.lastName || ''}` : ''
+  const userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : ''
 
   const handlers: ServiceRowHandlers = {
     onLocation: dialogs.openLocation,
@@ -74,47 +79,68 @@ function UserServicesContent({ userUuid }: UserServicesContentProps) {
     })
   }
 
+  // Titre : avatar + nom ; squelette en `span` pendant le chargement (pas de `div` dans le h1)
+  const title = userName ? (
+    <span className="flex min-w-0 items-center gap-3">
+      <UserAvatar user={user} aria-hidden />
+      <span className="truncate">{userName}</span>
+    </span>
+  ) : userQuery.isPending ? (
+    <span className="inline-block h-8 w-56 max-w-full animate-pulse rounded-md bg-accent align-middle">
+      <span className="sr-only">Chargement de l&apos;employé...</span>
+    </span>
+  ) : (
+    'Employé'
+  )
+
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1200px] space-y-6">
-          <UserServicesHeader name={userName} />
+    <PageContainer size="md">
+      <PageHeader
+        title={title}
+        description="Pointages de l'employé : pointez à sa place, ajoutez ou corrigez ses services."
+        back={{ to: '/users', label: 'Utilisateurs' }}
+        actions={
+          <Button size="sm" onClick={() => dialogs.openCreate()}>
+            <Plus className="size-4" />
+            Ajouter un service
+          </Button>
+        }
+      />
 
-          <UserStatusCard
-            statusInfo={statusInfo}
-            isPending={actions.isPending}
-            onStartService={actions.startService}
-            onStartBreak={actions.startBreak}
-            onEndService={actions.endService}
-            onEndBreak={actions.endBreak}
-          />
+      <UserStatusCard
+        statusInfo={statusInfo}
+        isPending={actions.isPending}
+        onStartService={actions.startService}
+        onStartBreak={actions.startBreak}
+        onEndService={actions.endService}
+        onEndBreak={actions.endBreak}
+      />
 
-          {hoursQuery.data && <WorkedHoursStats hours={hoursQuery.data} />}
+      {hoursQuery.data && <WorkedHoursStats hours={hoursQuery.data} />}
 
-          <ServicesFilters
-            showFilters={filters.showFilters}
-            onToggleFilters={filters.toggleFilters}
-            filters={filters.draft}
-            onFiltersChange={filters.setDraft}
-            hasActiveFilters={filters.hasActiveFilters}
-            onReset={list.reset}
-            onApply={list.apply}
-            onAdd={() => dialogs.openCreate()}
-          />
+      <section aria-label="Services" className="space-y-4">
+        <ServicesFilters
+          showFilters={filters.showFilters}
+          onToggleFilters={filters.toggleFilters}
+          filters={filters.draft}
+          onFiltersChange={filters.setDraft}
+          hasActiveFilters={filters.hasActiveFilters}
+          onReset={list.reset}
+          onApply={list.apply}
+        />
 
-          <ServicesDayList
-            data={servicesQuery.data}
-            isLoading={servicesQuery.isPending}
-            isFetching={servicesQuery.isFetching}
-            isError={servicesQuery.isError}
-            onRetry={() => list.reload(0)}
-            onPageChange={list.goToPage}
-            handlers={handlers}
-            onAdd={() => dialogs.openCreate()}
-            onAddForDate={dialogs.openCreate}
-          />
-        </div>
-      </main>
+        <ServicesDayList
+          data={servicesQuery.data}
+          isLoading={servicesQuery.isPending}
+          isFetching={servicesQuery.isFetching}
+          isError={servicesQuery.isError}
+          onRetry={() => list.reload(0)}
+          onPageChange={list.goToPage}
+          handlers={handlers}
+          onAdd={() => dialogs.openCreate()}
+          onAddForDate={dialogs.openCreate}
+        />
+      </section>
 
       <ServiceFormDialog
         open={dialogs.isOpen('form')}
@@ -135,6 +161,6 @@ function UserServicesContent({ userUuid }: UserServicesContentProps) {
         onOpenChange={dialogs.onOpenChange}
         location={dialogs.location}
       />
-    </div>
+    </PageContainer>
   )
 }

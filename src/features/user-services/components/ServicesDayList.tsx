@@ -51,9 +51,9 @@ export function ServicesDayList({
   const days = groupServicesByDay(services)
 
   return (
-    <>
+    <div className="space-y-4">
       {days.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {days.map((day) => (
             <ServiceDayCard
               key={day.date}
@@ -64,11 +64,11 @@ export function ServicesDayList({
           ))}
         </div>
       ) : (
-        <Empty className="gap-4 p-0 py-16 md:p-0 md:py-16">
+        <Empty className="gap-4 rounded-xl border px-4 py-16 md:px-4 md:py-16">
           <ClipboardList className="size-10 text-muted-foreground opacity-50" />
           <p className="text-muted-foreground">Aucun service trouvé</p>
           <Button onClick={onAdd}>
-            <Plus className="mr-2 size-4" />
+            <Plus className="size-4" />
             Ajouter un service
           </Button>
         </Empty>
@@ -81,8 +81,9 @@ export function ServicesDayList({
           totalElements={data.totalElements}
           onPageChange={onPageChange}
           disabled={isFetching}
+          className="rounded-xl px-4 py-2"
         />
       )}
-    </>
+    </div>
   )
 }

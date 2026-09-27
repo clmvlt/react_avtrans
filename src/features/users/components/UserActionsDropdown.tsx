@@ -15,7 +15,7 @@ type UserActionsDropdownProps = {
   actions: UserActions
 }
 
-/** Menu « ⋮ » des cartes mobiles : mêmes actions que le clic droit du tableau. */
+/** Menu « ⋮ » d'un utilisateur (carte mobile et colonne Actions du tableau), comme le clic droit. */
 export function UserActionsDropdown({ user, actions }: UserActionsDropdownProps) {
   return (
     <DropdownMenu>

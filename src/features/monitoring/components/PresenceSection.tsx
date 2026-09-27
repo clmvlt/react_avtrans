@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import type { UserWithStatusDTO } from '@/models'
 import type { MonitoringActions } from '../hooks/useMonitoringActions'
 import { PresenceGrid } from './PresenceGrid'
@@ -17,10 +18,11 @@ export function PresenceSection({ title, dotClass, users, color, actions }: Pres
   if (users.length === 0) return null
 
   return (
-    <section>
-      <h2 className="mb-3 flex items-center gap-2 text-sm font-medium tracking-wide text-muted-foreground uppercase">
-        <span className={`size-2 rounded-full ${dotClass}`} />
-        {title} ({users.length})
+    <section className="space-y-3">
+      <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+        <span className={cn('size-2.5 rounded-full', dotClass)} />
+        {title}
+        <span className="text-sm font-normal text-muted-foreground">({users.length})</span>
       </h2>
       <PresenceGrid users={users} color={color} actions={actions} />
     </section>
