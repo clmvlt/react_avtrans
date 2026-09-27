@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { PlanningPeriodController } from '../hooks/usePlanningPeriod'
 import { CustomRangeControls } from './CustomRangeControls'
@@ -7,23 +8,33 @@ type PlanningToolbarProps = {
   period: PlanningPeriodController
   /** Libellé de la période (semaine ou mois). */
   periodLabel: string
+  /** Résumé de la grille affichée (« 12 employés · 30 jours · 1 férié »), à droite. */
+  summary?: string
+  /** Actions de la page (export), au bout de la barre. */
+  actions?: ReactNode
 }
 
 /**
- * Barre d'outils du planning, sous l'en-tête de la page : type de période, puis navigation ou
- * plage personnalisée. À partir de `md`, elle reste collée sous l'en-tête de l'application
- * (`top-14`, sous son `z-30`) pendant le défilement de la grille.
+ * Barre d'outils compacte du planning, en haut de la page (qui n'a pas d'en-tête : la grille
+ * prend toute la place) : type de période, navigation ou plage personnalisée, résumé de la
+ * grille, puis les actions (export).
  */
-export function PlanningToolbar({ period, periodLabel }: PlanningToolbarProps) {
+export function PlanningToolbar({ period, periodLabel, summary, actions }: PlanningToolbarProps) {
   const isCustom = period.period.periodType === 'custom'
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 md:sticky md:top-14 md:z-20 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-4">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border bg-card p-2">
       <Tabs value={period.period.periodType} onValueChange={period.changePeriodType}>
-        <TabsList className="max-md:w-full">
-          <TabsTrigger value="week">Semaine</TabsTrigger>
-          <TabsTrigger value="month">Mois</TabsTrigger>
-          <TabsTrigger value="custom">Personnalisé</TabsTrigger>
+        <TabsList className="h-8 max-sm:w-full">
+          <TabsTrigger value="week" className="text-xs">
+            Semaine
+          </TabsTrigger>
+          <TabsTrigger value="month" className="text-xs">
+            Mois
+          </TabsTrigger>
+          <TabsTrigger value="custom" className="text-xs">
+            Personnalisé
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -46,6 +57,11 @@ export function PlanningToolbar({ period, periodLabel }: PlanningToolbarProps) {
           onToday={period.goToToday}
         />
       )}
+
+      <div className="ml-auto flex items-center gap-3">
+        {summary && <p className="text-xs text-muted-foreground max-lg:hidden">{summary}</p>}
+        {actions}
+      </div>
     </div>
   )
 }

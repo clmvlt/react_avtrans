@@ -1,59 +1,63 @@
 import { cn } from '@/lib/utils'
-import type { PlanningDate } from '../lib/planningDates'
+import type { PlanningDate, PlanningDensity } from '../lib/planningDates'
 
 type PlanningDayHeaderCellProps = {
   date: PlanningDate
-  /** Plus de 31 jours : initiale du jour, cellule plus basse. */
-  compact: boolean
+  density: PlanningDensity
+  /** Premier jour affiché : pas de séparateur de semaine. */
+  isFirst: boolean
 }
 
-/** En-tête d'un jour : aujourd'hui en violet, férié en rouge (●), week-end grisé. */
-export function PlanningDayHeaderCell({ date, compact }: PlanningDayHeaderCellProps) {
+/**
+ * En-tête d'un jour : initiale (ou jour abrégé en vue semaine) et numéro, numéro d'aujourd'hui
+ * sur pastille, férié en rouge sur hachures (nom affiché en vue semaine, sinon en info-bulle),
+ * week-end estompé, séparateur marqué le lundi.
+ */
+export function PlanningDayHeaderCell({ date, density, isFirst }: PlanningDayHeaderCellProps) {
   const { isToday, isHoliday, isWeekend } = date
+  const wide = density === 'week'
 
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center border-l px-0.5',
-        compact ? 'min-h-[40px] py-1' : 'min-h-[56px] px-1 py-2',
-        isToday && 'bg-primary',
-        !isToday && isHoliday && 'bg-destructive/10',
-        !isToday && !isHoliday && isWeekend && 'bg-muted/80',
+        'flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-border/60 px-0.5 py-1',
+        date.dayOfWeek === 1 && !isFirst && 'border-l-foreground/25',
+        isHoliday && 'bg-hatch-holiday',
       )}
-      title={date.holidayName || date.dateStr}
+      title={isHoliday ? `${date.label} · Férié : ${date.holidayName}` : date.label}
     >
       <span
         className={cn(
-          'leading-tight uppercase',
-          compact ? 'text-[9px]' : 'text-xs',
-          isToday && 'text-primary-foreground',
-          !isToday && isHoliday && 'text-destructive',
-          !isToday && !isHoliday && isWeekend && 'text-muted-foreground/60',
-          !isToday && !isHoliday && !isWeekend && 'text-muted-foreground',
+          'leading-none uppercase',
+          wide ? 'text-[11px]' : 'text-[10px]',
+          isHoliday ? 'font-semibold text-destructive' : 'text-muted-foreground',
+          !isHoliday && isWeekend && 'text-muted-foreground/60',
         )}
       >
-        {compact ? date.dayName.charAt(0) : date.dayName}
+        {wide ? (
+          <>
+            <span className="sm:hidden">{date.dayName.charAt(0)}</span>
+            <span className="max-sm:hidden">{date.dayName.replace('.', '')}</span>
+          </>
+        ) : (
+          date.dayName.charAt(0)
+        )}
       </span>
       <span
         className={cn(
-          'leading-tight font-bold',
-          compact ? 'text-xs' : 'text-base',
-          isToday && 'text-primary-foreground',
+          'flex items-center justify-center rounded-full leading-none font-semibold tabular-nums',
+          wide ? 'size-6 text-sm' : density === 'month' ? 'size-5 text-xs' : 'size-4 text-[10px]',
+          isToday && 'bg-primary text-primary-foreground',
           !isToday && isHoliday && 'text-destructive',
-          !isToday && !isHoliday && isWeekend && 'text-muted-foreground/60',
+          !isToday && !isHoliday && isWeekend && 'text-muted-foreground/70',
           !isToday && !isHoliday && !isWeekend && 'text-foreground',
         )}
       >
         {date.dayNumber}
       </span>
-      {isHoliday && (
-        <span
-          className={cn(
-            'mt-0.5 text-[6px]',
-            isToday ? 'text-primary-foreground' : 'text-destructive',
-          )}
-        >
-          ●
+      {wide && isHoliday && (
+        <span className="max-w-full truncate text-[10px] leading-tight font-medium text-destructive max-sm:hidden">
+          {date.holidayName}
         </span>
       )}
     </div>

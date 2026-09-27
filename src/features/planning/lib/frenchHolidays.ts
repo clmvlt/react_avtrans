@@ -1,10 +1,13 @@
+import { toLocalDateKey } from '@/lib/dates'
+
 /**
- * Jours fériés français du planning (port exact de Planning.vue).
+ * Jours fériés français du planning : les 11 jours légaux (hors Alsace-Moselle), comme
+ * `JoursFeriesService` de l'API.
  *
- * Bug B-03 reproduit (MIGRATION.md 8.2, non autorisé à la correction) : les fériés mobiles
- * passent par `toISOString()` sur un minuit **local**. En France (UTC+1 / UTC+2), la clé obtenue
- * est celle de la veille : Lundi de Pâques affiché le dimanche, Ascension le mercredi, Lundi de
- * Pentecôte le dimanche.
+ * Bug B-03 corrigé (MIGRATION.md 8.2, demande du propriétaire du 27/09/2026) : le Vue calculait
+ * les clés des fériés mobiles avec `toISOString()` sur un minuit local, d'où la veille en France
+ * (lundi de Pâques affiché le dimanche, Ascension le mercredi, Pentecôte le dimanche). Les clés
+ * sont désormais locales.
  */
 
 /** Date de Pâques (algorithme de Meeus/Jones/Butcher), à minuit local. */
@@ -26,6 +29,10 @@ export function getEasterDate(year: number): Date {
   return new Date(year, month - 1, day)
 }
 
+/** Clé locale `YYYY-MM-DD` de Pâques + `days` jours. */
+const easterPlus = (easter: Date, days: number) =>
+  toLocalDateKey(new Date(easter.getFullYear(), easter.getMonth(), easter.getDate() + days))
+
 /** Fériés d'une année : clé `YYYY-MM-DD` → nom. */
 export function getFrenchHolidays(year: number): Map<string, string> {
   const holidays = new Map<string, string>()
@@ -40,20 +47,11 @@ export function getFrenchHolidays(year: number): Map<string, string> {
   holidays.set(`${year}-11-11`, 'Armistice 1918')
   holidays.set(`${year}-12-25`, 'Noël')
 
-  // Jours fériés mobiles (basés sur Pâques) : clés en UTC, comme le Vue (B-03)
+  // Jours fériés mobiles (basés sur Pâques)
   const easter = getEasterDate(year)
-
-  const easterMonday = new Date(easter)
-  easterMonday.setDate(easter.getDate() + 1)
-  holidays.set(easterMonday.toISOString().split('T')[0]!, 'Lundi de Pâques')
-
-  const ascension = new Date(easter)
-  ascension.setDate(easter.getDate() + 39)
-  holidays.set(ascension.toISOString().split('T')[0]!, 'Ascension')
-
-  const pentecostMonday = new Date(easter)
-  pentecostMonday.setDate(easter.getDate() + 50)
-  holidays.set(pentecostMonday.toISOString().split('T')[0]!, 'Lundi de Pentecôte')
+  holidays.set(easterPlus(easter, 1), 'Lundi de Pâques')
+  holidays.set(easterPlus(easter, 39), 'Ascension')
+  holidays.set(easterPlus(easter, 50), 'Lundi de Pentecôte')
 
   return holidays
 }

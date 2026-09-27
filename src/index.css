@@ -269,3 +269,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }
+
+/* Planning : colonne d'un jour férié, hachurée en rouge pâle (clair et sombre). */
+@utility bg-hatch-holiday {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--destructive) 16%, transparent) 0 4px,
+    transparent 4px 8px
+  );
+}

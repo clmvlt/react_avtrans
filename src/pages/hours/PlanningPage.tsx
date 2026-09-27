@@ -1,6 +1,5 @@
 import { CalendarX2 } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { useAbsenceTypesQuery } from '@/features/absences/api/useAbsenceTypesQuery'
@@ -20,7 +19,11 @@ const NO_ABSENCE_TYPES: AbsenceTypeDTO[] = []
 
 /**
  * Planning des absences (admin) : semaine, mois ou plage personnalisée, export PDF / PNG.
- * L'export, dans l'en-tête, n'est actif que lorsque la grille de la période choisie est affichée.
+ * À la demande du propriétaire, la page n'a pas d'en-tête visible (titre dans le fil d'Ariane et
+ * pour les lecteurs d'écran) : la barre d'outils porte l'export et la grille prend toute la page.
+ * L'export n'est actif que lorsque la grille de la période choisie est affichée. La grille tient
+ * dans la fenêtre et défile à l'intérieur ; jours fériés et jours décomptés suivent les règles de
+ * l'API (D8).
  */
 export default function PlanningPage() {
   const period = usePlanningPeriod()
@@ -40,6 +43,16 @@ export default function PlanningPage() {
   })
   // Même condition d'affichage que la grille (le bouton était dans la grille dans le Vue)
   const hasGrid = planningQuery.isSuccess && users.length > 0
+  const holidayCount = dates.filter((date) => date.isHoliday).length
+  const summary = hasGrid
+    ? [
+        `${users.length} employé${users.length > 1 ? 's' : ''}`,
+        `${dates.length} jours`,
+        holidayCount > 0 && `${holidayCount} férié${holidayCount > 1 ? 's' : ''}`,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : undefined
 
   const renderContent = () => {
     if (planningQuery.isPending) return <PlanningSkeleton />
@@ -78,26 +91,23 @@ export default function PlanningPage() {
     }
 
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          {users.length} employé{users.length > 1 ? 's' : ''} · {dates.length} jours
-        </p>
-        <PlanningGrid
-          users={users}
-          dates={dates}
-          absenceTypes={absenceTypes}
-          onAbsenceClick={absenceDialog.openAbsence}
-          isStale={planningQuery.isPlaceholderData}
-        />
-      </div>
+      <PlanningGrid
+        users={users}
+        dates={dates}
+        absenceTypes={absenceTypes}
+        onAbsenceClick={absenceDialog.openAbsence}
+        isStale={planningQuery.isPlaceholderData}
+      />
     )
   }
 
   return (
-    <PageContainer size="full">
-      <PageHeader
-        title="Planning"
-        description="Les absences de l'équipe, jour par jour."
+    <PageContainer size="full" className="gap-3 py-3 md:py-4">
+      <h1 className="sr-only">Planning</h1>
+      <PlanningToolbar
+        period={period}
+        periodLabel={periodLabel}
+        summary={summary}
         actions={
           <PlanningExportMenu
             isExporting={isExporting}
@@ -114,11 +124,7 @@ export default function PlanningPage() {
           />
         }
       />
-
-      <div className="space-y-4">
-        <PlanningToolbar period={period} periodLabel={periodLabel} />
-        {renderContent()}
-      </div>
+      {renderContent()}
 
       <AbsenceDetailDialog controller={absenceDialog} />
     </PageContainer>

@@ -13,10 +13,12 @@ import {
 
 export type PlanningPeriodFields = {
   periodType: PlanningPeriodType
+  /** Année civile du mode mois. */
   year: number
   month: number
-  /** Semaine ISO (combinée à l'année civile, comme le Vue : B-03). */
+  /** Semaine ISO et son année (B-03 corrigé : le Vue les combinait avec l'année civile). */
   week: number
+  weekYear: number
   /** Plage personnalisée en cours de saisie (appliquée par « Afficher » ou un préréglage). */
   customStartDate: string
   customEndDate: string

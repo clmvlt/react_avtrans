@@ -1,69 +1,102 @@
-import { CalendarDays } from 'lucide-react'
 import { Link } from 'react-router'
 import { UserAvatar } from '@/components/shared/UserAvatar'
-import { Button } from '@/components/ui/button'
+import { formatHeures } from '@/features/absences/lib/absenceDecompte'
+import { cn } from '@/lib/utils'
 import type { AbsenceDTO } from '@/models'
 import type { PlanningUserDTO } from '@/services/absences'
-import { indexAbsencesByDate } from '../lib/absenceIndex'
+import type { PlanningAbsenceDay, UserPeriodSummary } from '../lib/absenceDays'
 import type { PlanningDate } from '../lib/planningDates'
+import type { PlanningLayout } from '../lib/planningLayout'
 import { PlanningDayCell } from './PlanningDayCell'
 
 type PlanningUserRowProps = {
   user: PlanningUserDTO
   dates: PlanningDate[]
-  gridColumns: string
-  compact: boolean
+  dayMap: Map<string, PlanningAbsenceDay>
+  summary: UserPeriodSummary
+  layout: PlanningLayout
   onAbsenceClick: (absence: AbsenceDTO) => void
 }
 
-/** Ligne d'un employé : identité, rôle, lien vers ses absences, puis une case par jour. */
+const numberFormat = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
+
+/**
+ * Ligne d'un employé : nom collé à gauche (lien vers ses absences), une case par jour, total de
+ * la période collé à droite (jours et heures créditées des absences approuvées, repère des jours
+ * en attente).
+ */
 export function PlanningUserRow({
   user,
   dates,
-  gridColumns,
-  compact,
+  dayMap,
+  summary,
+  layout,
   onAbsenceClick,
 }: PlanningUserRowProps) {
-  const absenceByDate = indexAbsencesByDate(user.absences, dates)
+  const fullName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
+  const shortName = `${user.firstName ?? ''} ${user.lastName?.charAt(0) ?? ''}.`.trim()
+  const totalTitle = [
+    `${numberFormat.format(summary.jours)} j décomptés, ${formatHeures(summary.heures)} créditées (absences approuvées)`,
+    summary.joursEnAttente > 0 && `${numberFormat.format(summary.joursEnAttente)} j en attente`,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
-    <div className="grid border-b last:border-b-0" style={{ gridTemplateColumns: gridColumns }}>
-      {/* Colonne des noms non collante : parité Vue (en mobile, le défilement masque les noms) */}
-      <div className="flex items-center gap-3 border-r bg-card px-4 py-3">
-        <UserAvatar user={user} size="md" />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-medium text-foreground">
-            {user.firstName} {user.lastName}
-          </span>
-          {user.role && (
-            <span
-              className="text-xs font-medium"
-              style={user.role.color ? { color: user.role.color } : undefined}
-            >
-              {user.role.nom}
-            </span>
-          )}
-        </div>
-        <Button variant="ghost" size="icon-sm" asChild>
-          <Link
-            to={`/absences?userUuid=${user.uuid}`}
-            title="Voir les absences"
-            aria-label="Voir les absences"
-          >
-            <CalendarDays className="size-3.5" />
-          </Link>
-        </Button>
+    <div
+      className={cn('group/row grid border-b border-border/60 last:border-b-0', layout.rowClass)}
+      style={{ gridTemplateColumns: layout.template }}
+    >
+      <div className="sticky left-0 z-10 flex min-w-0 items-center gap-2 border-r bg-card px-2 group-hover/row:bg-muted sm:px-3">
+        <UserAvatar
+          user={user}
+          size="sm"
+          className={cn('shrink-0 max-sm:hidden', layout.density === 'dense' ? 'size-5' : 'size-6')}
+        />
+        <Link
+          to={`/absences?userUuid=${user.uuid}`}
+          className="min-w-0 truncate rounded-sm text-sm font-medium text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          title={`${fullName}${user.role?.nom ? ` · ${user.role.nom}` : ''} · voir ses absences`}
+        >
+          <span className="sm:hidden">{shortName}</span>
+          <span className="max-sm:hidden">{fullName}</span>
+        </Link>
       </div>
+
       {dates.map((date, index) => (
         <PlanningDayCell
-          // dateStr peut être dupliqué (B-03) : l'index garantit une clé unique
-          key={`${date.dateStr}-${index}`}
+          key={date.dateStr}
           date={date}
-          absence={absenceByDate.get(date.dateStr)}
-          compact={compact}
+          day={dayMap.get(date.dateStr)}
+          density={layout.density}
+          userName={fullName}
+          isFirst={index === 0}
           onAbsenceClick={onAbsenceClick}
         />
       ))}
+
+      <div
+        className="sticky right-0 z-10 flex min-w-0 flex-col items-end justify-center border-l bg-card px-2 leading-tight tabular-nums group-hover/row:bg-muted sm:px-3"
+        title={totalTitle}
+      >
+        {summary.jours > 0 || summary.joursEnAttente > 0 ? (
+          <>
+            <span className="truncate text-[11px] font-semibold text-foreground sm:text-xs">
+              {summary.jours > 0 ? formatHeures(summary.heures) : '—'}
+            </span>
+            <span className="truncate text-[10px] text-muted-foreground">
+              {summary.jours > 0 && `${numberFormat.format(summary.jours)} j`}
+              {summary.joursEnAttente > 0 && (
+                <span className="text-warning">
+                  {summary.jours > 0 && ' '}+{numberFormat.format(summary.joursEnAttente)} j
+                </span>
+              )}
+            </span>
+          </>
+        ) : (
+          <span className="text-xs text-muted-foreground">—</span>
+        )}
+      </div>
     </div>
   )
 }

@@ -41,7 +41,7 @@ export function CustomRangeControls({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="flex items-center gap-2">
-        <label htmlFor={`${id}-start`} className="text-sm font-medium text-muted-foreground">
+        <label htmlFor={`${id}-start`} className="text-xs font-medium text-muted-foreground">
           Du
         </label>
         <Input
@@ -49,11 +49,11 @@ export function CustomRangeControls({
           type="date"
           value={startDate}
           onChange={(event) => onStartDateChange(event.target.value)}
-          className="w-auto"
+          className="h-8 w-auto"
         />
       </div>
       <div className="flex items-center gap-2">
-        <label htmlFor={`${id}-end`} className="text-sm font-medium text-muted-foreground">
+        <label htmlFor={`${id}-end`} className="text-xs font-medium text-muted-foreground">
           Au
         </label>
         <Input
@@ -61,19 +61,19 @@ export function CustomRangeControls({
           type="date"
           value={endDate}
           onChange={(event) => onEndDateChange(event.target.value)}
-          className="w-auto"
+          className="h-8 w-auto"
         />
       </div>
-      <Button type="button" disabled={!isValid} onClick={onApply}>
+      <Button type="button" size="sm" disabled={!isValid} onClick={onApply}>
         <Search className="size-4" />
         Afficher
       </Button>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden data-[orientation=vertical]:h-6 md:block"
+        className="mx-0.5 hidden data-[orientation=vertical]:h-5 md:block"
       />
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-sm text-muted-foreground">À partir de ce mois :</span>
+        <span className="text-xs text-muted-foreground">À partir de ce mois :</span>
         {CUSTOM_PRESETS.map((preset) => (
           <Button
             key={preset.label}
