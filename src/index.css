@@ -204,10 +204,6 @@
   /* Tailwind v4 ne met plus cursor:pointer sur les boutons : on le rétablit */
   button:not(:disabled),
   [role='button']:not(:disabled),
-  [role='menuitem']:not([data-disabled]),
-  [role='menuitemradio']:not([data-disabled]),
-  [role='menuitemcheckbox']:not([data-disabled]),
-  [role='option']:not([data-disabled]),
   label:has(> input[type='checkbox']),
   label:has(> input[type='radio']) {
     cursor: pointer;
@@ -246,6 +242,17 @@
     background-color: var(--selection);
     color: var(--selection-foreground);
   }
+}
+
+/* Entrées de menus (clic droit, menus « ⋮ », Select, Combobox) : main au survol. Les composants
+   shadcn posent `cursor-default`, une classe utilitaire qui l'emporte sur @layer base ; cette règle
+   est donc hors couche, pour s'appliquer partout sans modifier components/ui. Les entrées
+   désactivées (`aria-disabled`) gardent le curseur par défaut. */
+[role='menuitem']:not([aria-disabled='true']),
+[role='menuitemcheckbox']:not([aria-disabled='true']),
+[role='menuitemradio']:not([aria-disabled='true']),
+[role='option']:not([aria-disabled='true']) {
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar {

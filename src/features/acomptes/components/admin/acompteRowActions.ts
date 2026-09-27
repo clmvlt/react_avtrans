@@ -31,7 +31,7 @@ export function getAcompteMenuEntries(
     entries.push(
       { kind: 'item', action: 'approve', label: 'Approuver', icon: Check, tone: 'success' },
       { kind: 'item', action: 'reject', label: 'Refuser', icon: X, tone: 'destructive' },
-      { kind: 'separator', key: 'validation' },
+      { kind: 'separator', key: 'separator-validation' },
     )
   }
   if (acompte.status === 'APPROVED') {
@@ -45,7 +45,7 @@ export function getAcompteMenuEntries(
   }
   entries.push(
     { kind: 'item', action: 'details', label: 'Détails', icon: Eye },
-    { kind: 'separator', key: 'delete' },
+    { kind: 'separator', key: 'separator-delete' },
     { kind: 'item', action: 'delete', label: 'Supprimer', icon: Trash2, tone: 'destructive' },
   )
   return entries

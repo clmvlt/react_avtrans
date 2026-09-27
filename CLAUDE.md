@@ -161,6 +161,7 @@ src/
 - **Tokens shadcn uniquement** (`bg-background`, `text-foreground`, `border-border`, `bg-primary`…), plus les tokens AVTRANS `success`, `warning`, `info`, `destructive-foreground`. Jamais les variables legacy de `theme.css` du Vue (`--color-bg-primary`…).
 - Syntaxe Tailwind v4 : `bg-linear-to-*` (et non `bg-gradient-to-*`), `shadow-xs`, etc.
 - Police : pile système reprise du Vue (`--font-sans` dans `index.css`), pas de police web.
+- Curseur main : boutons via `@layer base` ; entrées de menus (clic droit, « ⋮ », Select, Combobox) via une règle **hors couche** d'`index.css`, car les composants shadcn posent `cursor-default`. Ne pas ajouter `cursor-pointer` au cas par cas.
 
 ## Contrat d'API (services copiés tels quels : ne pas les « corriger »)
 - Token **opaque** (pas un JWT), qui n'expire pas ; pas de route logout. 401 → déconnexion, **sauf** si le message commence par `Access denied: Required role` (problème d'autorisation, pas d'authentification).

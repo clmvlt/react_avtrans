@@ -30,7 +30,7 @@ export function getAbsenceMenuEntries(absence: AbsenceDTO): AbsenceMenuEntry[] {
     entries.push(
       { kind: 'item', action: 'approve', label: 'Approuver', icon: Check, tone: 'success' },
       { kind: 'item', action: 'reject', label: 'Refuser', icon: X, tone: 'destructive' },
-      { kind: 'separator', key: 'validation' },
+      { kind: 'separator', key: 'separator-validation' },
     )
   }
   entries.push({ kind: 'item', action: 'details', label: 'Détails', icon: Eye })
@@ -38,7 +38,7 @@ export function getAbsenceMenuEntries(absence: AbsenceDTO): AbsenceMenuEntry[] {
     entries.push({ kind: 'item', action: 'edit', label: 'Modifier', icon: Pencil })
   }
   entries.push(
-    { kind: 'separator', key: 'delete' },
+    { kind: 'separator', key: 'separator-delete' },
     { kind: 'item', action: 'delete', label: 'Supprimer', icon: Trash2, tone: 'destructive' },
   )
   return entries
