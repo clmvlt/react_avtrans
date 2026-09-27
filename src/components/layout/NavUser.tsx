@@ -2,9 +2,9 @@ import {
   ArrowLeftRight,
   Bell,
   ChevronsUpDown,
-  Download,
   LogOut,
   Moon,
+  Package,
   Smartphone,
   Sparkles,
   Sun,
@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { APP_VERSIONS_EMAILS } from '@/config/navConfig'
 import { APP_VERSION } from '@/config/version'
 import { useChangelog } from '@/features/changelog/hooks/useChangelog'
 import { usePermissions } from '@/hooks/usePermissions'
@@ -43,7 +44,8 @@ type NavUserProps = {
 
 /**
  * Compte en pied du menu : profil, notifications, thème, vue admin / utilisateur, nouveautés,
- * installation de l'app, déconnexion. Le déclencheur porte `data-state="open"` pendant
+ * installation de l'app, versions de l'app (comptes autorisés), déconnexion. « Télécharger l'app »
+ * est dans la section Application du menu. Le déclencheur porte `data-state="open"` pendant
  * l'ouverture : le rail d'icônes reste déplié tant que le menu est ouvert.
  */
 export function NavUser({
@@ -60,6 +62,7 @@ export function NavUser({
   const { isDark, toggleTheme } = useTheme()
   const { canToggleViewMode, isViewingAsUser, toggleViewMode } = usePermissions()
   const { hasUnseenChanges } = useChangelog()
+  const canManageAppVersions = !!user?.email && APP_VERSIONS_EMAILS.includes(user.email)
 
   // Changer de vue emmène sur l'accueil de la vue choisie : la page courante n'y a pas forcément sa place
   const handleToggleView = () => {
@@ -154,12 +157,14 @@ export function NavUser({
               Installer sur l'écran d'accueil
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/download">
-              <Download />
-              Télécharger l'app Android
-            </Link>
-          </DropdownMenuItem>
+          {canManageAppVersions && (
+            <DropdownMenuItem asChild>
+              <Link to="/app-versions" onClick={onNavigate}>
+                <Package />
+                Versions de l&apos;app
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onSelect={onLogout}>

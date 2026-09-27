@@ -8,13 +8,13 @@ import {
   Clock,
   Coins,
   CreditCard,
+  Download,
   FileUp,
   History,
   ListChecks,
   Package,
   PenLine,
   Scale,
-  Smartphone,
   Timer,
   UserCheck,
   Users,
@@ -130,16 +130,15 @@ export const navSections: NavSectionConfig[] = [
   },
   {
     title: 'Application',
-    links: [
-      {
-        to: '/app-versions',
-        label: "Versions de l'app",
-        lucideIcon: Smartphone,
-        requiredEmails: ['clementveillet@gmail.com'],
-      },
-    ],
+    links: [{ to: '/download', label: "Télécharger l'app", lucideIcon: Download }],
   },
 ]
+
+/**
+ * Comptes qui gèrent les versions de l'app (APK) : entrée « Versions de l'app » du menu du compte
+ * (`NavUser`), échangée avec « Télécharger l'app » à la demande du propriétaire.
+ */
+export const APP_VERSIONS_EMAILS = ['clementveillet@gmail.com']
 
 /** Section des pages personnelles : barre d'onglets mobile des utilisateurs */
 export const MY_SPACE_SECTION_TITLE = 'Mon espace'

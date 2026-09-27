@@ -15,6 +15,8 @@ const EXTRA_ROUTES: { path: string; meta: RouteMeta }[] = [
   { path: '/profile', meta: { title: 'Mon profil' } },
   { path: '/notifications', meta: { title: 'Notifications' } },
   { path: '/add-to-homescreen', meta: { title: "Installer l'application" } },
+  // Dans le menu du compte (comptes autorisés) depuis l'échange avec « Télécharger l'app »
+  { path: '/app-versions', meta: { title: "Versions de l'app", section: 'Application' } },
   {
     path: '/absence-types',
     meta: {
