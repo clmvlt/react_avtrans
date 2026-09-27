@@ -5,20 +5,17 @@ type CartesListSkeletonProps = {
   label: string
 }
 
-/** Chargement initial des listes de cartes et de types : actions, recherche, lignes. */
+/** Chargement initial des listes de cartes et de types, sous l'en-tête : recherche, lignes. */
 export function CartesListSkeleton({ label }: CartesListSkeletonProps) {
   return (
     <div role="status" aria-label={label} className="space-y-4">
-      <div className="flex justify-end gap-3">
-        <Skeleton className="h-8 w-32" />
-      </div>
-      <Skeleton className="h-9 w-full" />
+      <Skeleton className="h-9 w-full max-w-md" />
       <div className="space-y-3 md:hidden">
         {Array.from({ length: 4 }, (_, index) => (
           <Skeleton key={index} className="h-32 w-full rounded-lg" />
         ))}
       </div>
-      <div className="hidden overflow-hidden rounded-lg border shadow-sm md:block">
+      <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
         <Skeleton className="h-10 w-full rounded-none" />
         {Array.from({ length: 5 }, (_, index) => (
           <div key={index} className="flex items-center gap-3 border-t p-3">

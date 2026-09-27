@@ -67,10 +67,10 @@ export function VehicleKmTab({ vehiculeId, view, onViewChange, isAdmin }: Vehicl
         <KmChart kilometrages={kilometrages} />
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-foreground">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-base font-semibold text-foreground">
               Historique détaillé ({totalElements})
-            </h4>
+            </h3>
             {!view.showAll && totalElements > KM_PAGE_SIZE && (
               <Button
                 type="button"

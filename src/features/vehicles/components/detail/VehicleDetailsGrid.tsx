@@ -1,51 +1,46 @@
-import {
-  Calendar,
-  CalendarClock,
-  ClipboardCheck,
-  FileText,
-  Fuel,
-  Hash,
-  MessageSquare,
-  Shield,
-  Weight,
-} from 'lucide-react'
+import { Calendar, FileText, Fuel, Hash, MessageSquare, Repeat, Shield, Weight } from 'lucide-react'
 import type { VehiculeDTO } from '@/models'
 import { cn } from '@/lib/utils'
-import { EXPIRY_TEXT_CLASS, getExpiryStatus } from '../../lib/expiryStatus'
 import { formatDateShort, formatNumber } from '../../lib/formatters'
 import { InfoTile } from './InfoTile'
 
 type VehicleDetailsGridProps = {
   vehicule: VehiculeDTO
+  className?: string
 }
 
-const GRID_CLASS = 'grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3'
-
 /**
- * Informations techniques, assurance et contrôle technique (tuiles masquées si vides), puis le
- * commentaire, toujours affiché. Échéances en orange sous 30 jours, en rouge une fois passées.
+ * Véhicule relais, informations techniques et d'assurance (masquées si vides), puis le
+ * commentaire, toujours affiché. Les échéances (assurance, contrôle technique) sont dans les
+ * cartes du haut de la fiche.
  */
-export function VehicleDetailsGrid({ vehicule }: VehicleDetailsGridProps) {
-  const hasTechnical = Boolean(
+export function VehicleDetailsGrid({ vehicule, className }: VehicleDetailsGridProps) {
+  const hasDetails = Boolean(
+    vehicule.relaiImmat ||
     vehicule.vin ||
     vehicule.numeroCarteGrise ||
     vehicule.dateMiseEnCirculation ||
     vehicule.typeCarburant ||
-    vehicule.ptac,
-  )
-  const hasInsurance = Boolean(
-    vehicule.numeroContratAssurance ||
+    vehicule.ptac ||
     vehicule.assureur ||
-    vehicule.dateExpirationAssurance ||
-    vehicule.dateProchainControleTechnique,
+    vehicule.numeroContratAssurance,
   )
 
   return (
-    <div className="space-y-3 border-t px-5 py-4">
-      {hasTechnical && (
-        <div className={GRID_CLASS}>
+    <div className={cn('space-y-4', className)}>
+      {hasDetails ? (
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-3">
+          {vehicule.relaiImmat && (
+            <InfoTile
+              icon={Repeat}
+              label="Véhicule relais"
+              valueClassName="tracking-wide uppercase"
+            >
+              {vehicule.relaiImmat}
+            </InfoTile>
+          )}
           {vehicule.vin && (
-            <InfoTile icon={Hash} label="VIN" valueClassName="font-mono">
+            <InfoTile icon={Hash} label="VIN" valueClassName="font-mono break-all">
               {vehicule.vin}
             </InfoTile>
           )}
@@ -69,54 +64,33 @@ export function VehicleDetailsGrid({ vehicule }: VehicleDetailsGridProps) {
               {formatNumber(vehicule.ptac)} kg
             </InfoTile>
           )}
-        </div>
-      )}
-
-      {hasInsurance && (
-        <div className={GRID_CLASS}>
           {vehicule.assureur && (
             <InfoTile icon={Shield} label="Assureur">
               {vehicule.assureur}
             </InfoTile>
           )}
           {vehicule.numeroContratAssurance && (
-            <InfoTile icon={FileText} label="N° contrat">
+            <InfoTile icon={FileText} label="N° contrat d'assurance">
               {vehicule.numeroContratAssurance}
             </InfoTile>
           )}
-          {vehicule.dateExpirationAssurance && (
-            <InfoTile
-              icon={CalendarClock}
-              label="Expiration assurance"
-              valueClassName={EXPIRY_TEXT_CLASS[getExpiryStatus(vehicule.dateExpirationAssurance)]}
-            >
-              {formatDateShort(vehicule.dateExpirationAssurance)}
-            </InfoTile>
-          )}
-          {vehicule.dateProchainControleTechnique && (
-            <InfoTile
-              icon={ClipboardCheck}
-              label="Prochain CT"
-              valueClassName={
-                EXPIRY_TEXT_CLASS[getExpiryStatus(vehicule.dateProchainControleTechnique)]
-              }
-            >
-              {formatDateShort(vehicule.dateProchainControleTechnique)}
-            </InfoTile>
-          )}
-        </div>
+        </dl>
+      ) : (
+        <p className="text-sm text-muted-foreground">Aucune information technique renseignée.</p>
       )}
 
-      <InfoTile
-        icon={MessageSquare}
-        label="Commentaire"
-        valueClassName={cn(
-          'mt-1 font-normal',
-          vehicule.comment ? 'text-foreground' : 'text-muted-foreground italic',
-        )}
-      >
-        {vehicule.comment || 'Aucun commentaire'}
-      </InfoTile>
+      <dl className="border-t pt-4">
+        <InfoTile
+          icon={MessageSquare}
+          label="Commentaire"
+          valueClassName={cn(
+            'mt-1 font-normal',
+            vehicule.comment ? 'text-foreground' : 'text-muted-foreground italic',
+          )}
+        >
+          {vehicule.comment || 'Aucun commentaire'}
+        </InfoTile>
+      </dl>
     </div>
   )
 }

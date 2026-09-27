@@ -1,4 +1,9 @@
+import { FolderPlus, Plus } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { PageTabs } from '@/components/layout/PageTabs'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { useDossiersQuery } from '@/features/maintenance/api/useDossiersQuery'
 import { useTypesEntretienQuery } from '@/features/maintenance/api/useTypesEntretienQuery'
 import { DossierDeleteDialog } from '@/features/maintenance/components/types/DossierDeleteDialog'
@@ -12,13 +17,15 @@ import { TypesToolbar } from '@/features/maintenance/components/types/TypesToolb
 import { useCanManageMaintenance } from '@/features/maintenance/hooks/useCanManageMaintenance'
 import { useTypeDragAndDrop } from '@/features/maintenance/hooks/useTypeDragAndDrop'
 import { UNCLASSIFIED, useTypesExplorer } from '@/features/maintenance/hooks/useTypesExplorer'
+import { MAINTENANCE_TABS } from '@/features/maintenance/lib/maintenanceTabs'
 import { useDialogState } from '@/hooks/useDialogState'
 import type { DossierTypeEntretienDTO, TypeEntretienDTO } from '@/models'
 
 /**
- * /types-entretien (TypesEntretien.vue) : dossiers à gauche (zones de dépôt), types du dossier
- * affiché à droite. Création, modification, suppression et glisser-déposer pour l'administrateur
- * et le mécanicien. Accessible seulement depuis le bouton de /entretiens.
+ * /types-entretien (TypesEntretien.vue) : dossiers à gauche (zones de dépôt, empilés au-dessus sur
+ * téléphone), types du dossier affiché à droite. Création, modification, suppression et
+ * glisser-déposer pour l'administrateur et le mécanicien. Accessible par l'onglet
+ * « Types d'entretien » de /entretiens.
  */
 export default function TypesEntretienPage() {
   const canManage = useCanManageMaintenance()
@@ -44,7 +51,6 @@ export default function TypesEntretienPage() {
     if (typesQuery.isError) {
       return (
         <ErrorState
-          className="m-4 w-auto"
           message={
             (typesQuery.error instanceof Error && typesQuery.error.message) ||
             'Erreur lors du chargement'
@@ -56,7 +62,7 @@ export default function TypesEntretienPage() {
     }
 
     return (
-      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 md:grid-cols-[280px_1fr]">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[260px_minmax(0,1fr)] md:items-start">
         <DossiersSidebar
           dossiers={dossiers}
           totalCount={types.length}
@@ -67,18 +73,15 @@ export default function TypesEntretienPage() {
           dragOverFolderId={dragAndDrop.dragOverFolderId}
           dropTargetProps={dragAndDrop.dropTargetProps}
           canManage={canManage}
-          onCreateFolder={() => dossierDialogs.open('form')}
           onEditFolder={(dossier) => dossierDialogs.open('form', dossier)}
           onDeleteFolder={(dossier) => dossierDialogs.open('delete', dossier)}
         />
 
-        <div className="flex flex-col gap-4 p-4 md:p-6">
+        <div className="flex min-w-0 flex-col gap-4">
           <TypesToolbar
             search={explorer.search}
             onSearchChange={explorer.setSearch}
-            showDragHint={explorer.filteredTypes.length > 0}
-            canManage={canManage}
-            onCreateType={() => typeDialogs.open('form')}
+            showDragHint={canManage && explorer.filteredTypes.length > 0}
           />
           <TypesEntretienList
             types={explorer.filteredTypes}
@@ -95,8 +98,34 @@ export default function TypesEntretienPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="flex-1">{renderContent()}</main>
+    <PageContainer size="full">
+      <PageHeader
+        title="Entretiens"
+        description="Les types d'entretien et leurs dossiers."
+        actions={
+          canManage && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => dossierDialogs.open('form')}
+              >
+                <FolderPlus className="size-4" />
+                Nouveau dossier
+              </Button>
+              <Button type="button" size="sm" onClick={() => typeDialogs.open('form')}>
+                <Plus className="size-4" />
+                Nouveau type
+              </Button>
+            </>
+          )
+        }
+      >
+        <PageTabs tabs={MAINTENANCE_TABS} />
+      </PageHeader>
+
+      {renderContent()}
 
       <TypeEntretienFormDialog
         open={typeDialogs.isOpen('form')}
@@ -126,6 +155,6 @@ export default function TypesEntretienPage() {
           if (selectedFolderId === dossierId) explorer.selectFolder(null)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }

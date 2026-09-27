@@ -1,7 +1,5 @@
 import type { DragEvent } from 'react'
-import { Inbox, List, Plus, Tag } from 'lucide-react'
-import { BackButton } from '@/components/shared/BackButton'
-import { Button } from '@/components/ui/button'
+import { Inbox, List, Tag } from 'lucide-react'
 import type { StockCategoryDTO, StockItemDTO } from '@/models'
 import { countItemsInCategory, UNCLASSIFIED, type StockCategorySelection } from '../lib/stock'
 import { StockCategoryActions } from './StockCategoryActions'
@@ -12,20 +10,21 @@ type StockCategorySidebarProps = {
   categories: StockCategoryDTO[]
   selection: StockCategorySelection
   onSelect: (selection: StockCategorySelection) => void
+  /** Modification et suppression des catégories (la création est dans l'en-tête de la page). */
   canManage: boolean
   /** Cible survolée pendant un glisser-déposer (id de catégorie ou `UNCLASSIFIED`). */
   dragOverCategoryId: string | null
   onDragOver: (event: DragEvent, target: string) => void
   onDragLeave: () => void
   onDrop: (event: DragEvent, target: string) => void
-  onCreateCategory: () => void
   onEditCategory: (category: StockCategoryDTO) => void
   onDeleteCategory: (category: StockCategoryDTO) => void
 }
 
 /**
- * Barre latérale des catégories : « Tous », une entrée par catégorie (cible de dépôt, actions),
- * « Non classés ». Colonne sticky en desktop, puces qui passent à la ligne en mobile.
+ * Panneau des catégories : « Tous », une entrée par catégorie (cible de dépôt, actions),
+ * « Non classés ». Carte collante à gauche en desktop (liste qui défile si besoin), rangée qui
+ * défile horizontalement en mobile.
  */
 export function StockCategorySidebar({
   items,
@@ -37,36 +36,19 @@ export function StockCategorySidebar({
   onDragOver,
   onDragLeave,
   onDrop,
-  onCreateCategory,
   onEditCategory,
   onDeleteCategory,
 }: StockCategorySidebarProps) {
   const unclassifiedCount = items.filter((item) => !item.category).length
 
   return (
-    <aside className="border-b bg-background md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-r md:border-b-0">
-      <div className="flex items-center justify-between border-b p-4">
-        <div className="flex items-center gap-2">
-          <BackButton fallback="/entretiens" size="icon" className="size-7" title="Retour" />
-          <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-            Catégories
-          </h2>
-        </div>
-        {canManage && (
-          <Button
-            type="button"
-            variant="default"
-            size="icon-sm"
-            title="Créer une catégorie"
-            aria-label="Créer une catégorie"
-            onClick={onCreateCategory}
-          >
-            <Plus className="size-3.5" />
-          </Button>
-        )}
+    <aside className="rounded-xl border bg-card md:sticky md:top-20 md:flex md:max-h-[calc(100dvh-6.5rem)] md:flex-col">
+      <div className="border-b px-4 py-3">
+        <h2 className="text-sm font-semibold text-foreground">Catégories</h2>
       </div>
 
-      <div className="flex flex-wrap gap-2 overflow-y-auto p-2 md:flex-col md:flex-nowrap md:gap-0">
+      {/* Téléphone : rangée qui défile horizontalement ; ordinateur : liste verticale */}
+      <div className="flex min-h-0 gap-2 overflow-x-auto p-2 md:flex-col md:gap-0 md:overflow-x-visible md:overflow-y-auto">
         <StockCategoryNavItem
           icon={List}
           iconClassName="text-primary"
@@ -74,7 +56,7 @@ export function StockCategorySidebar({
           count={items.length}
           selected={selection === null}
           onSelect={() => onSelect(null)}
-          className="mb-2"
+          className="md:mb-2"
         />
 
         {categories.map((category) => {
@@ -119,7 +101,7 @@ export function StockCategorySidebar({
           onDragOver={(event) => onDragOver(event, UNCLASSIFIED)}
           onDragLeave={onDragLeave}
           onDrop={(event) => onDrop(event, UNCLASSIFIED)}
-          className="mt-0 border-t pt-3 md:mt-2"
+          className="md:mt-2 md:rounded-none md:border-t md:pt-3"
         />
       </div>
     </aside>

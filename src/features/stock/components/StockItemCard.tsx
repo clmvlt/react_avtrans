@@ -40,7 +40,7 @@ export function StockItemCard({
   return (
     <div
       className={cn(
-        'flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:shadow-sm',
+        'flex items-start gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent/30',
         canManage && 'cursor-grab active:cursor-grabbing',
       )}
       draggable={canManage}

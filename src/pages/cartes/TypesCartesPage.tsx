@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { PageTabs } from '@/components/layout/PageTabs'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
 import { useTypeCartesQuery } from '@/features/cartes/api/useTypeCartesQuery'
@@ -10,12 +13,13 @@ import { TypeCarteFormDialog } from '@/features/cartes/components/TypeCarteFormD
 import { TypeCarteMobileList } from '@/features/cartes/components/TypeCarteMobileList'
 import { TypesCartesTable } from '@/features/cartes/components/TypesCartesTable'
 import { filterTypesCartes } from '@/features/cartes/lib/cartes'
+import { CARTE_TABS } from '@/features/cartes/lib/carteTabs'
 import { useDialogState } from '@/hooks/useDialogState'
 import type { TypeCarteDTO } from '@/models'
 
 /**
- * Types de cartes (`/types-cartes`, admin) : liste, recherche, CRUD. Accessible seulement depuis
- * le bouton de la page Cartes ; pas de bouton retour, comme le Vue.
+ * Types de cartes (`/types-cartes`, admin) : liste, recherche, CRUD. Accessible par l'onglet
+ * « Types de cartes » de la page Cartes.
  */
 export default function TypesCartesPage() {
   const typesQuery = useTypeCartesQuery()
@@ -32,7 +36,6 @@ export default function TypesCartesPage() {
   } else if (!typesQuery.data) {
     content = (
       <ErrorState
-        className="mb-4"
         message={
           (typesQuery.error instanceof Error && typesQuery.error.message) ||
           'Erreur lors du chargement des types de cartes'
@@ -45,22 +48,11 @@ export default function TypesCartesPage() {
     const filteredTypes = filterTypesCartes(typesQuery.data, searchQuery)
     content = (
       <div className="space-y-4">
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            size="sm"
-            aria-label="Nouveau type"
-            onClick={() => dialogs.open('form')}
-          >
-            <Plus className="size-4" />
-            <span className="hidden md:inline">Nouveau type</span>
-          </Button>
-        </div>
-
         <ListSearchInput
           value={searchQuery}
           onValueChange={setSearchQuery}
           placeholder="Rechercher un type de carte..."
+          className="max-w-md"
         />
 
         <TypeCarteMobileList types={filteredTypes} onEdit={openEdit} onDelete={openDelete} />
@@ -70,10 +62,20 @@ export default function TypesCartesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1200px]">{content}</div>
-      </main>
+    <PageContainer>
+      <PageHeader
+        title="Cartes"
+        description="Les types de cartes disponibles."
+        actions={
+          <Button type="button" size="sm" onClick={() => dialogs.open('form')}>
+            <Plus className="size-4" />
+            Nouveau type
+          </Button>
+        }
+      >
+        <PageTabs tabs={CARTE_TABS} />
+      </PageHeader>
+      {content}
 
       <TypeCarteFormDialog
         open={dialogs.isOpen('form')}
@@ -86,6 +88,6 @@ export default function TypesCartesPage() {
         onOpenChange={dialogs.onOpenChange}
         typeCarte={dialogs.type === 'delete' ? dialogs.item : null}
       />
-    </div>
+    </PageContainer>
   )
 }

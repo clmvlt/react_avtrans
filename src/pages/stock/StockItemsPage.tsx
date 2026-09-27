@@ -1,5 +1,9 @@
 import { useState } from 'react'
+import { Plus, Tag } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { useStockCategoriesQuery } from '@/features/stock/api/useStockCategoriesQuery'
 import { useStockItemsQuery } from '@/features/stock/api/useStockItemsQuery'
 import { StockCategoryDeleteDialog } from '@/features/stock/components/StockCategoryDeleteDialog'
@@ -20,7 +24,10 @@ import {
 import { useDialogState } from '@/hooks/useDialogState'
 import type { StockCategoryDTO, StockItemDTO } from '@/models'
 
-/** Inventaire des pièces (`/stock`, admin ou mécanicien), avec barre latérale de catégories. */
+/**
+ * Inventaire des pièces (`/stock`, admin ou mécanicien) : panneau des catégories à gauche
+ * (empilé au-dessus sur téléphone), articles à droite.
+ */
 export default function StockItemsPage() {
   const canManage = useCanManageStock()
   const itemsQuery = useStockItemsQuery()
@@ -33,14 +40,15 @@ export default function StockItemsPage() {
   const categoryDialogs = useDialogState<'form' | 'delete', StockCategoryDTO>()
   const dragAndDrop = useStockDragAndDrop(categories)
 
-  // Le Vue chargeait les catégories puis les articles avant d'afficher la page
-  if (itemsQuery.isPending || categoriesQuery.isPending) {
-    return <StockSkeleton />
-  }
+  // Création : catégorie affichée présélectionnée (sauf « Tous » et « Non classés »)
+  const defaultCategoryId = selection && selection !== UNCLASSIFIED ? selection : ''
 
-  if (!itemsQuery.data) {
-    return (
-      <div className="m-4">
+  const renderContent = () => {
+    // Le Vue chargeait les catégories puis les articles avant d'afficher la page
+    if (itemsQuery.isPending || categoriesQuery.isPending) return <StockSkeleton />
+
+    if (!itemsQuery.data) {
+      return (
         <ErrorState
           message={
             (itemsQuery.error instanceof Error && itemsQuery.error.message) ||
@@ -49,55 +57,75 @@ export default function StockItemsPage() {
           onRetry={() => void itemsQuery.refetch()}
           isRetrying={itemsQuery.isRefetching}
         />
+      )
+    }
+
+    const items = itemsQuery.data
+    const filteredItems = filterStockItems(items, selection, searchQuery)
+
+    return (
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[260px_minmax(0,1fr)] md:items-start">
+        <StockCategorySidebar
+          items={items}
+          categories={categories}
+          selection={selection}
+          onSelect={setSelection}
+          canManage={canManage}
+          dragOverCategoryId={dragAndDrop.dragOverCategoryId}
+          onDragOver={dragAndDrop.handleDragOver}
+          onDragLeave={dragAndDrop.handleDragLeave}
+          onDrop={dragAndDrop.handleDrop}
+          onEditCategory={(category) => categoryDialogs.open('form', category)}
+          onDeleteCategory={(category) => categoryDialogs.open('delete', category)}
+        />
+
+        <div className="flex min-w-0 flex-col gap-4">
+          <StockToolbar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            showDragHint={canManage && filteredItems.length > 0}
+          />
+          <StockItemList
+            items={filteredItems}
+            selection={selection}
+            searchQuery={searchQuery}
+            canManage={canManage}
+            onDragStart={dragAndDrop.handleDragStart}
+            onDragEnd={dragAndDrop.handleDragEnd}
+            onEdit={(item) => itemDialogs.open('form', item)}
+            onDelete={(item) => itemDialogs.open('delete', item)}
+          />
+        </div>
       </div>
     )
   }
 
-  const items = itemsQuery.data
-  const filteredItems = filterStockItems(items, selection, searchQuery)
-  // Création : catégorie affichée présélectionnée (sauf « Tous » et « Non classés »)
-  const defaultCategoryId = selection && selection !== UNCLASSIFIED ? selection : ''
-
   return (
-    <div className="min-h-screen bg-background">
-      <main className="flex-1">
-        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 md:grid-cols-[280px_1fr]">
-          <StockCategorySidebar
-            items={items}
-            categories={categories}
-            selection={selection}
-            onSelect={setSelection}
-            canManage={canManage}
-            dragOverCategoryId={dragAndDrop.dragOverCategoryId}
-            onDragOver={dragAndDrop.handleDragOver}
-            onDragLeave={dragAndDrop.handleDragLeave}
-            onDrop={dragAndDrop.handleDrop}
-            onCreateCategory={() => categoryDialogs.open('form')}
-            onEditCategory={(category) => categoryDialogs.open('form', category)}
-            onDeleteCategory={(category) => categoryDialogs.open('delete', category)}
-          />
-
-          <div className="flex flex-col gap-4 p-4 md:p-6">
-            <StockToolbar
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              canManage={canManage}
-              showDragHint={filteredItems.length > 0}
-              onCreateItem={() => itemDialogs.open('form')}
-            />
-            <StockItemList
-              items={filteredItems}
-              selection={selection}
-              searchQuery={searchQuery}
-              canManage={canManage}
-              onDragStart={dragAndDrop.handleDragStart}
-              onDragEnd={dragAndDrop.handleDragEnd}
-              onEdit={(item) => itemDialogs.open('form', item)}
-              onDelete={(item) => itemDialogs.open('delete', item)}
-            />
-          </div>
-        </div>
-      </main>
+    <PageContainer size="full">
+      <PageHeader
+        title="Stock"
+        description="Pièces et consommables, par catégorie."
+        actions={
+          canManage && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => categoryDialogs.open('form')}
+              >
+                <Tag className="size-4" />
+                Nouvelle catégorie
+              </Button>
+              <Button type="button" size="sm" onClick={() => itemDialogs.open('form')}>
+                <Plus className="size-4" />
+                Ajouter un article
+              </Button>
+            </>
+          )
+        }
+      />
+      {renderContent()}
 
       <StockItemFormDialog
         open={itemDialogs.isOpen('form')}
@@ -124,6 +152,6 @@ export default function StockItemsPage() {
           if (selection === categoryId) setSelection(null)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }

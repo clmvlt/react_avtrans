@@ -60,7 +60,7 @@ export function VehiculeConfigsPanel({
       return (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }, (_, index) => (
-            <div key={index} className="space-y-3 rounded-lg border bg-card p-4">
+            <div key={index} className="space-y-3 rounded-xl border bg-card p-4">
               <Skeleton className="h-5 w-32" />
               <Skeleton className="h-4 w-24" />
               <div className="flex justify-end gap-1">
@@ -106,16 +106,16 @@ export function VehiculeConfigsPanel({
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Configurations d&apos;entretien</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-foreground">Configurations d&apos;entretien</h2>
         <Button
           type="button"
           size="sm"
           disabled={availableTypes.length === 0}
           onClick={() => openForm(null)}
         >
-          <Plus className="size-3.5" />
-          Ajouter
+          <Plus className="size-4" />
+          Ajouter une configuration
         </Button>
       </div>
 

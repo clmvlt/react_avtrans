@@ -114,7 +114,8 @@ export function getVehiclesColumns({
           {canDelete && (
             <Button
               type="button"
-              variant="destructive"
+              variant="ghost"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
               size="sm"
               title="Supprimer le véhicule"
               onClick={() => onDelete(row.original)}

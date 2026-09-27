@@ -17,7 +17,7 @@ export function RapportCard({ rapport, onViewPictures }: RapportCardProps) {
   const picturesCount = rapport.pictures?.length ?? 0
 
   return (
-    <div className="space-y-3 rounded-lg border bg-card p-4">
+    <div className="space-y-3 rounded-xl border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <CalendarDays className="size-4" />
@@ -31,7 +31,7 @@ export function RapportCard({ rapport, onViewPictures }: RapportCardProps) {
       {picturesCount > 0 && (
         <div className="flex justify-end">
           <Button type="button" variant="outline" size="sm" onClick={() => onViewPictures(rapport)}>
-            <Images className="mr-2 size-4" />
+            <Images className="size-4" />
             Voir les photos ({picturesCount})
           </Button>
         </div>

@@ -20,7 +20,7 @@ export function TabContentSkeleton({ variant, label }: TabContentSkeletonProps) 
       {variant === 'files' && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {Array.from({ length: 5 }, (_, index) => (
-            <div key={index} className="overflow-hidden rounded-lg border bg-card">
+            <div key={index} className="overflow-hidden rounded-xl border bg-card">
               <Skeleton className="aspect-square rounded-none" />
               <div className="space-y-1 border-t p-2">
                 <Skeleton className="h-3 w-3/4" />
@@ -38,7 +38,7 @@ export function TabContentSkeleton({ variant, label }: TabContentSkeletonProps) 
           )}
         >
           {Array.from({ length: 3 }, (_, index) => (
-            <div key={index} className="space-y-3 rounded-lg border bg-card p-4">
+            <div key={index} className="space-y-3 rounded-xl border bg-card p-4">
               <div className="flex items-center justify-between gap-3">
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="h-3 w-24" />
@@ -51,7 +51,7 @@ export function TabContentSkeleton({ variant, label }: TabContentSkeletonProps) 
 
       {variant === 'timeline' && (
         <div className="space-y-6">
-          <Skeleton className="aspect-[2/1] w-full rounded-lg" />
+          <Skeleton className="aspect-[2/1] w-full rounded-xl" />
           <div className="space-y-4">
             {Array.from({ length: 4 }, (_, index) => (
               <div key={index} className="flex gap-4">

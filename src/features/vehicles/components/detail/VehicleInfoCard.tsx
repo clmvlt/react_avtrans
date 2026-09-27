@@ -1,84 +1,66 @@
-import { useState } from 'react'
-import { usePermissions } from '@/hooks/usePermissions'
+import { ClipboardCheck, ShieldCheck } from 'lucide-react'
 import type { VehiculeDTO } from '@/models'
-import { RelaiBadge } from '../RelaiBadge'
 import { VehicleAvatar } from '../VehicleAvatar'
 import { VehicleDetailsGrid } from './VehicleDetailsGrid'
-import { VehicleEditForm } from './VehicleEditForm'
-import { VehicleInfoHeader } from './VehicleInfoHeader'
-import { VehicleKmBadge } from './VehicleKmBadge'
+import { VehicleExpiryCard } from './VehicleExpiryCard'
+import { VehicleKmCard } from './VehicleKmCard'
 
 type VehicleInfoCardProps = {
   vehicule: VehiculeDTO
   vehiculeId: string
-  /** Relevé ajouté depuis la pastille km. */
+  /** Bouton « Ajouter un relevé » (admin ou mécanicien). */
+  canManage: boolean
+  /** Relevé ajouté depuis la carte du kilométrage. */
   onKmAdded: () => void
 }
 
-/** Fiche du véhicule (VehiculeInfoCard.vue) : affichage, ou formulaire d'édition en place. */
-export function VehicleInfoCard({ vehicule, vehiculeId, onKmAdded }: VehicleInfoCardProps) {
-  const { isAdmin, isMechanic } = usePermissions()
-  // Toujours vrai derrière la garde « mécanicien » (`isMecanicien` du Vue)
-  const canManage = isAdmin || isMechanic
-  const [isEditing, setIsEditing] = useState(false)
-
+/**
+ * Fiche du véhicule en lecture (VehiculeInfoCard.vue) : cartes des informations clés
+ * (kilométrage, contrôle technique, assurance), puis photo et informations détaillées.
+ * L'édition remplace ce bloc par `VehicleEditForm`.
+ */
+export function VehicleInfoCard({
+  vehicule,
+  vehiculeId,
+  canManage,
+  onKmAdded,
+}: VehicleInfoCardProps) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
-      {isEditing ? (
-        <VehicleEditForm
-          vehicule={vehicule}
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <VehicleKmCard
           vehiculeId={vehiculeId}
-          onDone={() => setIsEditing(false)}
+          latestKm={vehicule.latestKm}
+          canAdd={canManage}
+          onKmAdded={onKmAdded}
+          className="col-span-2 lg:col-span-1"
         />
-      ) : (
-        <>
-          <div className="p-5">
-            <VehicleInfoHeader
-              vehicule={vehicule}
-              vehiculeId={vehiculeId}
-              isEditing={false}
-              canEdit={canManage}
-              onEdit={() => setIsEditing(true)}
-            />
+        <VehicleExpiryCard
+          icon={ClipboardCheck}
+          label="Contrôle technique"
+          date={vehicule.dateProchainControleTechnique}
+          hint="Prochain contrôle"
+        />
+        <VehicleExpiryCard
+          icon={ShieldCheck}
+          label="Assurance"
+          date={vehicule.dateExpirationAssurance}
+          hint="Date d'expiration"
+        />
+      </div>
 
-            <div className="flex items-center gap-4">
-              <div className="relative shrink-0">
-                <VehicleAvatar
-                  pictureUrl={vehicule.pictureUrl}
-                  alt={vehicule.immat}
-                  className="size-[72px] rounded-lg"
-                  iconClassName="size-8"
-                />
-              </div>
-
-              <div className="flex min-w-0 flex-col justify-center gap-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-2xl font-bold tracking-wide text-foreground uppercase">
-                    {vehicule.immat}
-                  </h2>
-                  {vehicule.relaiImmat && (
-                    <RelaiBadge immat={vehicule.relaiImmat} className="text-xs" />
-                  )}
-                </div>
-                {vehicule.brand && (
-                  <p className="text-sm text-muted-foreground">
-                    {vehicule.brand} {vehicule.model}
-                  </p>
-                )}
-              </div>
-
-              <VehicleKmBadge
-                vehiculeId={vehiculeId}
-                latestKm={vehicule.latestKm}
-                canAdd={canManage}
-                onKmAdded={onKmAdded}
-              />
-            </div>
-          </div>
-
-          <VehicleDetailsGrid vehicule={vehicule} />
-        </>
-      )}
+      <section className="rounded-xl border bg-card p-4 sm:p-5">
+        <h2 className="mb-4 text-base font-semibold text-foreground">Informations</h2>
+        <div className="flex flex-col gap-5 sm:flex-row">
+          <VehicleAvatar
+            pictureUrl={vehicule.pictureUrl}
+            alt={vehicule.immat}
+            className="size-24 rounded-lg sm:size-28"
+            iconClassName="size-10"
+          />
+          <VehicleDetailsGrid vehicule={vehicule} className="min-w-0 flex-1" />
+        </div>
+      </section>
     </div>
   )
 }

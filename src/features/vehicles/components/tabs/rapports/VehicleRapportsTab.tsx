@@ -69,8 +69,8 @@ export function VehicleRapportsTab({ vehiculeId }: VehicleRapportsTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Rapports ({totalElements})</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-base font-semibold text-foreground">Rapports ({totalElements})</h3>
         {!view.showAll && totalElements > RAPPORTS_PAGE_SIZE && (
           <Button
             type="button"

@@ -9,8 +9,8 @@ type EmptyBlockProps = ComponentProps<typeof Empty> & {
 }
 
 /**
- * État vide des pages d'entretiens : icône au-dessus d'un texte, au rendu du Vue
- * (`flex flex-col items-center justify-center gap-4 py-16`), sur la base de `Empty` de shadcn.
+ * État vide des pages d'entretiens : icône au-dessus d'un texte, dans un cadre en pointillés, sur
+ * la base de `Empty` de shadcn.
  */
 export function EmptyBlock({
   icon: Icon,
@@ -20,7 +20,10 @@ export function EmptyBlock({
   ...props
 }: EmptyBlockProps) {
   return (
-    <Empty className={cn('gap-4 rounded-none p-0 py-16 md:p-0 md:py-16', className)} {...props}>
+    <Empty
+      className={cn('gap-4 rounded-xl border border-dashed p-0 py-16 md:p-0 md:py-16', className)}
+      {...props}
+    >
       <Icon className={cn('size-12 text-muted-foreground', iconClassName)} />
       {children}
     </Empty>

@@ -18,7 +18,7 @@ export function CommentCard({ adjustInfo, onViewPictures }: CommentCardProps) {
   const { id } = adjustInfo
 
   return (
-    <div className="space-y-3 rounded-lg border bg-card p-4">
+    <div className="space-y-3 rounded-xl border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
         {adjustInfo.user && <UserChip user={adjustInfo.user} />}
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -32,7 +32,7 @@ export function CommentCard({ adjustInfo, onViewPictures }: CommentCardProps) {
       {id && (
         <div className="flex justify-end">
           <Button type="button" variant="outline" size="sm" onClick={() => onViewPictures(id)}>
-            <Images className="mr-2 size-4" />
+            <Images className="size-4" />
             Voir les photos
           </Button>
         </div>

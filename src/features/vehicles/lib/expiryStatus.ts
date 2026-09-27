@@ -20,7 +20,14 @@ export function getExpiryStatus(value: string | undefined): ExpiryStatus {
 
 /** Couleur du texte d'une échéance : orange sous 30 jours, rouge si dépassée. */
 export const EXPIRY_TEXT_CLASS: Record<ExpiryStatus, string> = {
-  soon: 'text-orange-500',
+  soon: 'text-warning',
   expired: 'text-destructive',
   ok: 'text-foreground',
+}
+
+/** État d'une échéance en toutes lettres, pour ne pas s'en remettre à la seule couleur. */
+export const EXPIRY_LABEL: Record<ExpiryStatus, string | null> = {
+  soon: 'Échéance dans moins de 30 jours',
+  expired: 'Échéance dépassée',
+  ok: null,
 }

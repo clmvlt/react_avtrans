@@ -26,11 +26,7 @@ const TABS: { value: VehicleDetailTab; label: string; icon: LucideIcon }[] = [
   { value: 'equipements', label: 'Équipements', icon: Wrench },
 ]
 
-/** Onglets « classeur » du Vue : fond muted, onglet actif sur fond de page, bordé de violet en sombre. */
-const TRIGGER_CLASS =
-  'gap-2 rounded-t-lg rounded-b-none border border-transparent px-5 py-2.5 text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-none group-data-[variant=default]/tabs-list:data-[state=active]:shadow-none data-[state=inactive]:bg-transparent dark:data-[state=active]:border-primary/40 dark:data-[state=active]:border-b-transparent dark:data-[state=active]:bg-primary/10'
-
-const CONTENT_CLASS = 'mt-0 bg-background p-6'
+const CONTENT_CLASS = 'p-4 sm:p-6'
 
 type VehicleDetailTabsProps = {
   vehiculeId: string
@@ -39,10 +35,11 @@ type VehicleDetailTabsProps = {
 }
 
 /**
- * Onglets du détail véhicule, « Fichiers » par défaut. Chaque onglet est monté à son activation.
- * Restent ici, pour survivre aux changements d'onglet comme dans le Vue : l'envoi de fichiers,
- * la page de l'historique km (tenue par la page) et la page des commentaires. Les rapports et les
- * équipements repartent de zéro à chaque ouverture de leur onglet.
+ * Onglets du détail véhicule, dans une carte, « Fichiers » par défaut. Les libellés restent
+ * visibles sur téléphone : la barre défile horizontalement. Chaque onglet est monté à son
+ * activation. Restent ici, pour survivre aux changements d'onglet comme dans le Vue : l'envoi de
+ * fichiers, la page de l'historique km (tenue par la page) et la page des commentaires. Les
+ * rapports et les équipements repartent de zéro à chaque ouverture de leur onglet.
  */
 export function VehicleDetailTabs({ vehiculeId, kmView, onKmViewChange }: VehicleDetailTabsProps) {
   const { isAdmin, isMechanic } = usePermissions()
@@ -53,14 +50,16 @@ export function VehicleDetailTabs({ vehiculeId, kmView, onKmViewChange }: Vehicl
   const [commentsPage, setCommentsPage] = useState(0)
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <div className="overflow-hidden rounded-lg border border-border">
-        <div className="flex items-end bg-muted px-4 pt-2">
-          <TabsList className="gap-0.5 bg-transparent p-0">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-0">
+      <div className="min-w-0 rounded-xl border bg-card">
+        {/* py-1 : le trait de l'onglet actif dépasse sous la liste ; sans marge basse, la zone qui
+            défile horizontalement afficherait aussi une barre de défilement verticale */}
+        <div className="overflow-x-auto border-b px-2 py-1 sm:px-4">
+          <TabsList variant="line" className="w-max">
             {TABS.map(({ value, label, icon: Icon }) => (
-              <TabsTrigger key={value} value={value} className={TRIGGER_CLASS} aria-label={label}>
+              <TabsTrigger key={value} value={value} className="flex-none px-3">
                 <Icon className="size-4" />
-                <span className="hidden sm:inline">{label}</span>
+                {label}
               </TabsTrigger>
             ))}
           </TabsList>

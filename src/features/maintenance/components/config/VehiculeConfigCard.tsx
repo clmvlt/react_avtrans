@@ -14,12 +14,7 @@ type VehiculeConfigCardProps = {
 /** Carte d'une configuration d'entretien du véhicule (grisée et badge « Inactif » si inactive). */
 export function VehiculeConfigCard({ config, onEdit, onDelete }: VehiculeConfigCardProps) {
   return (
-    <div
-      className={cn(
-        'rounded-lg border bg-card p-4 shadow-sm transition-shadow hover:shadow-md',
-        !config.actif && 'opacity-60',
-      )}
-    >
+    <div className={cn('rounded-xl border bg-card p-4', !config.actif && 'opacity-60')}>
       <div className="mb-3 flex items-center justify-between">
         <span className="font-medium text-foreground">{config.typeEntretien?.nom}</span>
         {!config.actif && <Badge variant="secondary">Inactif</Badge>}

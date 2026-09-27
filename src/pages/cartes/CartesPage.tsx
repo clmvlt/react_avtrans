@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { Plus, Tags } from 'lucide-react'
-import { Link } from 'react-router'
+import { Plus } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { PageTabs } from '@/components/layout/PageTabs'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
 import { useCartesQuery } from '@/features/cartes/api/useCartesQuery'
@@ -12,6 +14,7 @@ import { CartesTable } from '@/features/cartes/components/CartesTable'
 import { ListSearchInput } from '@/features/cartes/components/ListSearchInput'
 import { useRevealedSecrets } from '@/features/cartes/hooks/useRevealedSecrets'
 import { filterCartes } from '@/features/cartes/lib/cartes'
+import { CARTE_TABS } from '@/features/cartes/lib/carteTabs'
 import { useDialogState } from '@/hooks/useDialogState'
 import type { CarteDTO } from '@/models'
 
@@ -32,7 +35,6 @@ export default function CartesPage() {
   } else if (!cartesQuery.data) {
     content = (
       <ErrorState
-        className="mb-4"
         message={
           (cartesQuery.error instanceof Error && cartesQuery.error.message) ||
           'Erreur lors du chargement des cartes'
@@ -46,23 +48,11 @@ export default function CartesPage() {
     const filteredCartes = filterCartes(cartes, searchQuery)
     content = (
       <div className="space-y-4">
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/types-cartes">
-              <Tags className="size-4" />
-              Types de cartes
-            </Link>
-          </Button>
-          <Button type="button" size="sm" onClick={() => dialogs.open('form')}>
-            <Plus className="size-4" />
-            Nouvelle carte
-          </Button>
-        </div>
-
         <ListSearchInput
           value={searchQuery}
           onValueChange={setSearchQuery}
           placeholder="Rechercher par nom, numéro, type, utilisateur..."
+          className="max-w-md"
         />
 
         <CarteMobileList
@@ -84,10 +74,20 @@ export default function CartesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">{content}</div>
-      </main>
+    <PageContainer>
+      <PageHeader
+        title="Cartes"
+        description="Cartes carburant, péage et bancaires de l'entreprise."
+        actions={
+          <Button type="button" size="sm" onClick={() => dialogs.open('form')}>
+            <Plus className="size-4" />
+            Nouvelle carte
+          </Button>
+        }
+      >
+        <PageTabs tabs={CARTE_TABS} />
+      </PageHeader>
+      {content}
 
       <CarteFormDialog
         open={dialogs.isOpen('form')}
@@ -100,6 +100,6 @@ export default function CartesPage() {
         onOpenChange={dialogs.onOpenChange}
         carte={dialogs.type === 'delete' ? dialogs.item : null}
       />
-    </div>
+    </PageContainer>
   )
 }

@@ -34,13 +34,15 @@ export function FleetVehicleCard({ item, variant }: FleetVehicleCardProps) {
   const entretiensButton = ENTRETIENS_BUTTON[variant]
 
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
+    <div className="rounded-xl border bg-card p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <span className="font-medium text-foreground">
             {vehicule.brand} {vehicule.model}
           </span>
-          <span className="ml-2 text-sm text-muted-foreground">{vehicule.immat}</span>
+          <span className="ml-2 text-sm whitespace-nowrap text-muted-foreground">
+            {vehicule.immat}
+          </span>
         </div>
         {variant === 'late' && <TriangleAlert className="size-5 text-red-500" />}
         {variant === 'upcoming' && <Clock className="size-5 text-amber-500" />}
@@ -60,8 +62,8 @@ export function FleetVehicleCard({ item, variant }: FleetVehicleCardProps) {
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
           <Link to={`/vehicules/${vehicule.id}`}>
-            <Truck className="size-3.5" />
-            Voir véhicule
+            <Truck className="size-4" />
+            Voir le véhicule
           </Link>
         </Button>
         <Button
@@ -71,7 +73,7 @@ export function FleetVehicleCard({ item, variant }: FleetVehicleCardProps) {
           asChild
         >
           <Link to={`/entretiens/vehicule/${vehicule.id}`}>
-            <List className="size-3.5" />
+            <List className="size-4" />
             Entretiens
           </Link>
         </Button>

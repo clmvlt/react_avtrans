@@ -8,7 +8,7 @@ type EntretiensTotalCostProps = {
  */
 export function EntretiensTotalCost({ total }: EntretiensTotalCostProps) {
   return (
-    <div className="mb-2 flex justify-end gap-2 rounded-lg border bg-card px-4 py-3">
+    <div className="mb-2 flex justify-end gap-2 rounded-xl border bg-card px-4 py-3">
       <span className="text-sm font-medium text-muted-foreground">Total coût HT :</span>
       <span className="text-sm font-semibold text-foreground">
         {total.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €

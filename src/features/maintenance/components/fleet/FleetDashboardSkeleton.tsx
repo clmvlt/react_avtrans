@@ -11,7 +11,7 @@ export function FleetDashboardSkeleton() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }, (_, index) => (
-          <div key={index} className="space-y-3 rounded-lg border bg-card p-4">
+          <div key={index} className="space-y-3 rounded-xl border bg-card p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Skeleton className="h-4 w-28" />

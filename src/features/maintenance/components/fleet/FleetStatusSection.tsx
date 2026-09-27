@@ -60,7 +60,7 @@ export function FleetStatusSection({ variant, items }: FleetStatusSectionProps) 
       <span className={cn('flex size-8 items-center justify-center rounded-full', iconClassName)}>
         <Icon className="size-4" />
       </span>
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+      <h2 className="text-base font-semibold text-foreground">{title}</h2>
       <SectionBadge variant={variant} count={items.length} />
     </>
   )

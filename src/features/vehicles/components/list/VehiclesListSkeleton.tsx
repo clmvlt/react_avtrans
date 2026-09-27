@@ -27,7 +27,7 @@ export function VehiclesListSkeleton() {
         ))}
       </div>
 
-      <div className="hidden overflow-hidden rounded-lg border shadow-sm md:block">
+      <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
         <div className="flex h-10 items-center gap-6 border-b px-2">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-4 w-24" />

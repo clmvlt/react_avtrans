@@ -16,7 +16,7 @@ type EquipementCardProps = {
  */
 export function EquipementCard({ equipement, canManage, onEdit, onDelete }: EquipementCardProps) {
   return (
-    <div className="group rounded-lg border bg-card p-4 transition-colors hover:bg-accent/30">
+    <div className="group rounded-xl border bg-card p-4 transition-colors hover:bg-accent/30">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">

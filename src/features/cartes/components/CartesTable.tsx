@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import { CreditCard } from 'lucide-react'
+import { CreditCard, Pencil, Trash2 } from 'lucide-react'
 import { DataTable } from '@/components/shared/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -109,24 +109,28 @@ export function CartesTable({
       header: 'Actions',
       meta: { headerClassName: 'text-right', cellClassName: 'text-right' },
       cell: ({ row: { original: carte } }) => (
-        <div className="flex flex-wrap justify-end gap-1.5">
+        // Icônes seules : la table est déjà large (numéros masqués) ; libellés dans title/aria-label
+        <div className="flex justify-end gap-1">
           <Button
             type="button"
-            variant="default"
-            size="sm"
-            title="Modifier"
+            variant="outline"
+            size="icon-sm"
+            title="Modifier la carte"
+            aria-label="Modifier la carte"
             onClick={() => onEdit(carte)}
           >
-            Modifier
+            <Pencil className="size-4" />
           </Button>
           <Button
             type="button"
-            variant="destructive"
-            size="sm"
-            title="Supprimer"
+            variant="ghost"
+            size="icon-sm"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            title="Supprimer la carte"
+            aria-label="Supprimer la carte"
             onClick={() => onDelete(carte)}
           >
-            Supprimer
+            <Trash2 className="size-4" />
           </Button>
         </div>
       ),

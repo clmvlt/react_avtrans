@@ -11,7 +11,7 @@ type VehicleAvatarProps = ComponentProps<'div'> & {
 
 /**
  * Vignette d'un véhicule : sa photo, ou un camion blanc sur fond violet. La taille et l'arrondi
- * viennent de `className` (44 px dans la table, 48 px en mobile, 72 px dans le détail).
+ * viennent de `className` (44 px dans la table, 48 px en mobile, 96 à 112 px dans le détail).
  */
 export function VehicleAvatar({
   pictureUrl,

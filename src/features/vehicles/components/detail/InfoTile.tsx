@@ -6,19 +6,29 @@ type InfoTileProps = {
   icon: LucideIcon
   label: string
   children: ReactNode
-  /** Classes de la valeur (police mono du VIN, couleur d'une échéance…). */
+  /** Classes du conteneur (largeur dans la grille…). */
+  className?: string
+  /** Classes de la valeur (police mono du VIN…). */
   valueClassName?: string
 }
 
-/** Tuile grisée « icône + libellé » puis valeur, dans la fiche du véhicule. */
-export function InfoTile({ icon: Icon, label, children, valueClassName }: InfoTileProps) {
+/** Paire « libellé / valeur » de la fiche du véhicule, à placer dans un `<dl>`. */
+export function InfoTile({
+  icon: Icon,
+  label,
+  children,
+  className,
+  valueClassName,
+}: InfoTileProps) {
   return (
-    <div className="rounded-md bg-muted/50 px-3 py-2">
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Icon className="size-3.5" />
+    <div className={cn('min-w-0', className)}>
+      <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icon className="size-3.5 shrink-0" />
         <span>{label}</span>
-      </div>
-      <p className={cn('mt-0.5 text-sm font-medium text-foreground', valueClassName)}>{children}</p>
+      </dt>
+      <dd className={cn('mt-0.5 text-sm font-medium break-words text-foreground', valueClassName)}>
+        {children}
+      </dd>
     </div>
   )
 }

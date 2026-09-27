@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import type { SortingState } from '@tanstack/react-table'
+import { Plus } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { useVehiclesQuery } from '@/features/vehicles/api/useVehiclesQuery'
 import { VehicleCreateDialog } from '@/features/vehicles/components/dialogs/VehicleCreateDialog'
 import { VehicleDeleteDialog } from '@/features/vehicles/components/dialogs/VehicleDeleteDialog'
@@ -58,12 +62,7 @@ export default function VehiculesPage() {
 
     return (
       <div className="space-y-4">
-        <VehiclesToolbar
-          search={search}
-          onSearchChange={setSearch}
-          canCreate={canManage}
-          onCreate={() => dialogs.open('create')}
-        />
+        <VehiclesToolbar search={search} onSearchChange={setSearch} />
         <VehiclesMobileList vehicules={sortVehicles(filtered, sorting)} {...actions} />
         <VehiclesDataTable
           vehicules={filtered}
@@ -76,8 +75,20 @@ export default function VehiculesPage() {
   }
 
   return (
-    <main className="px-4 py-4 md:px-6 md:py-6">
-      <div className="mx-auto max-w-[1400px] space-y-6">{renderContent()}</div>
+    <PageContainer>
+      <PageHeader
+        title="Véhicules"
+        description="Le parc de véhicules : fiches, kilométrages et entretiens."
+        actions={
+          canManage && (
+            <Button size="sm" onClick={() => dialogs.open('create')}>
+              <Plus className="size-4" />
+              Ajouter un véhicule
+            </Button>
+          )
+        }
+      />
+      {renderContent()}
 
       <VehicleCreateDialog open={dialogs.isOpen('create')} onOpenChange={dialogs.onOpenChange} />
       <VehicleDeleteDialog
@@ -85,6 +96,6 @@ export default function VehiculesPage() {
         onOpenChange={dialogs.onOpenChange}
         vehicule={dialogs.item}
       />
-    </main>
+    </PageContainer>
   )
 }

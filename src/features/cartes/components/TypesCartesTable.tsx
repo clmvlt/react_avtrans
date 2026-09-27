@@ -48,7 +48,7 @@ export function TypesCartesTable({ types, onEdit, onDelete }: TypesCartesTablePr
         <div className="flex flex-wrap justify-end gap-1.5">
           <Button
             type="button"
-            variant="default"
+            variant="outline"
             size="sm"
             title="Modifier"
             onClick={() => onEdit(type)}
@@ -57,7 +57,8 @@ export function TypesCartesTable({ types, onEdit, onDelete }: TypesCartesTablePr
           </Button>
           <Button
             type="button"
-            variant="destructive"
+            variant="ghost"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             size="sm"
             title="Supprimer"
             onClick={() => onDelete(type)}

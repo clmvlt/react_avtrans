@@ -1,27 +1,21 @@
-import { Info, Plus, Search } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Info, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
 type StockToolbarProps = {
   searchQuery: string
   onSearchChange: (value: string) => void
-  canManage: boolean
-  /** Affiche l'aide sur le glisser-déposer (seulement s'il y a des articles listés). */
+  /** Aide sur le glisser-déposer (desktop, gestionnaire, s'il y a des articles listés). */
   showDragHint: boolean
-  onCreateItem: () => void
 }
 
-/** Recherche, aide sur le glisser-déposer (desktop) et bouton « Ajouter un article ». */
-export function StockToolbar({
-  searchQuery,
-  onSearchChange,
-  canManage,
-  showDragHint,
-  onCreateItem,
-}: StockToolbarProps) {
+/**
+ * Recherche et aide sur le glisser-déposer. L'aide, une infobulle au survol dans le Vue, est
+ * écrite en clair ; « Ajouter un article » est dans l'en-tête de la page.
+ */
+export function StockToolbar({ searchQuery, onSearchChange, showDragHint }: StockToolbarProps) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="relative flex-1">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="relative w-full sm:max-w-md">
         <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="search"
@@ -32,23 +26,11 @@ export function StockToolbar({
           className="pl-9"
         />
       </div>
-      {canManage && showDragHint && (
-        <div
-          tabIndex={0}
-          aria-label="Glissez-déposez les articles vers une catégorie"
-          className="group/hint relative hidden shrink-0 cursor-default rounded-sm text-muted-foreground/40 transition-colors outline-none hover:text-muted-foreground focus-visible:text-muted-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 md:block"
-        >
-          <Info className="size-3.5" />
-          <div className="pointer-events-none absolute top-full right-0 z-50 mt-2 hidden rounded-md border bg-popover px-3 py-1.5 text-xs whitespace-nowrap text-popover-foreground shadow-md group-hover/hint:block group-focus-visible/hint:block">
-            Glissez-déposez les articles vers une catégorie
-          </div>
-        </div>
-      )}
-      {canManage && (
-        <Button type="button" size="sm" className="shrink-0" onClick={onCreateItem}>
-          <Plus className="size-4" />
-          Ajouter un article
-        </Button>
+      {showDragHint && (
+        <p className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
+          <Info className="size-3.5 shrink-0" />
+          Glissez-déposez un article sur une catégorie pour le classer.
+        </p>
       )}
     </div>
   )

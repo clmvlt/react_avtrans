@@ -1,6 +1,10 @@
 import { useState } from 'react'
-import { useParams } from 'react-router'
+import { Plus, Truck } from 'lucide-react'
+import { Link, useParams } from 'react-router'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { useVehicleQuery } from '@/features/vehicles/api/useVehicleQuery'
 import { useDossiersQuery } from '@/features/maintenance/api/useDossiersQuery'
@@ -14,7 +18,7 @@ import { VehiculeEntretienFormDialog } from '@/features/maintenance/components/f
 import { EntretiensHistory } from '@/features/maintenance/components/history/EntretiensHistory'
 import { ValidateEntretienDialog } from '@/features/maintenance/components/vehicule/ValidateEntretienDialog'
 import { VehicleUpcomingAlerts } from '@/features/maintenance/components/vehicule/VehicleUpcomingAlerts'
-import { VehiculeEntretiensHeader } from '@/features/maintenance/components/vehicule/VehiculeEntretiensHeader'
+import { VehiculeEntretiensTabs } from '@/features/maintenance/components/vehicule/VehiculeEntretiensTabs'
 import { useCanManageMaintenance } from '@/features/maintenance/hooks/useCanManageMaintenance'
 import { useEntretiensHistory } from '@/features/maintenance/hooks/useEntretiensHistory'
 import type { EntretienRow } from '@/features/maintenance/lib/entretienRow'
@@ -22,12 +26,19 @@ import { buildHistoryFilterConfig } from '@/features/maintenance/lib/historySear
 import { notifyError } from '@/features/maintenance/lib/notify'
 import { useDialogState } from '@/hooks/useDialogState'
 import { cn } from '@/lib/utils'
-import type { TypeEntretienDTO } from '@/models'
+import type { TypeEntretienDTO, VehiculeDTO } from '@/models'
 
-const TAB_CONTENT_CLASS = 'mt-0 bg-background p-4 md:p-6 data-[state=inactive]:hidden'
+const TAB_CONTENT_CLASS = 'data-[state=inactive]:hidden'
 
 type FormState = { open: boolean; key: number; entretien: EntretienRow | null }
 type ValidationState = { open: boolean; typeEntretien: TypeEntretienDTO | null }
+
+/** « Renault Master · 125 000 km au compteur » (« 0 km » sans relevé, comme le Vue). */
+function describeVehicle(vehicule: VehiculeDTO) {
+  const name = `${vehicule.brand ?? ''} ${vehicule.model ?? ''}`.trim()
+  const km = `${vehicule.latestKm?.toLocaleString('fr-FR') || 0} km au compteur`
+  return [name, km].filter(Boolean).join(' · ')
+}
 
 /**
  * /entretiens/vehicule/:id (EntretiensVehicule.vue) : échéances, historique et configurations
@@ -75,76 +86,80 @@ function EntretiensVehiculeContent({ vehiculeId }: { vehiculeId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">
-          <Tabs value={tab} onValueChange={setTab}>
-            <div className="overflow-hidden rounded-lg border border-border">
-              <VehiculeEntretiensHeader
-                vehiculeId={vehiculeId}
-                vehicule={vehicle.data}
-                configCount={configs.data?.length ?? 0}
+    <PageContainer>
+      <PageHeader
+        back={{ to: '/entretiens', label: 'Entretiens' }}
+        title={
+          vehicle.data?.immat ? `Entretiens · ${vehicle.data.immat}` : 'Entretiens du véhicule'
+        }
+        description={vehicle.data ? describeVehicle(vehicle.data) : undefined}
+        actions={
+          <>
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/vehicules/${vehiculeId}`}>
+                <Truck className="size-4" />
+                Voir le véhicule
+              </Link>
+            </Button>
+            {canManage && (
+              <Button type="button" size="sm" onClick={() => openForm(null)}>
+                <Plus className="size-4" />
+                Nouvel entretien
+              </Button>
+            )}
+          </>
+        }
+      />
+
+      <Tabs value={tab} onValueChange={setTab} className="gap-4">
+        <VehiculeEntretiensTabs configCount={configs.data?.length ?? 0} canManage={canManage} />
+
+        <TabsContent value="entretiens" forceMount className={cn(TAB_CONTENT_CLASS, 'space-y-6')}>
+          {loadError ? (
+            <ErrorState
+              message="Erreur lors du chargement des données"
+              onRetry={retryLoad}
+              isRetrying={vehicle.isFetching || types.isFetching}
+            />
+          ) : (
+            <>
+              <VehicleUpcomingAlerts
+                upcoming={upcoming.data}
                 canManage={canManage}
-                onCreate={() => openForm(null)}
+                onValidate={handleValidate}
               />
+              <section className="space-y-4">
+                <h2 className="text-base font-semibold text-foreground">
+                  Historique des entretiens
+                </h2>
+                <EntretiensHistory
+                  variant="vehicule"
+                  history={history}
+                  filterConfig={buildHistoryFilterConfig({
+                    dossiers: dossiers.data ?? [],
+                    types: typeList,
+                    dossierId: history.filters.dossierId,
+                  })}
+                  canManage={canManage}
+                  onOpenFiles={(entretien) => dialogs.open('files', entretien)}
+                  onEdit={openForm}
+                  onDelete={(entretien) => dialogs.open('delete', entretien)}
+                />
+              </section>
+            </>
+          )}
+        </TabsContent>
 
-              <TabsContent
-                value="entretiens"
-                forceMount
-                className={cn(TAB_CONTENT_CLASS, 'space-y-6')}
-              >
-                {loadError ? (
-                  <ErrorState
-                    message="Erreur lors du chargement des données"
-                    onRetry={retryLoad}
-                    isRetrying={vehicle.isFetching || types.isFetching}
-                  />
-                ) : (
-                  <>
-                    <VehicleUpcomingAlerts
-                      upcoming={upcoming.data}
-                      canManage={canManage}
-                      onValidate={handleValidate}
-                    />
-                    <div className="space-y-4">
-                      <h2 className="text-lg font-semibold text-foreground">
-                        Historique des entretiens
-                      </h2>
-                      <EntretiensHistory
-                        variant="vehicule"
-                        history={history}
-                        filterConfig={buildHistoryFilterConfig({
-                          dossiers: dossiers.data ?? [],
-                          types: typeList,
-                          dossierId: history.filters.dossierId,
-                        })}
-                        canManage={canManage}
-                        onOpenFiles={(entretien) => dialogs.open('files', entretien)}
-                        onEdit={openForm}
-                        onDelete={(entretien) => dialogs.open('delete', entretien)}
-                      />
-                    </div>
-                  </>
-                )}
-              </TabsContent>
-
-              {canManage && (
-                <TabsContent
-                  value="configurations"
-                  forceMount
-                  className={cn(TAB_CONTENT_CLASS, 'space-y-4')}
-                >
-                  <VehiculeConfigsPanel
-                    vehiculeId={vehiculeId}
-                    configsQuery={configs}
-                    types={typeList}
-                  />
-                </TabsContent>
-              )}
-            </div>
-          </Tabs>
-        </div>
-      </main>
+        {canManage && (
+          <TabsContent
+            value="configurations"
+            forceMount
+            className={cn(TAB_CONTENT_CLASS, 'space-y-4')}
+          >
+            <VehiculeConfigsPanel vehiculeId={vehiculeId} configsQuery={configs} types={typeList} />
+          </TabsContent>
+        )}
+      </Tabs>
 
       <VehiculeEntretienFormDialog
         open={form.open}
@@ -180,6 +195,6 @@ function EntretiensVehiculeContent({ vehiculeId }: { vehiculeId: string }) {
         vehicule={vehicle.data}
         typeEntretien={validation.typeEntretien}
       />
-    </div>
+    </PageContainer>
   )
 }

@@ -18,7 +18,7 @@ export function StockEmptyState({ searchQuery, selection }: StockEmptyStateProps
         : 'Aucun article en stock'
 
   return (
-    <Empty className="gap-0 rounded-none p-0 py-16 text-muted-foreground md:p-0 md:py-16">
+    <Empty className="gap-0 rounded-xl border border-dashed p-0 py-16 text-muted-foreground md:p-0 md:py-16">
       <PackageOpen className="mb-4 size-12 opacity-50" />
       <p>{message}</p>
     </Empty>

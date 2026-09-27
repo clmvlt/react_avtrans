@@ -51,7 +51,7 @@ export function DossierNavItem({
       tabIndex={0}
       aria-pressed={selected}
       className={cn(
-        'group relative flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        'group relative flex shrink-0 cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:py-3',
         selected
           ? 'bg-primary text-primary-foreground'
           : dragOver

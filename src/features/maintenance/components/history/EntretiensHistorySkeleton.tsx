@@ -19,7 +19,7 @@ export function EntretiensHistorySkeleton({ showVehicle }: EntretiensHistorySkel
     <>
       <div className="space-y-3 md:hidden">
         {Array.from({ length: 4 }, (_, index) => (
-          <div key={index} className="space-y-3 rounded-lg border bg-card p-4">
+          <div key={index} className="space-y-3 rounded-xl border bg-card p-4">
             <div className="flex items-center justify-between">
               {showVehicle ? (
                 <div className="flex items-center gap-2">
@@ -40,7 +40,7 @@ export function EntretiensHistorySkeleton({ showVehicle }: EntretiensHistorySkel
         ))}
       </div>
 
-      <div className="hidden overflow-hidden rounded-lg border shadow-sm md:block">
+      <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
         <Table>
           <TableHeader>
             <TableRow>

@@ -1,12 +1,18 @@
 import { useState } from 'react'
+import { Package, Plus } from 'lucide-react'
+import { Link } from 'react-router'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { PageTabs } from '@/components/layout/PageTabs'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { useVehiclesQuery } from '@/features/vehicles/api/useVehiclesQuery'
 import { useDossiersQuery } from '@/features/maintenance/api/useDossiersQuery'
 import { useFleetUpcomingQuery } from '@/features/maintenance/api/useFleetUpcomingQuery'
 import { useTypesEntretienQuery } from '@/features/maintenance/api/useTypesEntretienQuery'
 import { EntretienDeleteDialog } from '@/features/maintenance/components/EntretienDeleteDialog'
-import { EntretiensHeader } from '@/features/maintenance/components/EntretiensHeader'
+import { EntretiensViewTabs } from '@/features/maintenance/components/EntretiensViewTabs'
 import { FleetDashboard } from '@/features/maintenance/components/fleet/FleetDashboard'
 import { EntretienFilesDialog } from '@/features/maintenance/components/files/EntretienFilesDialog'
 import { EntretienFormDialog } from '@/features/maintenance/components/form/EntretienFormDialog'
@@ -15,11 +21,12 @@ import { useEntretiensHistory } from '@/features/maintenance/hooks/useEntretiens
 import { useFleetEntretienForm } from '@/features/maintenance/hooks/useFleetEntretienForm'
 import type { EntretienRow } from '@/features/maintenance/lib/entretienRow'
 import { buildHistoryFilterConfig } from '@/features/maintenance/lib/historySearch'
+import { MAINTENANCE_TABS } from '@/features/maintenance/lib/maintenanceTabs'
 import { useDialogState } from '@/hooks/useDialogState'
 import { cn } from '@/lib/utils'
 import { selectIsAdmin, useAuthStore } from '@/stores/auth-store'
 
-const TAB_CONTENT_CLASS = 'mt-0 bg-background p-6 data-[state=inactive]:hidden'
+const TAB_CONTENT_CLASS = 'data-[state=inactive]:hidden'
 
 /**
  * /entretiens (Entretiens.vue) : tableau de bord des prochains entretiens de la flotte et
@@ -28,7 +35,7 @@ const TAB_CONTENT_CLASS = 'mt-0 bg-background p-6 data-[state=inactive]:hidden'
 export default function EntretiensPage() {
   // Bug B-04 reproduit (Entretiens.vue:1079) : les droits de gestion testent l'UUID
   // administrateur. Le mécanicien est en lecture seule sur cette page (pas de création,
-  // modification, suppression ni gestion des fichiers, pas de boutons Types / Stock).
+  // modification, suppression ni gestion des fichiers, pas d'accès aux types ni au stock).
   const canManage = useAuthStore(selectIsAdmin)
   const [tab, setTab] = useState('prochains')
 
@@ -58,56 +65,68 @@ export default function EntretiensPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 md:px-6 md:py-6">
-        <div className="mx-auto max-w-[1400px]">
-          <Tabs value={tab} onValueChange={setTab}>
-            <div className="overflow-hidden rounded-lg border border-border">
-              <EntretiensHeader
-                canManage={canManage}
-                upcomingCount={upcoming.data?.length ?? 0}
-                totalCount={history.totalElements}
-                onCreate={form.openCreate}
-              />
+    <PageContainer>
+      <PageHeader
+        title="Entretiens"
+        description="Suivi et historique des entretiens de la flotte."
+        actions={
+          canManage && (
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/stock">
+                  <Package className="size-4" />
+                  Stock
+                </Link>
+              </Button>
+              <Button type="button" size="sm" onClick={form.openCreate}>
+                <Plus className="size-4" />
+                Nouvel entretien
+              </Button>
+            </>
+          )
+        }
+      >
+        {/* Onglet « Types d'entretien » réservé à l'admin, comme son bouton dans le Vue (B-04) */}
+        {canManage && <PageTabs tabs={MAINTENANCE_TABS} />}
+      </PageHeader>
 
-              <TabsContent value="prochains" forceMount className={TAB_CONTENT_CLASS}>
-                {fleetError ? (
-                  <ErrorState
-                    message="Erreur lors du chargement des données"
-                    onRetry={retryFleet}
-                    isRetrying={upcoming.isFetching || vehicles.isFetching || types.isFetching}
-                  />
-                ) : (
-                  <FleetDashboard
-                    isLoading={upcoming.isPending || vehicles.isPending}
-                    prochains={upcoming.data ?? []}
-                    vehicules={vehiculeList}
-                  />
-                )}
-              </TabsContent>
+      <Tabs value={tab} onValueChange={setTab} className="gap-4">
+        <EntretiensViewTabs
+          upcomingCount={upcoming.data?.length ?? 0}
+          totalCount={history.totalElements}
+        />
 
-              <TabsContent
-                value="historique"
-                forceMount
-                className={cn(TAB_CONTENT_CLASS, 'space-y-4')}
-              >
-                <EntretiensHistory
-                  variant="fleet"
-                  history={history}
-                  filterConfig={buildHistoryFilterConfig({
-                    vehicules: vehiculeList,
-                    dossiers: dossierList,
-                    types: typeList,
-                    dossierId: history.filters.dossierId,
-                  })}
-                  canManage={canManage}
-                  {...rowActions}
-                />
-              </TabsContent>
-            </div>
-          </Tabs>
-        </div>
-      </main>
+        <TabsContent value="prochains" forceMount className={TAB_CONTENT_CLASS}>
+          {fleetError ? (
+            <ErrorState
+              message="Erreur lors du chargement des données"
+              onRetry={retryFleet}
+              isRetrying={upcoming.isFetching || vehicles.isFetching || types.isFetching}
+            />
+          ) : (
+            <FleetDashboard
+              isLoading={upcoming.isPending || vehicles.isPending}
+              prochains={upcoming.data ?? []}
+              vehicules={vehiculeList}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="historique" forceMount className={cn(TAB_CONTENT_CLASS, 'space-y-4')}>
+          <EntretiensHistory
+            variant="fleet"
+            history={history}
+            filterConfig={buildHistoryFilterConfig({
+              vehicules: vehiculeList,
+              dossiers: dossierList,
+              types: typeList,
+              dossierId: history.filters.dossierId,
+            })}
+            canManage={canManage}
+            {...rowActions}
+          />
+        </TabsContent>
+      </Tabs>
 
       <EntretienFormDialog
         open={form.open}
@@ -135,6 +154,6 @@ export default function EntretiensPage() {
         onOpenChange={dialogs.onOpenChange}
         entretien={dialogs.item}
       />
-    </div>
+    </PageContainer>
   )
 }

@@ -71,11 +71,11 @@ export function VehicleCommentsTab({ vehiculeId, page, onPageChange }: VehicleCo
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Commentaires</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-base font-semibold text-foreground">Commentaires</h3>
         <Button type="button" size="sm" onClick={() => setAddOpen(true)}>
-          <Plus className="mr-2 size-4" />
-          Ajouter
+          <Plus className="size-4" />
+          Ajouter un commentaire
         </Button>
       </div>
 

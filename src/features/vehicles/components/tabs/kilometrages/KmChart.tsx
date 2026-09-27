@@ -60,7 +60,7 @@ export function KmChart({ kilometrages }: KmChartProps) {
   const data = toChartData(kilometrages)
 
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="rounded-xl border bg-card p-4">
       <ChartContainer config={chartConfig} className="aspect-[2/1] w-full">
         <AreaChart data={data} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} />

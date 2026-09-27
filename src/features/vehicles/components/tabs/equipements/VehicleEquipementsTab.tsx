@@ -77,12 +77,12 @@ export function VehicleEquipementsTab({ vehiculeId, canManage }: VehicleEquipeme
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Équipements du véhicule</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-base font-semibold text-foreground">Équipements du véhicule</h3>
         {canManage && (
           <Button type="button" size="sm" onClick={() => dialogs.open('form')}>
-            <Plus className="mr-2 size-4" />
-            Ajouter
+            <Plus className="size-4" />
+            Ajouter un équipement
           </Button>
         )}
       </div>
