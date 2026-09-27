@@ -94,16 +94,16 @@ export function ChangePasswordForm({ onDone }: ChangePasswordFormProps) {
         />
       ))}
 
-      <div className="mt-4 flex justify-end gap-3 border-t pt-4 max-sm:flex-col">
+      <div className="mt-2 flex flex-col-reverse gap-3 border-t pt-4 sm:flex-row sm:justify-end">
         {/* type="button" : sans lui, « Annuler » changerait le mot de passe (MIGRATION.md 8.1) */}
-        <Button type="button" variant="outline" size="sm" onClick={onDone} disabled={saving}>
+        <Button type="button" variant="outline" onClick={onDone} disabled={saving}>
           Annuler
         </Button>
-        <Button type="submit" size="sm" disabled={saving}>
+        <Button type="submit" disabled={saving}>
           {saving ? (
-            <LoaderCircle className="size-3.5 animate-spin" />
+            <LoaderCircle className="size-4 animate-spin" />
           ) : (
-            <KeyRound className="size-3.5" />
+            <KeyRound className="size-4" />
           )}
           Changer le mot de passe
         </Button>

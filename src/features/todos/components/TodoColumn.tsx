@@ -46,7 +46,7 @@ export function TodoColumn({
   return (
     <div
       className={cn(
-        'flex w-full flex-1 flex-col rounded-lg border bg-card transition-all md:max-h-[calc(100vh-180px)] md:min-w-[250px]',
+        'flex w-full flex-1 flex-col rounded-xl border bg-card transition-all md:max-h-[calc(100svh-15rem)] md:min-w-[250px]',
         isDropTarget && 'border-primary ring-2 ring-primary/20',
       )}
       onDragOver={onDragOver}
@@ -60,7 +60,7 @@ export function TodoColumn({
         )}
         style={uncategorized ? undefined : { borderBottom: `3px solid ${color}` }}
       >
-        <span className="font-semibold text-foreground">{title}</span>
+        <span className="text-sm font-semibold text-foreground">{title}</span>
         <Badge variant="secondary" className="text-xs">
           {todos.length}
         </Badge>

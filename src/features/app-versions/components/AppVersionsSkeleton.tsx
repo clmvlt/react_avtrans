@@ -4,11 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 export function AppVersionsSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true" aria-label="Chargement des versions...">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <Skeleton className="h-9 flex-1" />
-        <Skeleton className="h-8 w-8 sm:w-40" />
-      </div>
-      <div className="overflow-hidden rounded-lg border shadow-sm">
+      <Skeleton className="h-9 w-full max-w-md" />
+      <div className="overflow-hidden rounded-xl border bg-card">
         <div className="border-b p-3">
           <Skeleton className="h-4 w-32" />
         </div>

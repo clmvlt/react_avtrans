@@ -35,7 +35,7 @@ export function TodoCard({
   return (
     <div
       className={cn(
-        'group cursor-grab rounded-md border bg-muted/50 p-3 transition-all hover:border-border/80 hover:shadow-sm active:cursor-grabbing',
+        'group cursor-grab rounded-lg border bg-muted/50 p-3 transition-all hover:border-border/80 hover:shadow-sm active:cursor-grabbing',
         isDragging && 'opacity-50',
         todo.isDone && 'opacity-60',
       )}

@@ -30,10 +30,7 @@ export function PlatformCard({
 }: PlatformCardProps) {
   return (
     <section
-      className={cn(
-        'flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md',
-        className,
-      )}
+      className={cn('flex flex-col overflow-hidden rounded-xl border bg-card shadow-xs', className)}
     >
       <div className={cn('flex items-center gap-4 border-b p-5', headerClassName)}>
         <div
@@ -45,7 +42,7 @@ export function PlatformCard({
           {icon}
         </div>
         <div>
-          <h2 className="text-lg font-bold text-foreground">{title}</h2>
+          <h2 className="text-base font-semibold text-foreground">{title}</h2>
           <p className="text-xs text-muted-foreground">{subtitle}</p>
         </div>
       </div>
@@ -53,7 +50,7 @@ export function PlatformCard({
       <div className="flex flex-1 flex-col p-5">{children}</div>
 
       <div className="mt-auto border-t bg-muted/30 px-5 py-3">
-        <p className="flex items-center gap-2 text-[11px] text-muted-foreground">
+        <p className="flex items-center gap-2 text-xs text-muted-foreground">
           <Info className="size-3.5 shrink-0" />
           {note}
         </p>

@@ -57,7 +57,7 @@ export function TodoBoard({
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-200px)] flex-col items-start gap-4 md:flex-row">
+    <div className="flex flex-col items-start gap-4 md:flex-row">
       <TodoColumn
         title="Sans catégorie"
         uncategorized

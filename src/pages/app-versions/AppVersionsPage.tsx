@@ -1,7 +1,11 @@
 import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { useAdminAppVersionsQuery } from '@/features/app-versions/api/useAdminAppVersionsQuery'
 import { useDeleteAppVersionMutation } from '@/features/app-versions/api/useDeleteAppVersionMutation'
 import { AppVersionCreateDialog } from '@/features/app-versions/components/AppVersionCreateDialog'
@@ -40,33 +44,38 @@ export default function AppVersionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="px-4 py-4 sm:px-6 sm:py-6">
-        <div className="mx-auto max-w-[1400px]">
-          {versionsQuery.isPending ? (
-            <AppVersionsSkeleton />
-          ) : versionsQuery.isError ? (
-            <ErrorState
-              error={versionsQuery.error}
-              onRetry={() => void versionsQuery.refetch()}
-              isRetrying={versionsQuery.isRefetching}
+    <PageContainer>
+      <PageHeader
+        title="Versions de l'app"
+        description="Publiez les nouvelles versions de l'application Android."
+        actions={
+          <Button size="sm" onClick={() => dialogs.open('create')}>
+            <Plus className="size-4" />
+            Publier une version
+          </Button>
+        }
+      />
+
+      <div>
+        {versionsQuery.isPending ? (
+          <AppVersionsSkeleton />
+        ) : versionsQuery.isError ? (
+          <ErrorState
+            error={versionsQuery.error}
+            onRetry={() => void versionsQuery.refetch()}
+            isRetrying={versionsQuery.isRefetching}
+          />
+        ) : (
+          <div className="space-y-4">
+            <AppVersionsToolbar search={search} onSearchChange={setSearch} />
+            <AppVersionsTable
+              versions={filterAppVersions(versionsQuery.data, search)}
+              onEdit={(version) => dialogs.open('edit', version)}
+              onDelete={(version) => dialogs.open('delete', version)}
             />
-          ) : (
-            <div className="space-y-4">
-              <AppVersionsToolbar
-                search={search}
-                onSearchChange={setSearch}
-                onCreate={() => dialogs.open('create')}
-              />
-              <AppVersionsTable
-                versions={filterAppVersions(versionsQuery.data, search)}
-                onEdit={(version) => dialogs.open('edit', version)}
-                onDelete={(version) => dialogs.open('delete', version)}
-              />
-            </div>
-          )}
-        </div>
-      </main>
+          </div>
+        )}
+      </div>
 
       <ConfirmDialog
         open={dialogs.isOpen('delete')}
@@ -89,6 +98,6 @@ export default function AppVersionsPage() {
         onOpenChange={dialogs.onOpenChange}
         versionId={dialogs.type === 'edit' ? (dialogs.item?.id ?? null) : null}
       />
-    </div>
+    </PageContainer>
   )
 }

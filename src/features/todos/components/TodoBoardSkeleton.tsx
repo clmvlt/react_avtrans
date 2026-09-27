@@ -11,7 +11,7 @@ export function TodoBoardSkeleton() {
       {Array.from({ length: 3 }, (_, column) => (
         <div
           key={column}
-          className="flex w-full flex-1 flex-col rounded-lg border bg-card md:min-w-[250px]"
+          className="flex w-full flex-1 flex-col rounded-xl border bg-card md:min-w-[250px]"
         >
           <div className="flex items-center justify-between border-b p-4">
             <Skeleton className="h-5 w-32" />

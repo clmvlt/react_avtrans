@@ -15,7 +15,7 @@ function YesNoBadge({ value }: { value?: boolean }) {
   return (
     <Badge
       variant={value ? 'outline' : 'destructive'}
-      className={cn(value && 'border-green-500/50 text-green-600 dark:text-green-400')}
+      className={cn(value && 'border-success/50 text-success')}
     >
       {value ? 'Oui' : 'Non'}
     </Badge>
@@ -26,18 +26,18 @@ function YesNoBadge({ value }: { value?: boolean }) {
 export function ProfileInfoView({ user }: ProfileInfoViewProps) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4 rounded-md border bg-background p-4 max-sm:flex-col max-sm:text-center">
+      <div className="flex items-center gap-4 rounded-lg border bg-muted/30 p-4 max-sm:flex-col max-sm:text-center">
         <Avatar className="size-20 shrink-0 border-2 border-border">
           {user?.pictureUrl && <AvatarImage src={user.pictureUrl} alt="Photo de profil" />}
           <AvatarFallback className="bg-muted text-muted-foreground">
             <User className="size-8" />
           </AvatarFallback>
         </Avatar>
-        <div className="flex flex-col gap-1 max-sm:items-center">
+        <div className="flex min-w-0 flex-col gap-1 max-sm:items-center">
           <span className="text-lg font-semibold text-foreground">
             {user?.firstName} {user?.lastName}
           </span>
-          <span className="text-sm text-muted-foreground">{user?.email}</span>
+          <span className="text-sm break-all text-muted-foreground">{user?.email}</span>
           <RoleBadge role={user?.role} className="mt-1" />
         </div>
       </div>

@@ -71,9 +71,7 @@ export function getAppVersionColumns({
       cell: ({ row: { original: version } }) => (
         <Badge
           variant={version.isActive ? 'outline' : 'destructive'}
-          className={cn(
-            version.isActive && 'border-green-500/50 text-green-600 dark:text-green-400',
-          )}
+          className={cn(version.isActive && 'border-success/50 text-success')}
         >
           {version.isActive ? 'Actif' : 'Inactif'}
         </Badge>

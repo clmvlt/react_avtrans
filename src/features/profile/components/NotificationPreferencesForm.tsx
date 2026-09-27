@@ -84,17 +84,13 @@ export function NotificationPreferencesForm({
         ))}
       </div>
 
-      <div className="mt-4 flex justify-end gap-3 border-t pt-4 max-sm:flex-col">
+      <div className="mt-2 flex flex-col-reverse gap-3 border-t pt-4 sm:flex-row sm:justify-end">
         {/* type="button" : sans lui, « Annuler » enregistrerait le formulaire (MIGRATION.md 8.1) */}
-        <Button type="button" variant="outline" size="sm" onClick={onDone} disabled={saving}>
+        <Button type="button" variant="outline" onClick={onDone} disabled={saving}>
           Annuler
         </Button>
-        <Button type="submit" size="sm" disabled={saving}>
-          {saving ? (
-            <LoaderCircle className="size-3.5 animate-spin" />
-          ) : (
-            <Check className="size-3.5" />
-          )}
+        <Button type="submit" disabled={saving}>
+          {saving ? <LoaderCircle className="size-4 animate-spin" /> : <Check className="size-4" />}
           Sauvegarder
         </Button>
       </div>

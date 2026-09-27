@@ -17,7 +17,7 @@ export function TodoToggleButton({ done, disabled, onToggle }: TodoToggleButtonP
       className={cn(
         'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-all',
         done
-          ? 'border-green-500 bg-green-500 text-white'
+          ? 'border-success bg-success text-success-foreground'
           : 'border-muted-foreground/40 text-transparent hover:border-primary hover:text-primary',
       )}
       disabled={disabled}

@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCheck, Volume2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { markNotificationsReadInList } from '../api/notificationListCache'
 import { useMarkAllNotificationsReadMutation } from '../api/useMarkAllNotificationsReadMutation'
@@ -24,13 +23,15 @@ function playTestSound() {
   }
 }
 
-type NotificationsHeaderProps = {
-  total: number
+type NotificationsActionsProps = {
   unreadCount: number
 }
 
-/** En-tête de /notifications : compteurs, « Test son » (dev) et « Tout marquer comme lu ». */
-export function NotificationsHeader({ total, unreadCount }: NotificationsHeaderProps) {
+/**
+ * Actions de l'en-tête de /notifications : « Test son » (développement) et « Tout marquer comme
+ * lu » (seulement s'il reste des non-lues). Les compteurs sont dans les onglets de la page.
+ */
+export function NotificationsActions({ unreadCount }: NotificationsActionsProps) {
   const queryClient = useQueryClient()
   const markAllRead = useMarkAllNotificationsReadMutation()
 
@@ -47,36 +48,24 @@ export function NotificationsHeader({ total, unreadCount }: NotificationsHeaderP
   }
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <p className="text-sm text-muted-foreground">
-          {total} notification{total > 1 ? 's' : ''}{' '}
-          {unreadCount > 0 && (
-            <Badge variant="outline" className="ml-2 border-primary/50 text-primary">
-              {unreadCount} non lue{unreadCount > 1 ? 's' : ''}
-            </Badge>
-          )}
-        </p>
-      </div>
-      <div className="flex items-center gap-3">
-        {import.meta.env.DEV && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-amber-500/50 text-amber-600"
-            onClick={playTestSound}
-          >
-            <Volume2 className="size-3.5" />
-            Test son
-          </Button>
-        )}
-        {unreadCount > 0 && (
-          <Button size="sm" disabled={markAllRead.isPending} onClick={handleMarkAllRead}>
-            <CheckCheck className="size-3.5" />
-            {markAllRead.isPending ? 'Chargement...' : 'Tout marquer comme lu'}
-          </Button>
-        )}
-      </div>
-    </div>
+    <>
+      {import.meta.env.DEV && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="border-warning/50 text-warning"
+          onClick={playTestSound}
+        >
+          <Volume2 className="size-4" />
+          Test son
+        </Button>
+      )}
+      {unreadCount > 0 && (
+        <Button size="sm" disabled={markAllRead.isPending} onClick={handleMarkAllRead}>
+          <CheckCheck className="size-4" />
+          {markAllRead.isPending ? 'Chargement...' : 'Tout marquer comme lu'}
+        </Button>
+      )}
+    </>
   )
 }

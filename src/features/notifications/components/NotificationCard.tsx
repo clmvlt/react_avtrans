@@ -10,8 +10,8 @@ import { getNotificationMeta } from '../lib/notificationMeta'
 type NotificationCardProps = {
   notification: NotificationDTO
   /**
-   * Colonne du bouton ✓ (onglets « Toutes » et « Non lues ») ; le bouton n'y apparaît que pour
-   * une notification non lue. L'onglet « Lues » n'a pas cette colonne, comme dans le Vue.
+   * Bouton « Marquer comme lu » (onglets « Toutes » et « Non lues ») ; il n'apparaît que pour
+   * une notification non lue. L'onglet « Lues » ne l'a pas, comme dans le Vue.
    */
   showActions?: boolean
   /** Marquage de cette notification en cours */
@@ -23,7 +23,7 @@ type NotificationCardProps = {
 /**
  * Carte d'une notification de la page /notifications (non lue : liseré et pastille primaires).
  * Présentation plus riche que la ligne du popover (`NotificationItem`) : pastille d'icône colorée
- * par type, date relative longue, bouton ✓.
+ * par type, date relative longue, bouton « Marquer comme lu ».
  */
 export function NotificationCard({
   notification,
@@ -35,7 +35,7 @@ export function NotificationCard({
   const meta = getNotificationMeta(notification.refType)
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    // Entrée / Espace sur le bouton ✓ ne doit pas ouvrir la notification
+    // Entrée / Espace sur « Marquer comme lu » ne doit pas ouvrir la notification
     if (event.target !== event.currentTarget) return
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -48,7 +48,7 @@ export function NotificationCard({
       role="button"
       tabIndex={0}
       className={cn(
-        'flex cursor-pointer gap-4 rounded-lg border bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-md',
+        'flex cursor-pointer gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:gap-4',
         !notification.isRead && 'border-l-4 border-l-primary bg-primary/[0.02]',
       )}
       onClick={() => onOpen(notification)}
@@ -56,7 +56,7 @@ export function NotificationCard({
     >
       <div
         className={cn(
-          'flex size-12 shrink-0 items-center justify-center rounded-lg border text-lg',
+          'flex size-10 shrink-0 items-center justify-center rounded-lg border sm:size-12',
           meta.iconClassName,
         )}
       >
@@ -86,24 +86,22 @@ export function NotificationCard({
         </div>
       </div>
 
-      {showActions && (
-        <div className="flex items-start">
-          {!notification.isRead && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              title="Marquer comme lu"
-              aria-label="Marquer comme lu"
-              disabled={isMarking}
-              onClick={(event) => {
-                event.stopPropagation()
-                onMarkRead(notification)
-              }}
-            >
-              <Check className="size-3.5" />
-            </Button>
-          )}
-        </div>
+      {showActions && !notification.isRead && (
+        // Libellé visible dès `sm` ; icône seule (36 px) sur téléphone
+        <Button
+          variant="ghost"
+          size="sm"
+          className="shrink-0 self-start max-sm:size-9 max-sm:px-0"
+          title="Marquer comme lu"
+          disabled={isMarking}
+          onClick={(event) => {
+            event.stopPropagation()
+            onMarkRead(notification)
+          }}
+        >
+          <Check className="size-4" />
+          <span className="max-sm:sr-only">Marquer comme lu</span>
+        </Button>
       )}
     </div>
   )

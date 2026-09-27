@@ -81,9 +81,9 @@ export function GoogleRegisterForm({ profile, onCreated, onCancel }: GoogleRegis
 
   return (
     <>
-      <div className="mb-8 text-center">
+      <div className="mb-8 flex flex-col items-center text-center">
         {/* Aperçu de l'avatar Google, initiales si la photo manque ou ne charge pas */}
-        <Avatar className="mb-4 inline-flex size-20 border border-border bg-primary/10">
+        <Avatar className="mb-5 size-16 border border-border bg-primary/10">
           {profile.pictureUrl && (
             <AvatarImage
               src={profile.pictureUrl}
@@ -96,8 +96,8 @@ export function GoogleRegisterForm({ profile, onCreated, onCancel }: GoogleRegis
             {getInitials(firstName, lastName)}
           </AvatarFallback>
         </Avatar>
-        <h1 className="mb-2 text-xl font-bold text-foreground sm:text-2xl">Créer mon compte</h1>
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Créer mon compte</h1>
+        <p className="mt-2 text-sm leading-relaxed text-balance text-muted-foreground">
           Vérifiez vos informations puis créez votre compte Google.
         </p>
       </div>

@@ -20,8 +20,8 @@ export function ProfileInfoCard({ user }: ProfileInfoCardProps) {
       title="Informations personnelles"
       action={
         !isEditing && (
-          <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-            <Pencil className="size-3.5" />
+          <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            <Pencil className="size-4" />
             Modifier
           </Button>
         )

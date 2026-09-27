@@ -26,7 +26,8 @@ const isBrowserType = (value: string): value is BrowserType =>
 
 /**
  * Sélecteur de navigateur (onglets sans contenu, comme le Vue) et étapes d'ajout à l'écran
- * d'accueil. Le navigateur détecté est présélectionné, Chrome Android sinon.
+ * d'accueil. Le navigateur détecté est présélectionné, Chrome Android sinon. Les noms restent
+ * visibles sur téléphone : les deux Chrome ont la même icône.
  */
 export function BrowserInstructionsTabs() {
   const [selectedBrowser, setSelectedBrowser] = useState<BrowserType>(() => {
@@ -37,9 +38,9 @@ export function BrowserInstructionsTabs() {
   return (
     <>
       <div className="mb-4">
-        <p className="mb-3 text-sm font-medium text-muted-foreground">
+        <h2 className="mb-3 text-sm font-semibold text-foreground">
           Instructions pour votre navigateur
-        </p>
+        </h2>
         <Tabs
           value={selectedBrowser}
           onValueChange={(value) => {
@@ -51,14 +52,9 @@ export function BrowserInstructionsTabs() {
               const Icon = BROWSER_ICONS[browser]
               const name = getBrowserName(browser)
               return (
-                <TabsTrigger
-                  key={browser}
-                  value={browser}
-                  aria-label={name}
-                  className="flex items-center gap-2"
-                >
+                <TabsTrigger key={browser} value={browser} className="h-8">
                   <Icon className="size-4" />
-                  <span className="hidden sm:inline">{name}</span>
+                  {name}
                 </TabsTrigger>
               )
             })}
@@ -67,20 +63,20 @@ export function BrowserInstructionsTabs() {
       </div>
 
       <ol className="mb-6 space-y-3">
-        <li className="flex items-start gap-3 rounded-md border border-primary bg-primary/5 p-3">
+        <li className="flex items-start gap-3 rounded-lg border border-primary/40 bg-primary/5 p-3">
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
             1
           </span>
-          <span className="pt-0.5 font-medium text-foreground">
+          <span className="pt-0.5 text-sm font-medium text-foreground">
             Cliquez sur le bouton ci-dessous pour aller sur la page Pointage
           </span>
         </li>
         {getInstructions(selectedBrowser).map((step, index) => (
-          <li key={step} className="flex items-start gap-3 rounded-md bg-muted p-3">
+          <li key={step} className="flex items-start gap-3 rounded-lg bg-muted/60 p-3">
             <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
               {index + 2}
             </span>
-            <span className="pt-0.5 text-foreground">{step}</span>
+            <span className="pt-0.5 text-sm text-foreground">{step}</span>
           </li>
         ))}
       </ol>

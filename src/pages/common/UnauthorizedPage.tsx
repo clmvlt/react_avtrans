@@ -1,7 +1,14 @@
-import { useNavigate } from 'react-router'
+import { House, LogOut, ShieldX } from 'lucide-react'
+import { Link, useNavigate } from 'react-router'
 import { PageMeta } from '@/components/shared/PageMeta'
 import { Button } from '@/components/ui/button'
-import { useAuthStore } from '@/stores/auth-store'
+import { getDefaultRoute } from '@/lib/getDefaultRoute'
+import {
+  selectIsActive,
+  selectIsAuthenticated,
+  selectRoleUuid,
+  useAuthStore,
+} from '@/stores/auth-store'
 
 /**
  * Destination des gardes pour un compte inactif ou des droits insuffisants.
@@ -10,7 +17,14 @@ import { useAuthStore } from '@/stores/auth-store'
 export default function UnauthorizedPage() {
   const navigate = useNavigate()
   const userRole = useAuthStore((s) => s.user?.role?.nom || null)
+  const isAuthenticated = useAuthStore(selectIsAuthenticated)
+  const isActive = useAuthStore(selectIsActive)
+  const roleUuid = useAuthStore(selectRoleUuid)
   const logout = useAuthStore((s) => s.logout)
+
+  // Compte inactif : la route par défaut ramènerait ici, seul « Se déconnecter » est proposé
+  const canGoHome = !isAuthenticated || isActive
+  const homePath = isAuthenticated ? getDefaultRoute(roleUuid) : '/'
 
   const handleLogout = () => {
     logout()
@@ -21,50 +35,56 @@ export default function UnauthorizedPage() {
     <>
       <PageMeta title="Accès non autorisé — AVTRANS Concept" robots="noindex, nofollow" />
 
-      <div className="flex min-h-screen items-center justify-center bg-muted p-4 sm:p-6">
-        <div className="w-full max-w-[480px] rounded-xl border border-border bg-card p-6 text-center shadow-xl sm:p-10">
-          <div className="mb-6">
-            <span aria-hidden="true" className="inline-block text-[48px] sm:text-[64px]">
-              🚫
-            </span>
+      <main className="flex min-h-svh items-center justify-center bg-muted/40 px-4 py-8 sm:p-6">
+        <div className="w-full max-w-md rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-8">
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <ShieldX className="size-8" />
           </div>
 
-          <h1 className="mb-4 text-2xl font-semibold text-destructive sm:text-3xl">Accès refusé</h1>
-
-          <p className="mb-6 text-lg leading-relaxed text-muted-foreground">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Accès refusé</h1>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Vous n'avez pas les permissions nécessaires pour accéder à cette application.
           </p>
 
           {userRole && (
-            <div className="mb-6 inline-flex flex-col items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 px-6 py-4">
-              <span className="text-sm tracking-wider text-muted-foreground uppercase">
-                Votre rôle actuel
-              </span>
-              <span className="text-lg font-semibold text-warning">{userRole}</span>
-            </div>
+            <p className="mt-5 inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg border border-warning/30 bg-warning/10 px-4 py-2 text-sm">
+              <span className="text-muted-foreground">Votre rôle actuel :</span>
+              <span className="font-semibold text-warning">{userRole}</span>
+            </p>
           )}
 
-          <div className="mb-8">
-            <p className="mb-3 text-base leading-relaxed text-muted-foreground">
+          <div className="mt-6 space-y-3 text-left text-sm leading-relaxed text-muted-foreground">
+            <p>
               Seuls les <strong className="font-medium text-foreground">Administrateurs</strong> et
               les <strong className="font-medium text-foreground">Mécaniciens</strong> peuvent
               accéder à ce site.
             </p>
-            <p className="mb-3 text-base leading-relaxed text-muted-foreground">
+            <p>
               Si vous êtes un <strong className="font-medium text-foreground">Utilisateur</strong>,
               veuillez utiliser l'application mobile pour accéder à vos pointages.
             </p>
-            <p className="mt-4 text-sm text-muted-foreground/70">
+            <p className="text-xs">
               Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre administrateur
               système.
             </p>
           </div>
 
-          <Button onClick={handleLogout} className="w-full">
-            Se déconnecter
-          </Button>
+          <div className="mt-8 flex flex-col gap-3">
+            {canGoHome && (
+              <Button asChild>
+                <Link to={homePath}>
+                  <House className="size-4" />
+                  Retour à l'accueil
+                </Link>
+              </Button>
+            )}
+            <Button variant={canGoHome ? 'outline' : 'default'} onClick={handleLogout}>
+              <LogOut className="size-4" />
+              Se déconnecter
+            </Button>
+          </div>
         </div>
-      </div>
+      </main>
     </>
   )
 }

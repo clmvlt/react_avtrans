@@ -11,12 +11,12 @@ type GoogleRegisterPendingProps = {
 export function GoogleRegisterPending({ message, onGoToLogin }: GoogleRegisterPendingProps) {
   return (
     <div className="text-center">
-      <div className="mb-5 inline-flex size-[88px] items-center justify-center rounded-full bg-linear-to-br from-info to-info/80">
-        <ShieldUser className="size-11 text-white" />
+      <div className="mb-4 inline-flex size-16 items-center justify-center rounded-full bg-info/10 text-info">
+        <ShieldUser className="size-8" />
       </div>
-      <h2 className="mb-4 text-2xl font-bold text-foreground">Compte créé !</h2>
+      <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground">Compte créé !</h2>
 
-      <div className="mb-6 flex gap-3 rounded-md border border-info/30 bg-info/10 p-4 text-left">
+      <div className="mb-6 flex gap-3 rounded-xl border border-info/30 bg-info/10 p-4 text-left">
         <Info className="mt-0.5 size-5 shrink-0 text-info" />
         <p className="text-sm leading-relaxed text-foreground">{message}</p>
       </div>

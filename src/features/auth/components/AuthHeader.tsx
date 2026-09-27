@@ -6,16 +6,16 @@ type AuthHeaderProps = {
   description?: ReactNode
 }
 
-/** En-tête des pages d'auth : logo rond, titre et sous-titre facultatif. */
+/** En-tête des pages d'auth : logo carré arrondi, titre et sous-titre facultatif. */
 export function AuthHeader({ title, description }: AuthHeaderProps) {
   return (
-    <div className="mb-8 text-center">
-      <div className="mb-4 inline-flex size-16 items-center justify-center overflow-hidden rounded-full sm:size-20">
-        <img src={logoUrl} alt="Logo" className="size-full rounded-full object-cover" />
-      </div>
-      <h1 className="mb-2 text-xl font-bold text-foreground sm:text-2xl">{title}</h1>
+    <div className="mb-8 flex flex-col items-center text-center">
+      <img src={logoUrl} alt="AVTRANS" className="mb-5 size-14 rounded-xl shadow-xs" />
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
       {description && (
-        <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+        <p className="mt-2 text-sm leading-relaxed text-balance text-muted-foreground">
+          {description}
+        </p>
       )}
     </div>
   )

@@ -21,10 +21,7 @@ export function IosTestflightCard({ className }: IosTestflightCardProps) {
       note="TestFlight doit être installé depuis l'App Store."
       className={className}
     >
-      <Badge
-        variant="outline"
-        className="mb-5 w-fit border-violet-500/30 text-violet-600 dark:text-violet-400"
-      >
+      <Badge variant="outline" className="mb-5 w-fit border-info/30 text-info">
         <Plane className="size-3" />
         Programme TestFlight
       </Badge>

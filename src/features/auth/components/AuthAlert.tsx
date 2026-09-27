@@ -21,7 +21,7 @@ export function AuthAlert({ variant = 'error', title, icon, className, children 
       <div
         role="status"
         className={cn(
-          'mb-6 flex items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4 text-success',
+          'mb-6 flex items-start gap-3 rounded-lg border border-success/30 bg-success/10 p-4 text-success',
           className,
         )}
       >
@@ -39,7 +39,7 @@ export function AuthAlert({ variant = 'error', title, icon, className, children 
     <div
       role="alert"
       className={cn(
-        'mb-6 flex items-center gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive',
+        'mb-6 flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive',
         className,
       )}
     >

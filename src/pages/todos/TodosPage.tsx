@@ -1,5 +1,9 @@
 import { useState } from 'react'
+import { Plus, Tags } from 'lucide-react'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
+import { Button } from '@/components/ui/button'
 import { useTodoCategoriesQuery } from '@/features/todos/api/useTodoCategoriesQuery'
 import { useTodosQuery } from '@/features/todos/api/useTodosQuery'
 import { TodoBoard } from '@/features/todos/components/TodoBoard'
@@ -35,7 +39,6 @@ export default function TodosPage() {
   } else if (!todosQuery.data) {
     content = (
       <ErrorState
-        className="mb-4"
         message={
           (todosQuery.error instanceof Error && todosQuery.error.message) ||
           'Erreur lors du chargement des tâches'
@@ -46,32 +49,54 @@ export default function TodosPage() {
     )
   } else {
     content = (
-      <TodoBoard
-        todos={filterVisibleTodos(todosQuery.data, showCompleted)}
-        categories={categories}
-        draggingTodoUuid={dragAndDrop.draggingTodo?.uuid}
-        dragOverTarget={dragAndDrop.dragOverTarget}
-        onDragStart={dragAndDrop.handleDragStart}
-        onDragEnd={dragAndDrop.handleDragEnd}
-        onDragOver={dragAndDrop.handleDragOver}
-        onDragLeave={dragAndDrop.handleDragLeave}
-        onDrop={dragAndDrop.handleDrop}
-        onEdit={(todo) => dialogs.open('form', todo)}
-        onDelete={(todo) => dialogs.open('delete', todo)}
-      />
+      // Défilement horizontal quand les colonnes dépassent ; la marge interne laisse voir
+      // l'anneau de la colonne survolée pendant un glisser-déposer
+      <div className="-m-1 overflow-x-auto p-1">
+        <TodoBoard
+          todos={filterVisibleTodos(todosQuery.data, showCompleted)}
+          categories={categories}
+          draggingTodoUuid={dragAndDrop.draggingTodo?.uuid}
+          dragOverTarget={dragAndDrop.dragOverTarget}
+          onDragStart={dragAndDrop.handleDragStart}
+          onDragEnd={dragAndDrop.handleDragEnd}
+          onDragOver={dragAndDrop.handleDragOver}
+          onDragLeave={dragAndDrop.handleDragLeave}
+          onDrop={dragAndDrop.handleDrop}
+          onEdit={(todo) => dialogs.open('form', todo)}
+          onDelete={(todo) => dialogs.open('delete', todo)}
+        />
+      </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <TodosToolbar
-        showCompleted={showCompleted}
-        onShowCompletedChange={setShowCompleted}
-        onOpenCategories={() => setCategoriesOpen(true)}
-        onCreate={() => dialogs.open('form')}
+    <PageContainer size="full">
+      <PageHeader
+        title="À faire"
+        description="Les tâches de l'équipe, par colonne."
+        actions={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCategoriesOpen(true)}
+            >
+              <Tags className="size-4" />
+              Gérer les catégories
+            </Button>
+            <Button type="button" size="sm" onClick={() => dialogs.open('form')}>
+              <Plus className="size-4" />
+              Nouvelle tâche
+            </Button>
+          </>
+        }
       />
 
-      <main className="overflow-x-auto px-6 py-6">{content}</main>
+      <div className="space-y-4">
+        <TodosToolbar showCompleted={showCompleted} onShowCompletedChange={setShowCompleted} />
+        {content}
+      </div>
 
       <TodoTrashDropZone
         visible={!!dragAndDrop.draggingTodo}
@@ -98,6 +123,6 @@ export default function TodosPage() {
         onOpenChange={dialogs.onOpenChange}
         todo={dialogs.type === 'delete' ? dialogs.item : null}
       />
-    </div>
+    </PageContainer>
   )
 }

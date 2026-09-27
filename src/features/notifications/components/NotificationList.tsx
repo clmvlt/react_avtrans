@@ -7,7 +7,7 @@ type NotificationListProps = {
   notifications: NotificationDTO[]
   /** Phrase de l'état vide, propre à chaque onglet */
   emptyMessage: string
-  /** Colonne du bouton ✓ (absente de l'onglet « Lues ») */
+  /** Bouton « Marquer comme lu » (absent de l'onglet « Lues ») */
   showActions?: boolean
   /** Notification en cours de marquage */
   markingUuid?: string
@@ -26,12 +26,14 @@ export function NotificationList({
 }: NotificationListProps) {
   if (notifications.length === 0) {
     return (
-      <Empty className="gap-3 border border-solid bg-card py-16 md:py-16">
-        <EmptyHeader>
-          <EmptyMedia>
-            <Inbox className="size-16 text-muted-foreground opacity-50" />
+      <Empty className="gap-4 rounded-xl border border-dashed px-4 py-12 md:px-4 md:py-12">
+        <EmptyHeader className="gap-1">
+          <EmptyMedia className="mb-3 size-14 rounded-full bg-muted">
+            <Inbox className="size-7 text-muted-foreground" />
           </EmptyMedia>
-          <EmptyTitle className="font-semibold text-foreground">Aucune notification</EmptyTitle>
+          <EmptyTitle className="text-base font-medium tracking-normal text-foreground">
+            Aucune notification
+          </EmptyTitle>
           <EmptyDescription>{emptyMessage}</EmptyDescription>
         </EmptyHeader>
       </Empty>
