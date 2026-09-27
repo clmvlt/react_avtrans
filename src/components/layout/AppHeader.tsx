@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Eye, Menu, PanelLeft, X } from 'lucide-react'
+import { Eye, X } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import faviconUrl from '@/assets/favicon.png'
 import {
@@ -11,24 +11,27 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { useSidebar } from '@/components/ui/sidebar'
 import { NotificationsPopover } from '@/features/notifications/components/NotificationsPopover'
 import { usePermissions } from '@/hooks/usePermissions'
 import { getDefaultRoute } from '@/lib/getDefaultRoute'
 import { getRouteMeta } from '@/lib/routeMeta'
 import { selectRoleUuid, useAuthStore } from '@/stores/auth-store'
+import { MobileNavSheet } from './MobileNavSheet'
+
+type AppHeaderProps = {
+  onShowChangelog: () => void
+  onLogout: () => void
+}
 
 /**
- * En-tête collant des pages protégées : bouton du menu, fil d'Ariane (logo sur téléphone),
- * rappel de la vue utilisateur, cloche des notifications.
+ * En-tête collant des pages protégées : fil d'Ariane sur ordinateur ; menu « hamburger » et logo
+ * sur téléphone ; rappel de la vue utilisateur et cloche des notifications à droite.
  */
-export function AppHeader() {
+export function AppHeader({ onShowChangelog, onLogout }: AppHeaderProps) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const roleUuid = useAuthStore(selectRoleUuid)
   const { isViewingAsUser, toggleViewMode } = usePermissions()
-  const { isMobile, toggleSidebar } = useSidebar()
   const meta = getRouteMeta(pathname)
 
   const crumbs = [
@@ -43,22 +46,8 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-4 md:rounded-t-xl">
-      {/* Menu « hamburger » sur téléphone, bouton de repli de la barre latérale sur ordinateur */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-9"
-        title={isMobile ? 'Menu' : 'Replier ou déplier le menu'}
-        aria-label="Menu"
-        onClick={toggleSidebar}
-      >
-        {isMobile ? <Menu className="size-5" /> : <PanelLeft className="size-4" />}
-      </Button>
-      <Separator
-        orientation="vertical"
-        className="mr-1 data-[orientation=vertical]:h-5 max-md:hidden"
-      />
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-4 md:px-6 lg:px-8">
+      <MobileNavSheet onShowChangelog={onShowChangelog} onLogout={onLogout} />
 
       {/* Téléphone : logo ; ordinateur : fil d'Ariane */}
       <Link to={getDefaultRoute(roleUuid)} className="flex items-center gap-2 md:hidden">

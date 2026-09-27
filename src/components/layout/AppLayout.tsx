@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { PageMeta } from '@/components/shared/PageMeta'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { DEFAULT_TITLE } from '@/config/seo'
 import { useChangelog } from '@/features/changelog/hooks/useChangelog'
 import { useNotificationSideEffects } from '@/features/notifications/hooks/useNotificationSideEffects'
@@ -9,20 +8,15 @@ import { ServiceHistoryProvider } from '@/features/service-history/components/Se
 import { getRouteMeta } from '@/lib/routeMeta'
 import { useAuthStore } from '@/stores/auth-store'
 import { AppHeader } from './AppHeader'
-import { AppSidebar } from './AppSidebar'
+import { AppSideRail } from './AppSideRail'
 import { GlobalDialogs } from './GlobalDialogs'
 import { MobileBottomNav } from './MobileBottomNav'
 import { useBottomNavLinks } from './useBottomNavLinks'
 
-/** Barre latérale ouverte ou repliée : cookie posé par le SidebarProvider de shadcn */
-function readSidebarOpen(): boolean {
-  const match = document.cookie.match(/(?:^|;\s*)sidebar_state=(true|false)/)
-  return match ? match[1] === 'true' : true
-}
-
 /**
- * Coquille des pages protégées : barre latérale (panneau coulissant sur téléphone), en-tête avec
- * fil d'Ariane, contenu, barre d'onglets mobile des utilisateurs et dialogs globaux.
+ * Coquille des pages protégées : rail d'icônes à gauche (ordinateur, déplié au survol par-dessus
+ * la page), en-tête avec fil d'Ariane ou menu « hamburger » (téléphone), contenu, barre d'onglets
+ * mobile des utilisateurs et dialogs globaux.
  */
 export function AppLayout() {
   const { pathname } = useLocation()
@@ -33,7 +27,6 @@ export function AppLayout() {
   const { hasUnseenChanges } = useChangelog()
   // Nouveautés ouvertes d'office à l'arrivée dans l'app authentifiée (y compris après connexion)
   const [changelogOpen, setChangelogOpen] = useState(hasUnseenChanges)
-  const [sidebarDefaultOpen] = useState(readSidebarOpen)
   const bottomNavLinks = useBottomNavLinks()
   const hasBottomNav = bottomNavLinks.length > 1
 
@@ -49,20 +42,20 @@ export function AppLayout() {
     <ServiceHistoryProvider>
       {/* Titre de l'onglet préfixé du nombre de non-lues : « (3) Pointage · AVTRANS » */}
       <PageMeta title={unreadCount > 0 ? `(${unreadCount}) ${title}` : title} />
-      <SidebarProvider
-        defaultOpen={sidebarDefaultOpen}
+      {/* `data-bottom-nav` : hauteur réservée à la barre d'onglets (--bottom-nav-h, index.css) */}
+      <div
         data-bottom-nav={hasBottomNav}
-        className="pb-(--bottom-nav-h)"
+        className="group/app flex min-h-svh w-full pb-(--bottom-nav-h)"
       >
-        <AppSidebar onShowChangelog={() => setChangelogOpen(true)} onLogout={handleLogout} />
-        <SidebarInset className="min-w-0">
-          <AppHeader />
-          <div className="flex flex-1 flex-col">
+        <AppSideRail onShowChangelog={() => setChangelogOpen(true)} onLogout={handleLogout} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <AppHeader onShowChangelog={() => setChangelogOpen(true)} onLogout={handleLogout} />
+          <main className="flex flex-1 flex-col">
             <Outlet />
-          </div>
-        </SidebarInset>
+          </main>
+        </div>
         {hasBottomNav && <MobileBottomNav links={bottomNavLinks} />}
-      </SidebarProvider>
+      </div>
       <GlobalDialogs changelogOpen={changelogOpen} onChangelogOpenChange={setChangelogOpen} />
     </ServiceHistoryProvider>
   )

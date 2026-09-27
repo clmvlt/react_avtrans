@@ -14,7 +14,7 @@ type MobileActionBarProps = {
  */
 export function MobileActionBar({ children }: MobileActionBarProps) {
   return (
-    <div className="fixed inset-x-0 bottom-[var(--bottom-nav-h,0px)] z-40 border-t bg-background/95 px-4 pt-2.5 pb-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] backdrop-blur group-data-[bottom-nav=true]/sidebar-wrapper:pb-2.5 supports-[backdrop-filter]:bg-background/80 md:hidden">
+    <div className="fixed inset-x-0 bottom-[var(--bottom-nav-h,0px)] z-40 border-t bg-background/95 px-4 pt-2.5 pb-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] backdrop-blur group-data-[bottom-nav=true]/app:pb-2.5 supports-[backdrop-filter]:bg-background/80 md:hidden">
       <div className="mx-auto max-w-5xl">{children}</div>
     </div>
   )

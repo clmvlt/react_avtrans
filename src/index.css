@@ -107,7 +107,7 @@
   --chart-4: oklch(0.5 0.22 300);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  /* Fond de la coquille (barre latérale « inset ») : gris très légèrement violet */
+  /* Fond du rail de navigation et du menu mobile : gris très légèrement violet */
   --sidebar: oklch(0.975 0.003 286);
   --sidebar-foreground: oklch(0.141 0.005 286);
   --sidebar-primary: oklch(0.42 0.195 285);

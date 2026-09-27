@@ -33,7 +33,8 @@ export function AppProviders({ children }: AppProvidersProps) {
           />
         </TooltipProvider>
       </ThemeProvider>
-      {import.meta.env.DEV && <ReactQueryDevtools buttonPosition="bottom-left" />}
+      {/* En bas à droite : en bas à gauche, le bouton cachait le compte du rail de navigation */}
+      {import.meta.env.DEV && <ReactQueryDevtools buttonPosition="bottom-right" />}
     </QueryClientProvider>
   )
 }
