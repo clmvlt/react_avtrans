@@ -6,7 +6,9 @@ Ce projet est la **migration de l'app Vue 3** `D:\3_PROJET\AVTRANS\pointage2026\
 
 **`MIGRATION.md` fait foi** pour l'avancement (table de correspondance, statuts, décisions, bugs, questions). L'inventaire détaillé par domaine est dans `docs/migration/`. Mettre `MIGRATION.md` à jour à chaque étape validée.
 
-**Objectif** : parité fonctionnelle stricte. Mêmes routes et URL, mêmes écrans, mêmes appels API, même rendu en clair et en sombre, même comportement par rôle. Pas de refonte. Le code doit cependant être du React idiomatique, pas du Vue transcrit ligne à ligne. Un bug repéré dans le Vue est noté dans `MIGRATION.md` et **reproduit à l'identique** tant que le propriétaire n'a pas autorisé sa correction (section 8 de `MIGRATION.md`).
+**Objectif** : parité fonctionnelle stricte. Mêmes routes et URL, mêmes appels API, mêmes données et actions, même comportement par rôle. Le code doit être du React idiomatique, pas du Vue transcrit ligne à ligne. Un bug repéré dans le Vue est noté dans `MIGRATION.md` et **reproduit à l'identique** tant que le propriétaire n'a pas autorisé sa correction (section 8 de `MIGRATION.md`).
+
+**Design : refondu à la demande du propriétaire (décision D7, 27/09/2026, `MIGRATION.md` section 11)**. Le rendu ne suit plus le Vue : coquille à barre latérale, structure de page unique, tableaux compacts (voir « Structure des pages » et « Coquille »). Rester simple et lisible pour un utilisateur non technique. La landing et les pages légales ne sont pas concernées.
 
 ## Commandes
 - Dev : `npm run dev` (port 5173, `host 0.0.0.0`). Pour lancer le Vue à côté : `npx vite --port 5174` depuis `vue_avtrans` (le CORS de l'API accepte toutes les origines).
@@ -56,7 +58,7 @@ src/
 ├── components/
 │   ├── ui/         # UNIQUEMENT les composants générés par le CLI shadcn
 │   ├── shared/     # composants maison réutilisables (InputField, Combobox, FileDropzone, SignaturePad, ConfirmDialog…)
-│   └── layout/     # RootLayout, AppLayout, Navbar, UpdateBanner, LegalLayout…
+│   └── layout/     # RootLayout, AppLayout, AppSidebar, AppHeader, NavUser, MobileBottomNav, PageContainer, PageHeader, PageTabs, UpdateBanner, LegalLayout…
 ├── pages/<domaine>/<Nom>Page.tsx     # une page par route, mêmes sous-dossiers que src/views du Vue
 ├── router/         # routes + composants de garde
 ├── providers/      # QueryClientProvider, ThemeProvider, Toaster…
@@ -78,9 +80,25 @@ src/
 - `dangerouslySetInnerHTML` interdit sans DOMPurify. Le HTML construit à la main (export PDF du planning) échappe ses valeurs.
 - Boutons dans un `<form>` qui ne soumettent pas : **`type="button"`** (piège : les « Annuler » du Profil Vue n'en avaient pas).
 
+## Structure des pages (refonte D7)
+- Toute page protégée : `<PageContainer size="sm|md|lg|full">` (défaut `lg`) puis `<PageHeader title description actions back>` puis le contenu. **Pas de `<main>`** (SidebarInset l'est déjà), pas de `min-h-screen`, pas d'en-tête collant propre à la page, pas de bouton « Retour » générique : une page de détail passe `back={{ to: '/parent', label: 'Parent' }}`.
+- `size` : `sm` formulaires / profil, `md` pages personnelles (« Mes … », Pointage), `lg` listes et tableaux d'admin, `full` planning, kanban, vues avec panneau interne.
+- Titre = nom de la page (celui du menu), description = une phrase qui dit à quoi sert la page. Action principale dans `actions`, libellé explicite (« Ajouter un véhicule »), secondaires en `outline` avant elle. Les barres d'outils ne contiennent que recherche et filtres.
+- Pages sœurs (une liste et sa configuration) : `<PageTabs>` dans `children` du `PageHeader`, même titre sur les deux pages, constante `XXX_TABS` dans `features/<domaine>/lib/`.
+- Chargement, erreur et vide s'affichent **sous** le `PageHeader` (le titre reste visible).
+- Blocs : cartes `rounded-xl border bg-card` (pas d'ombre marquée), titres de section `text-base font-semibold`, espacements `gap-4` / `gap-6`.
+- Tableaux : colonne Actions compacte : l'action du moment visible (Modifier, Approuver / Refuser…), le reste dans le menu « ⋮ » de la feature (le même que sur les cartes mobiles) ; « Supprimer » en `ghost` texte rouge, jamais un bouton rouge plein par ligne. Vérifier à 1366 px avec la barre latérale ouverte : pas de colonne coupée.
+- Nouvelle page protégée : l'ajouter aussi dans `navSections` (`src/config/navConfig.ts`) ou, si elle n'est pas dans le menu, dans `EXTRA_ROUTES` de `src/lib/routeMeta.ts` (fil d'Ariane et titre d'onglet).
+
+## Coquille (refonte D7)
+- `AppLayout` = `SidebarProvider` + `AppSidebar` (variante `inset`, repliable en icônes, panneau coulissant sur téléphone) + `SidebarInset` (`AppHeader` collant de 56 px, `z-30`, puis la page) + `MobileBottomNav` + dialogs globaux. Un élément collant d'une page se place sous l'en-tête : `top-14`.
+- Menu : une seule source, `navSections`, filtrée par `usePermissions().canAccess` (vue utilisateur comprise) et `requiredEmails`.
+- Barre d'onglets mobile : rôle Utilisateur ou vue utilisateur, liens de « Mon espace ». Sa hauteur est dans la variable CSS `--bottom-nav-h` (0 sans barre ou à partir de `md`) ; un élément fixé en bas utilise `bottom-[var(--bottom-nav-h,0px)]`.
+- Titre d'onglet : `AppLayout` rend `PageMeta` avec « (n) Page · AVTRANS » d'après `getRouteMeta`.
+
 ## Conventions fixées par la coquille (phase 3)
 - **Pages** : `src/pages/<domaine>/<Nom>Page.tsx` avec `export default function <Nom>Page()`. `src/router/routes.tsx` les charge en `lazy` ; une nouvelle page = un fichier + une entrée dans `routes.tsx`.
-- **Métadonnées** : `components/shared/PageMeta` (`title`, `description`, `robots`, `canonicalPath` ; valeurs par défaut = celles de la landing, comme le Vue). Une seule instance par écran : chaque page **publique** rend la sienne, `AppLayout` rend celle des pages protégées. Pas de `document.title` impératif.
+- **Métadonnées** : `components/shared/PageMeta` (`title`, `description`, `robots`, `canonicalPath` ; valeurs par défaut = celles de la landing, comme le Vue). Une seule instance par écran : chaque page **publique** rend la sienne, `AppLayout` rend celle des pages protégées (titre de la page d'après `routeMeta`). Pas de `document.title` impératif.
 - **Store** : `useAuthStore(selectIsAdmin)` etc. (sélecteurs exportés par `src/stores/auth-store.ts`) ; `usePermissions()` pour `canAccess` / `hasRole` (navigation). Route par défaut : `getDefaultRoute(roleUuid)` (`src/lib/getDefaultRoute.ts`).
 - **Hooks de requêtes partagés déjà créés** (à compléter, pas à dupliquer) :
   - `features/users/api` : `usersKeys`, `useUsersQuery` ;
@@ -153,6 +171,7 @@ src/
 
 ## Stockage navigateur (clés identiques au Vue : l'app React remplace la Vue sur le même domaine)
 - localStorage : `auth_token`, `user`, `theme-preference`, `changelog_last_seen_version`, `notifications_sound_enabled`.
+- Cookie `sidebar_state` (barre latérale ouverte ou repliée), posé par le composant `sidebar` de shadcn (refonte D7).
 - sessionStorage : `version_check_reloaded_for`, `version_check_dismissed`.
 
 ## Thème
@@ -160,7 +179,7 @@ src/
 - Script anti-FOUC d'`index.html` conservé : il **n'applique pas `.dark` sur `/`** (la landing et son HTML pré-rendu sont toujours en clair).
 
 ## Pointage (mobile-first)
-`/pointage` est surtout utilisé sur téléphone par les chauffeurs. Barre d'actions fixe en bas sur mobile (safe-area), frise, historique en accordéon, filtres dans un Sheet. **Vérifier d'abord à 360 px** (zone du pouce), puis le desktop.
+`/pointage` est surtout utilisé sur téléphone par les chauffeurs. Barre d'actions fixe en bas sur mobile, posée sur la barre d'onglets (safe-area gérée par celle-ci), frise, historique en accordéon, filtres dans un Sheet. **Vérifier d'abord à 360 px** (zone du pouce), puis le desktop.
 
 ## SEO (landing et login uniquement), pré-rendu, PWA, version
 - URL publique : `https://pointage.avtrans-concept.com` (constantes dans `src/config/seo.ts`). **Jamais `app.avtrans-concept.com`** (hôte mort).
@@ -192,4 +211,4 @@ src/
   6. commiter.
 - Commits atomiques en français, format conventional commits (`feat(auth): …`, `chore(setup): …`), un commit par étape validée. Pas de push sans demande.
 - Sous-agents : ils suivent ce fichier ; relire leur travail avant de commiter.
-- Définition de « terminé » : build (type-check + build + pré-rendu) et lint sans erreur ni warning ; toutes les lignes de `MIGRATION.md` à `vérifié` ; chaque route du Vue présente avec le même chemin, les mêmes gardes et le même rendu ; aucun fichier de `vue_avtrans` modifié.
+- Définition de « terminé » : build (type-check + build + pré-rendu) et lint sans erreur ni warning ; toutes les lignes de `MIGRATION.md` à `vérifié` ; chaque route du Vue présente avec le même chemin, les mêmes gardes et les mêmes fonctions (le rendu suit la refonte D7) ; aucun fichier de `vue_avtrans` modifié.

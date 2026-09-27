@@ -39,6 +39,7 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 | 3. Coquille | providers, store auth, router + gardes, layout, Login / NotFound / Unauthorized, bannière de version, badge favicon | **vérifié** (25/09/2026) |
 | 4. Domaines | voir l'ordre ci-dessous | **vérifié** (26/09/2026) : les 43 routes sont portées |
 | 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | **vérifié** (26/09/2026) : build + pré-rendu strict + lint + format sans erreur ni warning |
+| 6. Refonte du design (D7) | coquille à barre latérale, en-têtes de page, onglets, barre d'onglets mobile, harmonisation des pages ; voir section 11 | **fait** (27/09/2026, branche `refonte-design`) : build, lint et captures OK ; reste le contrôle du propriétaire |
 
 Ordre des domaines en phase 4 (celui du brief) :
 
@@ -110,6 +111,9 @@ Les annexes relèvent plusieurs centaines de constats (bugs, incohérences, code
 1. **Disparaissent par construction** (section 8.1) : doubles montages, fuites mémoire, `id="app"` dupliqué, `type="button"` manquants… Le port React idiomatique les corrige sans changer le comportement voulu. *Je propose de les corriger sans redemander.*
 2. **Bugs à comportement visible** (section 8.2, numérotés) : je les reproduis **à l'identique**, sauf ceux que vous m'autorisez à corriger. Vous pouvez répondre par numéros (« corrige B-01 à B-12 »).
 3. **Limites de l'API** (section 8.3) : impossibles à corriger côté front sans toucher `api_avtrans`. Je les note, je ne les « corrige » pas.
+
+**D7. Refonte du design (demandée le 27/09/2026, après la migration).**
+Le propriétaire a demandé de « revoir intégralement le design de l'app », en restant simple, avec des dispositions de pages logiques pour un utilisateur normal. La **parité visuelle avec le Vue est donc abandonnée** ; la **parité fonctionnelle reste la règle** : mêmes routes, mêmes gardes, mêmes appels API, mêmes données, mêmes actions et comportements par rôle, bugs B-xx toujours reproduits sauf accord. La landing et les pages légales (publiques, SEO) ne sont pas concernées. Détail en section 11.
 
 **Déjà décidé par le brief ou par la doc à jour (pour information) :**
 - Formulaires : la doc shadcn à jour recommande `Field` + `Controller` de react-hook-form plutôt que l'ancien `Form` / `FormField`. J'utiliserai `field`, pas `form`.
@@ -215,7 +219,8 @@ src/
 
 *Fin de migration* : `alert-dialog`, `card`, `input-group`, `scroll-area`, `toggle` et `toggle-group` ont été retirés, aucun écran ne les utilisant (`ConfirmDialog` repose sur `dialog`).
 
-- **Non installés** : `sidebar` (seul usage : `AppSidebar.vue`, mort), `form` (remplacé par `field`), `calendar` (sauf Q-DATES), `pagination` (une `SimplePagination` maison sur Button suffit ; le Vue a trois variantes de pagination, voir 4.2).
+- *Refonte D7 (27/09/2026)* : `sidebar` et `breadcrumb` ajoutés pour la nouvelle coquille (section 11).
+- **Non installés** (avant D7) : `sidebar` (seul usage : `AppSidebar.vue`, mort), `form` (remplacé par `field`), `calendar` (sauf Q-DATES), `pagination` (une `SimplePagination` maison sur Button suffit ; le Vue a trois variantes de pagination, voir 4.2).
 - `accordion` : historique de Pointage uniquement. **Pas** pour la FAQ de la landing : Radix démonte le contenu fermé, les réponses disparaîtraient du HTML pré-rendu. La FAQ garde `<details>`.
 - Hook `use-mobile` (livré avec certains composants) : breakpoint 768 px, cohérent avec `md`.
 
@@ -228,10 +233,10 @@ Toute modification d'un fichier de `components/ui` sera justifiée par un commen
 | tokens (`index.css`) | palette violette oklch clair et sombre, `--radius: 0.625rem`, tokens `success`, `warning`, `info`, `destructive-foreground` ; règles de base (curseur pointer, correctif largeur des inputs date/time sur iOS, padding safe-area du body) ; `--font-sans`/`--font-mono` venant en réalité de `theme.css` (pile système) | tout reporter ; `chart-*` gardés (utiles au chart) ; `sidebar-*` et règles view-transition non reportés (morts) |
 | `button` | tailles `icon-sm`, `icon-lg` (très utilisées), `cursor-pointer` | vérifier dans le fichier généré ; `cursor-pointer` via la règle de base plutôt que dans le composant |
 | `badge` | variante **`warning`** (orange, « Expire bientôt » des cartes) ; forme `rounded-full` | ajouter la variante ; comparer la forme au rendu Vue |
-| `dialog` | overlay `bg-black/80` ; fermeture **uniquement** au clic sur l'overlay (liste blanche `[data-floating-content]`) | overlay `/80` ; `onInteractOutside` n'ignore que les toasts sonner et la lightbox, jamais un `preventDefault` général |
+| `dialog` | overlay `bg-black/80` (*D7 : `bg-black/50` de shadcn, dialog et sheet*) ; fermeture **uniquement** au clic sur l'overlay (liste blanche `[data-floating-content]`) | overlay `/80` ; `onInteractOutside` n'ignore que les toasts sonner et la lightbox, jamais un `preventDefault` général |
 | `sheet` | overlay `z-[1040] bg-black/80`, contenu `z-[1050]` | établir une échelle de z-index unique (sheet < popover < lightbox < toasts) plutôt que recopier ces valeurs |
 | `dropdown-menu`, `tabs` | `cursor-pointer` sur les items et triggers | via la règle de base |
-| `skeleton` | `bg-primary/10` (teinte violette) au lieu de `bg-accent` | reporter |
+| `skeleton` | `bg-primary/10` (teinte violette) au lieu de `bg-accent` | reporter ; *D7 : revenu au `bg-accent` de shadcn* |
 | `table` | conteneur `overflow-auto` | reporter si nécessaire au rendu |
 | `checkbox` | mapping `checked`/`modelValue` propre à reka-ui | **ne pas reproduire** : `checked` + `onCheckedChange` natifs |
 
@@ -263,7 +268,7 @@ Seules 13 icônes FA sont réellement rendues (pages auth, et `getFileIcon` d'En
 | `Combobox` | `ui/select/Select.vue` (**maison**, 469 l. : recherche par défaut, `clearable`, pas de multi) | ~20 fichiers ; `select` shadcn quand la recherche est inutile |
 | `AddressAutocomplete` | `ui/address-autocomplete` | UserEdit, ProfileCompletion (requête géocodage via `useQuery`, debounce) |
 | `SearchFilters` | `ui/search-filters` (panneau repliable, configuration par tableau) | Absences, Acomptes, Couchettes, Journal, Entretiens ×2 |
-| `BackButton` | `ui/retour/Retour.vue` | Pointage, AbsenceTypes, MyAcomptes, MesCouchettes, MyAbsences, Stock, Entretiens |
+| ~~`BackButton`~~ | `ui/retour/Retour.vue` | supprimé par la refonte (D7) : retour par `PageHeader` (`back`) ou la barre latérale |
 | `FileDropzone`, `FileCard`, `ImageLightbox`, `PdfPreview`, `PdfViewerDialog` | `ui/file-dropzone`, `ui/file-card`, `ui/image-lightbox`, `ui/pdf-preview`, visionneuses PDF recopiées dans 2 vues | Véhicules, Entretiens ×2, Profil, Versions |
 | `SignaturePad` | `ui/signature-pad` | SignatureReminderDialog |
 | `MapboxMap` | `useMapModal` | UserServices |
@@ -275,7 +280,7 @@ Seules 13 icônes FA sont réellement rendues (pages auth, et `getFileIcon` d'En
 | `StatCard`, `StatusChips`, `ResponsiveFilterSheet` | cartes de stats, puces de statut, Sheet de filtres des pages « mes » | Pointage, Heures, Contrats, MyAbsences, MyAcomptes |
 | `BrandLogo` | logo recopié dans 6 fichiers (`/src/assets/favicon.png`) | auth, légal, Navbar |
 
-**`components/layout/`** : `RootLayout` (Outlet + UpdateBanner + ScrollRestoration), `AppLayout` (Navbar + Outlet + dialogs globaux), `GlobalDialogs`, `Navbar` (+ `NavbarLinks`, `UserMenu`, `MobileNavSheet`), `UpdateBanner`, `LegalLayout`.
+**`components/layout/`** : `RootLayout` (Outlet + UpdateBanner + ScrollRestoration), `AppLayout` (Navbar + Outlet + dialogs globaux), `GlobalDialogs`, `Navbar` (+ `NavbarLinks`, `UserMenu`, `MobileNavSheet`), `UpdateBanner`, `LegalLayout`. *Refonte D7 : la navbar est remplacée par `AppSidebar` + `AppHeader` + `NavUser` + `MobileBottomNav`, et les pages utilisent `PageContainer` / `PageHeader` / `PageTabs` (section 11).*
 
 **`src/hooks/`** : `useMediaQuery` (ou `use-mobile` shadcn), `useDebouncedValue`, `useNow` (horloge à la seconde via `useSyncExternalStore`), `useLocalStorage`, `usePermissions`, `useTheme` (+ `providers/ThemeProvider`), `useVersionCheck`, `useDialogState`, `useMapboxMap`, `usePdfPreview` (`useQuery`), `usePageMeta` (si D2 = B), `useDragAndDrop` (si pas de dnd-kit).
 
@@ -431,11 +436,11 @@ En React : routes layout `RequireAuth` (auth + e-mail vérifié + compte actif),
 | `ui/image-lightbox/ImageLightbox.vue` (305 l.) | `components/shared/ImageLightbox.tsx` + hooks `useZoom`/`useSwipe` | vérifié |
 | `ui/input-field/InputField.vue` | `components/shared/InputField.tsx` | vérifié |
 | `ui/messages/Messages.vue` | — : `ui/sonner` | vérifié |
-| `ui/navbar/Navbar.vue` (448 l.) | `components/layout/Navbar.tsx`, `NavbarLinks.tsx`, `UserMenu.tsx`, `MobileNavSheet.tsx` + `src/lib/filterNav.ts` | vérifié |
+| `ui/navbar/Navbar.vue` (448 l.) | ~~`Navbar.tsx`, `NavbarLinks.tsx`, `UserMenu.tsx`, `MobileNavSheet.tsx`~~ → refonte D7 : `components/layout/{AppSidebar, AppHeader, NavUser, MobileBottomNav}.tsx` + `src/lib/filterNav.ts`, `src/lib/routeMeta.ts` | vérifié (D7 : en cours) |
 | `ui/notifications/Notifications.vue` (550 l.) | `features/notifications/components/NotificationsPopover.tsx`, `NotificationItem.tsx`, `hooks/useNotificationSideEffects.ts`, `lib/notificationMeta.ts` (partagé avec la page) | vérifié |
 | `ui/pdf-preview/PdfPreview.vue` | `components/shared/PdfPreview.tsx` | vérifié |
 | `ui/profile-completion/ProfileCompletionDialog.vue` | `features/profile/components/ProfileCompletionDialog.tsx` | vérifié |
-| `ui/retour/Retour.vue` | `components/shared/BackButton.tsx` | vérifié |
+| `ui/retour/Retour.vue` | ~~`components/shared/BackButton.tsx`~~ supprimé par la refonte (D7) | — |
 | `ui/search-filters/SearchFilters.vue` | `components/shared/SearchFilters.tsx` | vérifié |
 | `ui/select/Select.vue` (maison) | `components/shared/Combobox.tsx` (popover + command) ; `ui/select` si pas de recherche | vérifié |
 | `ui/signature-pad/SignaturePad.vue` | `components/shared/SignaturePad.tsx` | vérifié |
@@ -487,7 +492,7 @@ Hooks Query : `useLoginMutation`, `useGoogleSignInMutation`, `useRegisterMutatio
 
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
-| views/hours/Pointage.vue (1117) | pages/hours/PointagePage.tsx (~130 l.) ; features/pointage/components/{PointageHeader, PointageSkeleton, StatusHeroCard, StatusPill, WorkedHoursStats, TodayServicesCard, ServiceHistorySection, HistoryDayItem, HistoryPagination, HistoryFiltersSheet, MobileActionBar, KilometrageDialog} ; hooks/{usePointageStatus, useGeolocation, usePointageActions, useKilometrageDialog} ; lib/{workedTime, groupHistoryByDay} | `useNow` (chrono à la seconde), géolocalisation (permission, toasts), km du jour **obligatoire** pour le rôle Utilisateur avant « Démarrer », barre d'actions fixe en bas sous `md` avec safe-area, historique en `accordion`, filtres dans un `sheet` (en bas sous 640 px, à droite au-dessus), `useVehiclesQuery` + `useAddKilometrageMutation` (feature vehicles) | vérifié |
+| views/hours/Pointage.vue (1117) | pages/hours/PointagePage.tsx (~130 l.) ; features/pointage/components/{~~PointageHeader~~ (D7 : `PageHeader`), PointageSkeleton, StatusHeroCard, StatusPill, WorkedHoursStats, TodayServicesCard, ServiceHistorySection, HistoryDayItem, HistoryPagination, HistoryFiltersSheet, MobileActionBar, KilometrageDialog} ; hooks/{usePointageStatus, useGeolocation, usePointageActions, useKilometrageDialog} ; lib/{workedTime, groupHistoryByDay} | `useNow` (chrono à la seconde), géolocalisation (permission, toasts), km du jour **obligatoire** pour le rôle Utilisateur avant « Démarrer », barre d'actions fixe en bas sous `md` avec safe-area, historique en `accordion`, filtres dans un `sheet` (en bas sous 640 px, à droite au-dessus), `useVehiclesQuery` + `useAddKilometrageMutation` (feature vehicles) | vérifié |
 | components/hours/PointageActions.vue (74) | features/pointage/components/PointageActions.tsx | | vérifié |
 | components/hours/ServiceTimeline.vue (78) | features/pointage/components/ServiceTimeline.tsx | | vérifié |
 
@@ -527,7 +532,7 @@ Hooks Query : `useUsersQuery`, `usePendingUsers`, `useUsersLastVehiclesQuery`, `
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
 | views/vehicles/Vehicules.vue (967) | pages/vehicles/VehiculesPage.tsx ; features/vehicles/components/list/{VehiclesToolbar, vehiclesColumns, VehiclesDataTable, VehiclesMobileList, VehicleMobileCard, VehicleActionsMenuItems} ; components/{VehicleIdentity, VehicleAvatar, RelaiBadge} ; dialogs/{VehicleCreateDialog, VehicleDeleteDialog} ; forms/{VehicleFormFields, VehiclePictureInput} ; schemas/vehicle.ts | data-table, context-menu, ConfirmDialog « CONFIRMER » | vérifié |
-| views/vehicles/VehiculeDetail.vue (1242) | pages/vehicles/VehiculeDetailPage.tsx ; features/vehicles/components/detail/{VehicleInfoCard, VehicleInfoHeader, VehicleInfoView, VehicleKmBadge, AddKmDialog, VehicleDetailsGrid, InfoTile, VehicleEditForm, VehicleAvatarEditor, VehicleDetailTabs} ; hooks/{useVehicleFilesUpload, useDetailTab} ; PicturesGridDialog | onglets « classeur » (style à reproduire), PdfViewerDialog, ImageLightbox, FileDropzone | vérifié |
+| views/vehicles/VehiculeDetail.vue (1242) | pages/vehicles/VehiculeDetailPage.tsx ; features/vehicles/components/detail/{VehicleInfoCard, ~~VehicleInfoHeader~~, VehicleInfoView, VehicleKmBadge (D7 : `VehicleKmCard`, + `VehicleFactCard`, `VehicleExpiryCard`), AddKmDialog, VehicleDetailsGrid, InfoTile, VehicleEditForm, VehicleAvatarEditor, VehicleDetailTabs} ; hooks/{useVehicleFilesUpload, useDetailTab} ; PicturesGridDialog | onglets « classeur » (style à reproduire), PdfViewerDialog, ImageLightbox, FileDropzone | vérifié |
 | components/vehicles/VehiculeInfoCard.vue (570) | detail/VehicleInfoCard.tsx et sous-composants ; lib/expiryStatus.ts | échéances orange sous 30 jours, rouge si dépassées | vérifié |
 | components/vehicles/VehiculeKilometragesTab.vue (338) | tabs/kilometrages/{VehicleKmTab, KmChart, KmTimeline, KmTimelineItem, EditKmDialog} | **chart.js → `chart` shadcn (Recharts, AreaChart)** ; édition réservée à l'admin | vérifié |
 | components/vehicles/VehiculeCommentsTab.vue (100) | tabs/comments/{VehicleCommentsTab, CommentCard, AddCommentDialog, AdjustPicturesDialog} | | vérifié |
@@ -546,7 +551,7 @@ Hooks Query : `useVehiclesQuery`, `useVehicleQuery`, `useVehicleFiles`, `useVehi
 | Source Vue | Cible React | Dépendances clés | Statut |
 |---|---|---|---|
 | views/maintenance/Entretiens.vue (2089) | pages/maintenance/EntretiensPage.tsx ; features/maintenance/components/fleet/{FleetDashboard, FleetStatusSection, FleetVehicleCard, FleetAlertLine, FleetDashboardSkeleton} ; history/{EntretiensHistory, EntretiensHistoryToolbar, entretienColumns, EntretiensDataTable, EntretienMobileCard, EntretienActionsMenu, EntretiensTotalCost} ; form/{EntretienFormDialog, TypeEntretienPicker, EntretienFilesField} ; files/EntretienFilesDialog ; lib/{fleetStatus, entretienDates, formatPeriodicite, buildHistorySearchParams} ; hooks/{useEntretiensHistory, useHistoryFilterConfig, useEntretienDialogs, useFleetStatus, useCanManageMaintenance} | SearchFilters, data-table, context-menu, Combobox hiérarchique (popover + command), FileDropzone, ImageLightbox, PdfViewerDialog | vérifié |
-| views/maintenance/EntretiensVehicule.vue (1693) | pages/maintenance/EntretiensVehiculePage.tsx ; features/maintenance/components/vehicule/{VehiculeEntretiensHeader, VehicleUpcomingAlerts, UpcomingAlertCard, ValidateEntretienDialog} ; config/{VehiculeConfigsPanel, VehiculeConfigCard} ; + historique, formulaire et fichiers **partagés** avec Entretiens | `TabbedPageHeader` partagé | vérifié |
+| views/maintenance/EntretiensVehicule.vue (1693) | pages/maintenance/EntretiensVehiculePage.tsx ; features/maintenance/components/vehicule/{VehiculeEntretiensHeader (D7 : `VehiculeEntretiensTabs`), VehicleUpcomingAlerts, UpcomingAlertCard, ValidateEntretienDialog} ; config/{VehiculeConfigsPanel, VehiculeConfigCard} ; + historique, formulaire et fichiers **partagés** avec Entretiens | `TabbedPageHeader` partagé | vérifié |
 | views/maintenance/TypesEntretien.vue (894) | pages/maintenance/TypesEntretienPage.tsx ; features/maintenance/components/types/{DossiersSidebar, DossierNavItem, TypesToolbar, TypesEntretienList, TypeEntretienCard, TypeEntretienFormDialog, DossierFormDialog} ; hooks/{useTypesExplorer, useTypeDragAndDrop} | glisser-déposer (Q-DND), `scroll-area` | vérifié |
 | components/maintenance/ConfigEntretienModal.vue (220) | features/maintenance/components/config/ConfigEntretienDialog.tsx ; schemas/configEntretien.ts | | vérifié |
 
@@ -754,7 +759,7 @@ Les numéros de ligne renvoient aux fichiers du Vue. Le détail et les bugs mine
 | B-10 | Mes couchettes : « couchette du jour » et compteur « Ce mois » calculés sur la page affichée. Depuis la page 2, on propose de redéclarer (400) | MesCouchettes:316, 320 | requête dédiée à la page 0 |
 | B-11 ✔ | Connexion sur mobile : « Voir » du prompt d'écran d'accueil mène à `/quick-login?setup=true`, route inexistante (404) | Login:211 | `/add-to-homescreen` |
 | B-12 | Prompt d'écran d'accueil fermé par l'overlay ou Échap : l'utilisateur reste sur `/login`, connecté, sans redirection | HomeScreenPrompt:2 | traiter comme « Plus tard » |
-| B-13 | 404 : « Tableau de bord » pointe en dur vers `/vehicules` (un utilisateur finit sur `/unauthorized`). Bouton retour avec `fallback="/"` : renvoie vers la landing publique (Pointage, MyAbsences, MyAcomptes, MesCouchettes) | NotFound:35, 73 ; Retour ×4 | route par défaut selon le rôle |
+| B-13 | 404 : « Tableau de bord » pointe en dur vers `/vehicules` (un utilisateur finit sur `/unauthorized`). Bouton retour avec `fallback="/"` : renvoie vers la landing publique (Pointage, MyAbsences, MyAcomptes, MesCouchettes) | NotFound:35, 73 ; Retour ×4 | route par défaut selon le rôle. *D7 : le bouton retour des pages « Mes … » et de Pointage disparaît avec l'en-tête de page (barre latérale / onglets) ; sur la 404, « Retour à l'accueil » suit le rôle ; seul le repli de « Page précédente » (sans historique) reste en dur sur `/vehicules`.* |
 | B-14 | Pointage : le chrono du jour retire les pauses, le total par jour de l'historique ne les retire pas (l'un des deux est faux, voir Q-PAUSES) ; le dialog de kilométrage obligatoire est impossible à quitter si les véhicules ne se chargent pas | Pointage:548-588 vs 668-678 ; 314, 1013 | selon Q-PAUSES ; bouton « Annuler » en cas d'erreur |
 | B-15 ✔ | `pagesWithoutNavbar` : 6 noms sur 9 ne correspondent à aucune route. La navbar, le polling des notifications et les dialogs globaux apparaissent sur `/verify`, `/password-reset`, `/unauthorized`, les pages légales… (sur `/unauthorized`, le polling d'un compte inactif provoque un 401 puis une déconnexion). Changelog et complétion de profil évalués seulement au montage : jamais juste après la connexion, mais affichés sur la landing. Changelog non marqué comme vu s'il est fermé autrement que par « Fermer » | App.vue:76, 102-116, 154 | Q-NAVBAR, Q-GLOBALDIALOGS |
 | B-16 | Suivi des présences : l'entrée « Services » du menu recharge toute l'app (`window.location.href`) ; une erreur initiale n'est jamais effacée malgré les rafraîchissements réussis | ServicesMonitoring:381, 543-550 | navigation interne ; état d'erreur de la requête |
@@ -833,3 +838,43 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 | 2026-09-25 / 26 | 1 | Phases 2 et 3 : couche agnostique copiée (seules adaptations : icônes lucide, intercepteur 401 découplé, `import type`) ; coquille (store Zustand hydraté depuis les clés du Vue, router data mode et gardes, ThemeProvider, navbar, notifications, bannière de version, changelog, historique d'un pointage) ; composants partagés. Phase 4 par sous-agents parallèles : auth, pointage, heures/planning/journal, véhicules, absences, acomptes, signatures, couchettes, versions, notifications, profil, landing et légal portés ; B-02 corrigé (échappement, règle de sécurité du brief). Phase 5 amorcée : version.json, sitemap, en-tête SEO, pré-rendu porté, deploy/. Vérifié visuellement contre la prod Vue : login (360 px clair et sombre), landing (desktop identique, même hauteur à 360 px). Utilisateurs, entretiens, stock, cartes et todos : reprise en cours après une coupure de l'API. | `9161c08` à `8e593ca` |
 | 2026-09-26 | 1 | Fin de la phase 4 : utilisateurs (liste, pointages d'un employé, suivi des présences), entretiens (flotte, véhicule, types), stock, cartes et todos portés et relus ; bugs du Vue reproduits (B-01, B-04 à B-07, B-16 à B-27, B-30, B-31, 8.3). Phase 5 : compression gzip + brotli, `AppLayout` chargé à la demande et chunk `react-vendor` (bundle initial de la landing : 505 ko au lieu de 805 ko + coquille), limite de taille relevée pour mapbox-gl seul ; `MigrationPlaceholder` et 6 composants shadcn inutilisés retirés ; aucun module orphelin ni `any` ; libellés d'`InputField` alignés sur le Vue (login identique au pixel près). Vérifié : `npm run build` avec `PRERENDER_STRICT=1`, lint, format, parité des 43 routes et des gardes. Reste : contrôle visuel des écrans connectés (session requise). | `c534637` à ce commit |
 | 2026-09-26 | 1 | Contrôle visuel des écrans (rôles, 360 px et desktop, clair et sombre) validé par le propriétaire : toutes les lignes passent à `vérifié`. Migration terminée ; reste au propriétaire le premier déploiement avec `deploy.py --minor` (bump de version pour que les clients Vue détectent la bascule). | ce commit |
+| 2026-09-27 | 2 | Refonte du design (D7), branche `refonte-design` : nouvelle coquille (barre latérale groupée par rôle, en-tête à fil d'Ariane, barre d'onglets mobile des chauffeurs), primitives de page (`PageContainer`, `PageHeader`, `PageTabs`), 43 routes harmonisées par 3 sous-agents puis relues ; tableaux compactés (actions en menu « ⋮ »), filtres en carte, catégories défilantes sur mobile, pages publiques restylées. Vérifié : build strict, lint, format ; ~50 captures Edge headless sur une fausse API locale (3 rôles, 360 px et 1366 px, clair et sombre), sans débordement horizontal. Reste : contrôle du propriétaire sur la vraie API. | voir `git log refonte-design` |
+
+## 11. Refonte du design (D7)
+
+Demande du propriétaire (27/09/2026) : « revoir intégralement le design de l'app, rester simple, des dispositions de pages logiques et simples pour un utilisateur normal ». Travail sur la branche `refonte-design`.
+
+### 11.1 Ce qui ne change pas
+Routes et URL, gardes, appels API, services et hooks de données, données affichées, actions, dialogs, comportement par rôle, clés de stockage du Vue. Les bugs B-xx restent reproduits sauf mention ci-dessous. La landing et les pages légales (publiques, SEO, pré-rendu) ne sont pas touchées.
+
+### 11.2 Coquille (`src/components/layout`)
+- **Ordinateur** : barre latérale shadcn (`AppSidebar`, variante `inset`), repliable en icônes (bouton de l'en-tête ou Ctrl/Cmd+B ; état mémorisé par le cookie `sidebar_state` que pose le composant shadcn). Sections : « À faire » (admin, mécanicien), Mon espace, Personnel, Heures, Flotte, Application. Source unique : `navSections` (`src/config/navConfig.ts`), filtrée par `canAccess` (vue utilisateur comprise). Badge des comptes en attente sur « Utilisateurs ». Pied `NavUser` : profil, notifications, thème, vue admin / utilisateur, nouveautés, installation sur l'écran d'accueil, téléchargement de l'APK, déconnexion, version.
+- **En-tête** (`AppHeader`, collant) : bouton du menu, fil d'Ariane section › parent › page (`src/lib/routeMeta.ts`), rappel « Vue utilisateur » cliquable, cloche des notifications.
+- **Téléphone** : menu « hamburger » (panneau coulissant), logo dans l'en-tête ; pour le rôle Utilisateur (ou la vue utilisateur), **barre d'onglets en bas** (`MobileBottomNav`) : Pointage, Absences, Acomptes, Couchettes (si autorisé). Sa hauteur est réservée par la variable CSS `--bottom-nav-h` ; la barre d'actions du pointage se pose au-dessus.
+- Titre d'onglet : « (3) Mes absences · AVTRANS » (le Vue affichait le titre de la landing sur toutes les pages protégées).
+- Changer de vue (admin ↔ utilisateur) emmène sur l'accueil de la vue choisie (`/pointage` ou la route par défaut du rôle).
+- Supprimés : `Navbar`, `NavbarLinks` (liens qui apparaissaient ou disparaissaient selon la largeur), `UserMenu`, `MobileNavSheet`.
+
+### 11.3 Pages
+- Structure unique : `PageContainer` (largeurs `sm` formulaires, `md` pages personnelles, `lg` listes d'admin, `full` planning et vues à panneau), puis `PageHeader` (titre, description d'une phrase, actions à droite, lien `back` vers le parent pour les pages de détail), puis le contenu. Plus d'en-têtes collants propres aux pages ni de `BackButton` (supprimé).
+- L'action principale est dans l'en-tête avec un libellé explicite (« Ajouter un véhicule », « Nouvelle absence »…) ; les barres d'outils ne gardent que recherche et filtres.
+- Pages sœurs en onglets (`PageTabs`) : Absences / Types d'absence, Entretiens / Types d'entretien, Cartes / Types de cartes.
+- Filtres (`SearchFilters`) : carte « Filtres » avec résumé des filtres actifs, ouverte d'office sur grand écran, repliée sur téléphone.
+- Tableaux : carte bordée, en-tête grisé ; colonne Actions compacte : l'action du moment reste visible (Modifier ; Approuver / Refuser si en attente ; Marquer payé), le reste est dans le menu « ⋮ » (mêmes entrées que sur mobile) ; « Supprimer » en texte rouge discret au lieu d'un bouton rouge plein par ligne.
+- Stock et types d'entretien : panneau de catégories / dossiers en rangée qui défile horizontalement sur téléphone.
+- Pages publiques (connexion, inscription, mot de passe, vérification, 404, accès refusé, erreur, `/download`) : carte centrée sobre, logo carré, lien « Retour au site ».
+- Clarifications de libellés et d'ergonomie faites au passage (exemples) : échéances écrites en toutes lettres sur la fiche véhicule, légende du planning, aide au glisser-déposer écrite en clair, « Jours travaillés » au lieu de « Jours trav. », titres de sections (« Total de l'équipe », « Heures travaillées »), menus « ⋮ » à la place de boutons icône de 32 px.
+
+### 11.4 Composants et tokens
+- Ajoutés par le CLI : `sidebar`, `breadcrumb`. `src/hooks/use-mobile.ts` (livré avec la sidebar) réécrit sur `useMediaQuery` ; `sidebar.tsx` modifié pour le lint (squelette tiré dans `useState`). Commentaires en tête des fichiers.
+- Personnalisations de 4.2 revues : squelettes neutres (`bg-accent`), overlays `bg-black/50`. Fond de la coquille (`--sidebar`) légèrement teinté en clair.
+- `StatCard` allégée (sans ombre ni survol, icône masquée sous `sm`), conteneurs de tableaux et cartes en `rounded-xl border bg-card`, couleurs vertes/orange brutes remplacées par les tokens `success` / `warning` là où elles ont été touchées.
+
+### 11.5 Vérification
+Fausse API locale (hors dépôt, réponses calquées sur les contrôleurs d'`api_avtrans`) et captures Edge headless en CDP : rôles administrateur, chauffeur (couchette) et mécanicien, 360 px et 1366 px, clair et sombre sur un échantillon ; aucun débordement horizontal. `npm run build` avec `PRERENDER_STRICT=1`, `npm run lint`, `npm run format:check` : OK. **Reste** : contrôle par le propriétaire sur la vraie API.
+
+### 11.6 Points à trancher par le propriétaire
+- **B-04** : sur `/entretiens`, l'onglet « Types d'entretien », le bouton « Stock » et les actions restent réservés à l'admin (bug reproduit) alors que le mécanicien gère `/types-entretien` et `/stock`. Corriger ?
+- **B-13 (reste)** : sur la 404, le repli de « Page précédente » sans historique pointe toujours en dur vers `/vehicules`.
+- Fiche véhicule : le véhicule relais apparaît deux fois (pastille à côté du titre et ligne « Véhicule relais »). Garder la pastille seule ?
+- Planning : description « Les absences de l'équipe, jour par jour » (la page montre des absences, pas des services).
