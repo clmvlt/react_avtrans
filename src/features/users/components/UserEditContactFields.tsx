@@ -1,6 +1,8 @@
 import { Clock, Phone, Smartphone } from 'lucide-react'
 import { Controller, type Control } from 'react-hook-form'
 import { InputField } from '@/components/shared/InputField'
+import { Button } from '@/components/ui/button'
+import { CONTRACT_PRESETS, contractHoursHint } from '../lib/contractPresets'
 import type { UserEditFormValues } from '../schemas/userEdit'
 
 type UserEditContactFieldsProps = {
@@ -8,7 +10,10 @@ type UserEditContactFieldsProps = {
   disabled: boolean
 }
 
-/** Sections « Contrat » (heures mensuelles) et « Coordonnées » (téléphones). */
+/**
+ * Sections « Contrat » (heures mensuelles, durées usuelles du transport et équivalent
+ * hebdomadaire : D8) et « Coordonnées » (téléphones).
+ */
 export function UserEditContactFields({ control, disabled }: UserEditContactFieldsProps) {
   return (
     <>
@@ -18,15 +23,33 @@ export function UserEditContactFields({ control, disabled }: UserEditContactFiel
           name="heureContrat"
           control={control}
           render={({ field }) => (
-            <InputField
-              {...field}
-              label="Heures mensuelles du contrat"
-              type="number"
-              placeholder="Ex: 151.67"
-              disabled={disabled}
-              icon={Clock}
-              hint="Heures contractuelles par mois (ex: 151.67h)"
-            />
+            <div className="space-y-2">
+              <InputField
+                {...field}
+                label="Heures mensuelles du contrat"
+                type="number"
+                placeholder="Ex: 151.67"
+                disabled={disabled}
+                icon={Clock}
+                hint={contractHoursHint(field.value)}
+              />
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Durées usuelles">
+                {CONTRACT_PRESETS.map((preset) => (
+                  <Button
+                    key={preset.value}
+                    type="button"
+                    size="sm"
+                    variant={field.value === preset.value ? 'default' : 'outline'}
+                    aria-pressed={field.value === preset.value}
+                    disabled={disabled}
+                    onClick={() => field.onChange(preset.value)}
+                  >
+                    {preset.label}
+                    <span className="text-xs font-normal opacity-80">{preset.hint}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
           )}
         />
       </div>
