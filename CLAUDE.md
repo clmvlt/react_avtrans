@@ -2,7 +2,7 @@
 
 Plateforme de gestion du personnel et de la flotte d'AVTRANS (livraisons pharmaceutiques) : pointage, absences, acomptes, véhicules et entretiens, signatures, couchettes, stock, cartes, todos, versions d'app (APK), notifications, landing publique indexée. Trois rôles : Utilisateur, Administrateur, Mécanicien.
 
-Ce projet est la **migration de l'app Vue 3** `D:\3_PROJET\AVTRANS\pointage2026\vue_avtrans`. Le Vue est la **référence, en lecture seule : ne jamais le modifier**. L'API Spring Boot `../api_avtrans` est hors périmètre : ne pas la modifier.
+Ce projet est la **migration de l'app Vue 3** `D:\3_PROJET\AVTRANS\pointage2026\vue_avtrans`. Le Vue est la **référence, en lecture seule : ne jamais le modifier**. L'API Spring Boot `../api_avtrans` est hors périmètre : ne pas la modifier, sauf évolution demandée explicitement par le propriétaire, et alors de façon rétrocompatible (exemple : heures créditées par les absences, décision D8, `MIGRATION.md` section 12).
 
 **`MIGRATION.md` fait foi** pour l'avancement (table de correspondance, statuts, décisions, bugs, questions). L'inventaire détaillé par domaine est dans `docs/migration/`. Mettre `MIGRATION.md` à jour à chaque étape validée.
 

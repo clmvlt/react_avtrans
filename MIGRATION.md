@@ -40,6 +40,7 @@ Une ligne ne passe à `vérifié` qu'après contrôle visuel contre l'app Vue. �
 | 4. Domaines | voir l'ordre ci-dessous | **vérifié** (26/09/2026) : les 43 routes sont portées |
 | 5. Build, SEO, finitions | plugins Vite, pré-rendu, robots, JSON-LD, manifest, revue de parité, nettoyage des dépendances | **vérifié** (26/09/2026) : build + pré-rendu strict + lint + format sans erreur ni warning |
 | 6. Refonte du design (D7) | coquille à rail d'icônes, en-têtes de page, onglets, barre d'onglets mobile, harmonisation des pages ; voir section 11 | **fait** (27/09/2026, branche `refonte-design`) : build, lint et captures OK ; reste le contrôle du propriétaire |
+| 7. Heures d'absence (D8) | évolution hors parité : heures créditées par les absences et les jours fériés (API puis front) ; voir section 12 | **fait** (27/09/2026, branches `feat/heures-absences` de l'API et du front) : tests de l'API, build, lint et vérification sur l'API locale ; reste le déploiement (API **avant** front) |
 
 Ordre des domaines en phase 4 (celui du brief) :
 
@@ -114,6 +115,9 @@ Les annexes relèvent plusieurs centaines de constats (bugs, incohérences, code
 
 **D7. Refonte du design (demandée le 27/09/2026, après la migration).**
 Le propriétaire a demandé de « revoir intégralement le design de l'app », en restant simple, avec des dispositions de pages logiques pour un utilisateur normal. La **parité visuelle avec le Vue est donc abandonnée** ; la **parité fonctionnelle reste la règle** : mêmes routes, mêmes gardes, mêmes appels API, mêmes données, mêmes actions et comportements par rôle, bugs B-xx toujours reproduits sauf accord. La landing et les pages légales (publiques, SEO) ne sont pas concernées. Détail en section 11.
+
+**D8. Heures créditées par les absences (demandée le 27/09/2026, après la migration).**
+Le propriétaire a demandé que chaque absence « ajoute » des heures selon les règles françaises du transport (décompte sur 6 jours ouvrables, contrat de l'employé, week-ends, jours fériés), **d'abord côté API puis côté front**. C'est une **évolution fonctionnelle hors parité** : l'API `api_avtrans` est modifiée à sa demande (exception à « API hors périmètre »), de façon **rétrocompatible** (colonnes nullables, champs et routes ajoutés, rien de retiré ni de changé de sens) pour que le Vue et le Flutter continuent de fonctionner. Les modèles et services copiés du Vue sont étendus (champs et méthodes ajoutés, marqués « D8 »). Le Vue n'est pas modifié. Réponses du propriétaire : les chauffeurs ne travaillent pas le samedi (le samedi avant la reprise est décompté), les jours fériés chômés sont crédités dans « Heures contrat », un employé sans contrat ne reçoit aucune heure, B-18 est corrigé sur « Heures contrat ». Détail en section 12.
 
 **Déjà décidé par le brief ou par la doc à jour (pour information) :**
 - Formulaires : la doc shadcn à jour recommande `Field` + `Controller` de react-hook-form plutôt que l'ancien `Form` / `FormField`. J'utiliserai `field`, pas `form`.
@@ -513,6 +517,8 @@ Hooks Query : `useActiveServiceQuery`, `useMyWorkedHoursQuery`, `useDailyService
 
 Hooks Query : `usePlanningQuery`, `useUsersWithHoursQuery`, `useContractComparisonQuery(year, month)`, `useExportHoursMutation`, `useServiceModificationsSearchQuery`, `useServiceModificationsQuery(uuid)`.
 
+*D8 (hors parité, section 12)* : « Heures contrat » affiche les heures créditées (absences + fériés, `ContractCreditedHours`), le total, l'écart et la réalisation sur ce total ; B-18 corrigé dans `lib/contractFormat.ts`. Le planning montre les heures créditées dans le détail d'une absence ; l'export Excel gagne une colonne côté API.
+
 #### Utilisateurs, pointages d'un employé, suivi des présences (4.4). Annexe : [users-profil-notifications](docs/migration/inventaire-users-profil-notifications.md)
 
 | Source Vue | Cible React | Dépendances clés | Statut |
@@ -574,6 +580,8 @@ Hooks Query : `useFleetUpcomingQuery`, `useVehicleUpcomingQuery`, `useEntretiens
 | components/myabsences/MyAbsenceEditModal.vue (271) | features/absences/components/my/MyAbsenceRequestDialog.tsx | AbsenceFormFields | vérifié |
 
 Hooks Query : `useAdminAbsencesQuery`, `useMyAbsencesQuery`, `useAbsenceTypesQuery` (partagé avec Planning), mutations create (admin et employé), update, validate (partagée avec Planning), delete, cancel, CRUD des types.
+
+*D8 (hors parité, section 12)* : `useAbsenceDecompteQuery` (aperçu du décompte, anti-rebond dans les formulaires), `useSetAbsenceHeuresMutation` ; `lib/absenceDecompte.ts` ; `schemas/absenceHeures.ts` ; composants `AbsenceDecompteSummary`, `AbsenceDecomptePreview` (dans `AbsenceFormFields`), `AbsenceDecompteDetail`, `AbsenceHeuresValue`, `admin/AbsenceHeuresDialog`, `types/AbsenceTypeHoursFields`.
 
 #### Acomptes (4.8). Annexe : [absences-acomptes](docs/migration/inventaire-absences-acomptes.md)
 
@@ -764,7 +772,7 @@ Les numéros de ligne renvoient aux fichiers du Vue. Le détail et les bugs mine
 | B-15 ✔ | `pagesWithoutNavbar` : 6 noms sur 9 ne correspondent à aucune route. La navbar, le polling des notifications et les dialogs globaux apparaissent sur `/verify`, `/password-reset`, `/unauthorized`, les pages légales… (sur `/unauthorized`, le polling d'un compte inactif provoque un 401 puis une déconnexion). Changelog et complétion de profil évalués seulement au montage : jamais juste après la connexion, mais affichés sur la landing. Changelog non marqué comme vu s'il est fermé autrement que par « Fermer » | App.vue:76, 102-116, 154 | Q-NAVBAR, Q-GLOBALDIALOGS |
 | B-16 | Suivi des présences : l'entrée « Services » du menu recharge toute l'app (`window.location.href`) ; une erreur initiale n'est jamais effacée malgré les rafraîchissements réussis | ServicesMonitoring:381, 543-550 | navigation interne ; état d'erreur de la requête |
 | B-17 | Todos : les tâches d'une catégorie supprimée disparaissent du tableau jusqu'au rechargement ; suppression par la corbeille sans confirmation et échec silencieux | Todos:492-494, 356-379 | colonne de repli ; toast d'erreur |
-| B-18 | Heures contrat : différences négatives affichées sans signe moins. Arrondis « 7h60 » (Contrats, UserHoursModal, suivi des présences) | ContractHours:490-500 ; UserHoursModal:654-659 ; ServicesMonitoring:274 | formatage correct |
+| B-18 ✔ **corrigé sur Heures contrat** (D8, accord du 27/09/2026) | Heures contrat : différences négatives affichées sans signe moins. Arrondis « 7h60 » (Contrats, UserHoursModal, suivi des présences). *Reste reproduit dans UserHoursModal et le suivi des présences.* | ContractHours:490-500 ; UserHoursModal:654-659 ; ServicesMonitoring:274 | formatage correct |
 | B-19 | Tris faux ou partiels : tri client limité à la page courante alors que le serveur pagine (Couchettes, Absences, Acomptes, Entretiens) ; `Date.parse` appliqué aux nombres et immatriculations (tri km des véhicules, Heures, Users) | voir annexes | tri typé par colonne (react-table) ; tri serveur si l'API le permet |
 | B-20 | Entretiens : « Total coût HT » et recherche rapide ne portent que sur la page courante | Entretiens:1277, 286-294, 1587-1599 | libellé explicite, ou agrégat API |
 | B-21 | EntretiensVehicule : date envoyée avec un décalage `+01:00` codé en dur (faux l'été), alors qu'Entretiens envoie `T12:00:00` | EntretiensVehicule:1546 | format unique `YYYY-MM-DDT12:00:00` |
@@ -838,6 +846,7 @@ Les recommandations entre parenthèses s'appliquent si vous ne tranchez pas autr
 | 2026-09-25 / 26 | 1 | Phases 2 et 3 : couche agnostique copiée (seules adaptations : icônes lucide, intercepteur 401 découplé, `import type`) ; coquille (store Zustand hydraté depuis les clés du Vue, router data mode et gardes, ThemeProvider, navbar, notifications, bannière de version, changelog, historique d'un pointage) ; composants partagés. Phase 4 par sous-agents parallèles : auth, pointage, heures/planning/journal, véhicules, absences, acomptes, signatures, couchettes, versions, notifications, profil, landing et légal portés ; B-02 corrigé (échappement, règle de sécurité du brief). Phase 5 amorcée : version.json, sitemap, en-tête SEO, pré-rendu porté, deploy/. Vérifié visuellement contre la prod Vue : login (360 px clair et sombre), landing (desktop identique, même hauteur à 360 px). Utilisateurs, entretiens, stock, cartes et todos : reprise en cours après une coupure de l'API. | `9161c08` à `8e593ca` |
 | 2026-09-26 | 1 | Fin de la phase 4 : utilisateurs (liste, pointages d'un employé, suivi des présences), entretiens (flotte, véhicule, types), stock, cartes et todos portés et relus ; bugs du Vue reproduits (B-01, B-04 à B-07, B-16 à B-27, B-30, B-31, 8.3). Phase 5 : compression gzip + brotli, `AppLayout` chargé à la demande et chunk `react-vendor` (bundle initial de la landing : 505 ko au lieu de 805 ko + coquille), limite de taille relevée pour mapbox-gl seul ; `MigrationPlaceholder` et 6 composants shadcn inutilisés retirés ; aucun module orphelin ni `any` ; libellés d'`InputField` alignés sur le Vue (login identique au pixel près). Vérifié : `npm run build` avec `PRERENDER_STRICT=1`, lint, format, parité des 43 routes et des gardes. Reste : contrôle visuel des écrans connectés (session requise). | `c534637` à ce commit |
 | 2026-09-26 | 1 | Contrôle visuel des écrans (rôles, 360 px et desktop, clair et sombre) validé par le propriétaire : toutes les lignes passent à `vérifié`. Migration terminée ; reste au propriétaire le premier déploiement avec `deploy.py --minor` (bump de version pour que les clients Vue détectent la bascule). | ce commit |
+| 2026-09-27 | 3 | Heures d'absence (D8), branches `feat/heures-absences` : API (jours fériés, calcul des heures créditées, réglages des types, heures forcées, aperçu du décompte, comparaison au contrat, colonne de l'export ; 62 tests unitaires verts) puis front (aperçu dans les formulaires, colonne Heures, détail jour par jour, « Modifier les heures », réglages des types, Heures contrat avec total et écart, préréglages de contrat). Vérifié : build strict, lint, format ; écrans sur l'API locale branchée à la base de dev. | voir `git log feat/heures-absences` (API et front) |
 | 2026-09-27 | 2 | Refonte du design (D7), branche `refonte-design` : nouvelle coquille (menu latéral groupé par rôle, en-tête à fil d'Ariane, barre d'onglets mobile des chauffeurs), primitives de page (`PageContainer`, `PageHeader`, `PageTabs`), 43 routes harmonisées par 3 sous-agents puis relues ; tableaux compactés (actions en menu « ⋮ »), filtres en carte, catégories défilantes sur mobile, pages publiques restylées. Vérifié : build strict, lint, format ; ~50 captures Edge headless sur une fausse API locale (3 rôles, 360 px et 1366 px, clair et sombre), sans débordement horizontal. Reste : contrôle du propriétaire sur la vraie API. | voir `git log refonte-design` |
 
 ## 11. Refonte du design (D7)
@@ -878,3 +887,38 @@ Fausse API locale (hors dépôt, réponses calquées sur les contrôleurs d'`api
 - **B-13 (reste)** : sur la 404, le repli de « Page précédente » sans historique pointe toujours en dur vers `/vehicules`.
 - Fiche véhicule : le véhicule relais apparaît deux fois (pastille à côté du titre et ligne « Véhicule relais »). Garder la pastille seule ?
 - Planning : description « Les absences de l'équipe, jour par jour » (la page montre des absences, pas des services).
+
+## 12. Heures créditées par les absences (D8)
+
+Demande du propriétaire (27/09/2026) : gérer le nombre d'heures qu'une absence « ajoute », selon les conventions françaises du transport (décompte sur 6 jours, contrat de chaque employé, week-ends, jours fériés), d'abord dans l'API puis dans le front.
+
+### 12.1 Règles de calcul (API, `HeuresAbsenceCalculator`)
+- **Base** : `User.heureContrat` (heures **mensuelles**, champ existant) ramené à la semaine : `hebdo = mensuel × 12 / 52` (151,67 h → 35 h ; 169 h → 39 h ; 186 h → 42,92 h), soit les durées d'équivalence du Code des transports (art. D3312-45 : 35 h messagerie / sédentaires, 39 h courte distance, 43 h grands routiers). **Sans contrat : 0 h** (les jours restent comptés, l'écran le signale).
+- **Mode de décompte, par type d'absence** : jours **ouvrables** (lun.→sam., 6 j/sem., défaut, règle des congés payés), jours **ouvrés** (lun.→ven., 5 j/sem.) ou jours **calendaires** (7 j/sem.). Valeur d'un jour = `hebdo / jours par semaine` : une semaine complète vaut toujours les heures hebdomadaires du contrat.
+- **Jours exclus** : dimanches et fériés chômés (ouvrables) ; samedis, dimanches et fériés (ouvrés) ; aucun (calendaires). Un férié pendant une absence n'est pas décompté (règle légale).
+- **Samedi avant la reprise** (ouvrables, journée complète) : une absence qui finit un vendredi décompte aussi le samedi suivant, sauf s'il est férié (les chauffeurs ne travaillent pas le samedi). Lun.→ven. = 6 jours = 35 h pour 151,67 h/mois.
+- **Demi-journée** : 0,5 jour par jour décompté, sans samedi ajouté.
+- **Crédit d'heures par type** (`compteHeures`) : vrai par défaut, faux pour « Sans solde » (réglage modifiable). Une absence de type personnalisé (sans type) suit les valeurs par défaut.
+- **Heures fixées à la main** (`heuresForcees`, admin, tout statut) ; remises au calcul automatique quand les dates, la période ou le type changent ; réparties au prorata des jours décomptés pour le découpage par mois.
+- **Calcul en direct** (pas d'instantané) : les heures suivent le contrat et le réglage du type actuels, comme « Heures contrat » utilisait déjà le contrat actuel ; forcer une valeur la fige.
+- **Jours fériés chômés** (« Heures contrat » et export) : les 11 fériés légaux (hors Alsace-Moselle) tombant du lundi au samedi créditent `hebdo / 6`, sauf s'ils ont été pointés (férié travaillé), s'ils tombent pendant une absence qui ne compte pas d'heures, ou sans contrat. Les conditions d'ancienneté de la convention (3 mois, 6 mois, 1 an) ne sont pas gérées faute de date d'embauche.
+- Les heures créditées ne sont **pas** du travail effectif : elles ne s'ajoutent jamais aux heures travaillées ni à la base des heures supplémentaires ; elles forment une colonne et un total séparés.
+
+### 12.2 API (`api_avtrans`, branche `feat/heures-absences`)
+- `JoursFeriesService` (fériés en cache par année, extrait de l'export) ; `HeuresAbsenceCalculator`.
+- `absence_types.mode_decompte`, `absence_types.compte_heures` (nullables, renseignés au démarrage par `DataInitializer` pour les types existants) ; `absences.heures_forcees`.
+- `AbsenceDTO` : `joursDecomptes`, `heures`, `heuresCalculees`, `heuresForcees`, `modeDecompte`, `compteHeures`, `contratRenseigne`. `AbsenceTypeDTO` / requête : `modeDecompte`, `compteHeures`.
+- Routes : `POST /absences/decompte` (employé connecté), `POST /absences/admin/decompte` (avec `userUuid`), `PUT /absences/admin/{uuid}/heures` (`{ heures: number | null }`).
+- `GET /users/contract-hours` et `/users/{uuid}/contract-hours` : `heuresAbsences`, `heuresFeries`, `joursFeries`, `heuresTotal`, `differenceTotal`, `pourcentageTotal` (champs existants inchangés).
+- Export Excel : colonne K « Heures créditées », sous-totaux par semaine et par mois, ligne « TOTAL DU MOIS (travail + absences + fériés) ».
+
+### 12.3 Front
+- Formulaires d'absence (admin et employé) : aperçu en direct « 6 j ouvrables · 35 h », base du calcul et détail jour par jour repliable.
+- Liste admin : colonne « Heures » (repère si modifiées à la main ou si l'absence ne crédite rien) ; menu « ⋮ » et détail : « Modifier les heures » ; détail : décompte jour par jour ; résumé d'approbation : heures créditées.
+- Mes absences : heures sur les cartes, décompte dans le détail. Planning : heures dans le détail d'une absence.
+- Types d'absence : réglage « Décompte des jours » et case « Compte dans les heures », colonne « Décompte ».
+- Heures contrat : colonnes Créditées (détail au survol), Total, Écart et Réalisation sur le total ; carte « Heures créditées » ; B-18 corrigé. Si l'API n'a pas encore les nouveaux champs, retour aux heures effectuées seules.
+- Utilisateurs : préréglages 151,67 h / 169 h / 186 h et équivalent hebdomadaire sous « Heures mensuelles du contrat ».
+
+### 12.4 Déploiement
+Déployer l'**API d'abord** (Hibernate ajoute les colonnes, `DataInitializer` renseigne les types), puis le front. Dans l'ordre inverse, le front afficherait 0 h partout et l'aperçu du décompte « Impossible de calculer les heures ».
