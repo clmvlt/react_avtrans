@@ -9,6 +9,7 @@ import {
   getPercentageClass,
   type ContractRow,
 } from '../lib/contractFormat'
+import { ContractCreditedHours } from './ContractCreditedHours'
 import { ContractProgressBar } from './ContractProgressBar'
 
 type ContractComparisonCardProps = {
@@ -24,7 +25,10 @@ function Tile({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-/** Carte mobile : contrat, heures effectuées, écart, réalisation, jours et moyenne. */
+/**
+ * Carte mobile : heures effectuées, créditées (D8), total, contrat, écart, réalisation, jours et
+ * moyenne.
+ */
 export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
   return (
     <div className="rounded-xl border bg-card p-4">
@@ -36,38 +40,44 @@ export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
         )}
       </UserIdentity>
 
-      <div className="mt-3 grid grid-cols-2 gap-2 text-center">
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <Tile label="Effectuées">
-          <p className="text-lg font-bold text-violet-600 dark:text-violet-400">
+          <p className="font-bold text-violet-600 dark:text-violet-400">
             {formatContractHours(row.heuresEffectuees)}
           </p>
         </Tile>
-        <Tile label="Contrat">
-          <p className="text-lg font-bold text-foreground">
-            {row.heureContrat != null ? formatContractHours(row.heureContrat) : '-'}
-          </p>
+        <Tile label="Créditées">
+          <ContractCreditedHours row={row} />
         </Tile>
-        <Tile label="Différence">
-          <p className={cn('text-lg font-bold', getDifferenceClass(row.difference))}>
-            {formatDifference(row.difference)}
-          </p>
-        </Tile>
-        <Tile label="Réalisation">
-          <p className={cn('text-lg font-bold', getPercentageClass(row.pourcentageRealisation))}>
-            {formatPercentage(row.pourcentageRealisation)}
-          </p>
+        <Tile label="Total">
+          <p className="font-bold text-foreground">{formatContractHours(row.heuresTotal)}</p>
         </Tile>
       </div>
 
       <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+        <Tile label="Contrat">
+          <p className="text-sm font-semibold text-foreground">
+            {row.heureContrat != null ? formatContractHours(row.heureContrat) : '-'}
+          </p>
+        </Tile>
+        <Tile label="Écart">
+          <p className={cn('text-sm font-bold', getDifferenceClass(row.differenceTotal))}>
+            {formatDifference(row.differenceTotal)}
+          </p>
+        </Tile>
+        <Tile label="Réalisation">
+          <p className={cn('text-sm font-bold', getPercentageClass(row.pourcentageTotal))}>
+            {formatPercentage(row.pourcentageTotal)}
+          </p>
+        </Tile>
+      </div>
+
+      <div className="mt-2 grid grid-cols-2 gap-2 text-center">
         <Tile label="Jours travaillés">
           <p className="text-sm font-semibold text-foreground">
             {row.joursTravailles}
             <span className="font-normal text-muted-foreground"> / {row.joursOuvres}</span>
           </p>
-        </Tile>
-        <Tile label="Absences">
-          <p className="text-sm font-semibold text-foreground">{row.joursAbsence}j</p>
         </Tile>
         <Tile label="Moyenne / jour">
           <p className="text-sm font-semibold text-foreground">
@@ -77,7 +87,7 @@ export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
       </div>
 
       {row.heureContrat != null && row.heureContrat > 0 && (
-        <ContractProgressBar percentage={row.pourcentageRealisation} className="mt-3 h-2 w-full" />
+        <ContractProgressBar percentage={row.pourcentageTotal} className="mt-3 h-2 w-full" />
       )}
     </div>
   )

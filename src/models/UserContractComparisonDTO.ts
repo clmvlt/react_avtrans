@@ -23,6 +23,18 @@ export interface UserContractComparisonDTO {
   joursTravailles: number
   /** effectuées / joursTravailles */
   moyenneHeuresParJour: number | null
+  /** Heures créditées par les absences approuvées du mois (0 sans contrat) — D8 */
+  heuresAbsences?: number
+  /** Heures créditées par les jours fériés chômés du mois — D8 */
+  heuresFeries?: number
+  /** Jours fériés chômés crédités dans le mois — D8 */
+  joursFeries?: number
+  /** Effectuées + absences + fériés — D8 */
+  heuresTotal?: number
+  /** Total - contrat (null si pas de contrat) — D8 */
+  differenceTotal?: number | null
+  /** (total/contrat)*100 (null si pas de contrat) — D8 */
+  pourcentageTotal?: number | null
 }
 
 /**

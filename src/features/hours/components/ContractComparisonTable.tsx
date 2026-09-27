@@ -12,6 +12,7 @@ import {
   getPercentageClass,
   type ContractRow,
 } from '../lib/contractFormat'
+import { ContractCreditedHours } from './ContractCreditedHours'
 import { ContractProgressBar } from './ContractProgressBar'
 
 const CENTER = { headerClassName: 'text-center', cellClassName: 'text-center' }
@@ -42,29 +43,47 @@ const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
     accessorFn: (row) => row.heuresEffectuees,
     header: ({ column }) => <DataTableColumnHeader column={column} title="Effectuées" />,
     cell: ({ row }) => (
-      <span className="text-lg font-bold text-violet-600 dark:text-violet-400">
+      <span className="font-semibold text-violet-600 dark:text-violet-400">
         {formatContractHours(row.original.heuresEffectuees)}
       </span>
     ),
     meta: CENTER,
   },
   {
-    id: 'difference',
-    accessorFn: (row) => row.difference,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Différence" />,
+    id: 'heuresCreditees',
+    accessorFn: (row) => row.heuresCreditees,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Créditées" />,
+    cell: ({ row }) => <ContractCreditedHours row={row.original} />,
+    meta: CENTER,
+  },
+  {
+    id: 'heuresTotal',
+    accessorFn: (row) => row.heuresTotal,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Total" />,
     cell: ({ row }) => (
-      <span className={cn('text-lg font-bold', getDifferenceClass(row.original.difference))}>
-        {formatDifference(row.original.difference)}
+      <span className="text-lg font-bold text-foreground">
+        {formatContractHours(row.original.heuresTotal)}
       </span>
     ),
     meta: CENTER,
   },
   {
-    id: 'pourcentageRealisation',
-    accessorFn: (row) => row.pourcentageRealisation,
+    id: 'differenceTotal',
+    accessorFn: (row) => row.differenceTotal,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Écart" />,
+    cell: ({ row }) => (
+      <span className={cn('font-bold', getDifferenceClass(row.original.differenceTotal))}>
+        {formatDifference(row.original.differenceTotal)}
+      </span>
+    ),
+    meta: CENTER,
+  },
+  {
+    id: 'pourcentageTotal',
+    accessorFn: (row) => row.pourcentageTotal,
     header: ({ column }) => <DataTableColumnHeader column={column} title="Réalisation" />,
     cell: ({ row }) => {
-      const pct = row.original.pourcentageRealisation
+      const pct = row.original.pourcentageTotal
       if (pct == null) return <span className="text-sm text-muted-foreground">-</span>
       return (
         <div className="flex flex-col items-center gap-1">
@@ -90,26 +109,9 @@ const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
     meta: CENTER,
   },
   {
-    id: 'joursAbsence',
-    accessorFn: (row) => row.joursAbsence,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Absences" />,
-    cell: ({ row }) => (
-      <span
-        className={
-          row.original.joursAbsence > 0
-            ? 'font-medium text-amber-600 dark:text-amber-400'
-            : 'text-muted-foreground'
-        }
-      >
-        {row.original.joursAbsence}j
-      </span>
-    ),
-    meta: CENTER,
-  },
-  {
     id: 'moyenneHeuresParJour',
     accessorFn: (row) => row.moyenneHeuresParJour,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Moyenne / jour" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Moy. / jour" />,
     cell: ({ row }) =>
       row.original.moyenneHeuresParJour != null ? (
         <span className="font-medium text-foreground">
@@ -129,7 +131,10 @@ type ContractComparisonTableProps = {
   onSortingChange: OnChangeFn<SortingState>
 }
 
-/** Tableau desktop contrat / heures effectuées, huit colonnes triables. */
+/**
+ * Tableau desktop contrat / heures, neuf colonnes triables. D8 : heures créditées (absences +
+ * fériés) et total ; l'écart et la réalisation portent sur le total.
+ */
 export function ContractComparisonTable({
   rows,
   sorting,

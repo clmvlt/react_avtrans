@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { CalendarDays, Clock, FileText, Users } from 'lucide-react'
+import { CalendarCheck, Clock, FileText, Users } from 'lucide-react'
 import { StatCard } from '@/components/shared/StatCard'
 import { formatContractHours, type ContractTotals } from '../lib/contractFormat'
 
@@ -7,7 +7,10 @@ type ContractStatsGridProps = {
   totals: ContractTotals
 }
 
-/** Heures effectuées, heures contrat, jours ouvrés du mois et employés avec contrat. */
+/**
+ * Heures effectuées, heures créditées (absences + fériés, D8), heures contrat et employés avec
+ * contrat.
+ */
 export function ContractStatsGrid({ totals }: ContractStatsGridProps) {
   const titleId = useId()
 
@@ -15,6 +18,12 @@ export function ContractStatsGrid({ totals }: ContractStatsGridProps) {
     <section aria-labelledby={titleId} className="space-y-3">
       <h2 id={titleId} className="text-sm font-semibold text-foreground">
         Synthèse du mois
+        {totals.joursOuvres != null && (
+          <span className="font-normal text-muted-foreground">
+            {' '}
+            · {totals.joursOuvres} jours ouvrés
+          </span>
+        )}
       </h2>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
@@ -24,16 +33,16 @@ export function ContractStatsGrid({ totals }: ContractStatsGridProps) {
           value={formatContractHours(totals.heuresEffectuees)}
         />
         <StatCard
+          icon={CalendarCheck}
+          iconClassName="bg-green-500/10 text-green-500"
+          label="Heures créditées"
+          value={formatContractHours(totals.heuresCreditees)}
+        />
+        <StatCard
           icon={FileText}
           iconClassName="bg-amber-500/10 text-amber-500"
           label="Heures contrat"
           value={formatContractHours(totals.heuresContrat)}
-        />
-        <StatCard
-          icon={CalendarDays}
-          iconClassName="bg-green-500/10 text-green-500"
-          label="Jours ouvrés"
-          value={totals.joursOuvres ?? '-'}
         />
         <StatCard
           icon={Users}

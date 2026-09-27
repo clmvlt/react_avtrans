@@ -34,7 +34,7 @@ export default function ExportHoursPage() {
     <PageContainer size="sm">
       <PageHeader
         title="Export des heures"
-        description="Téléchargez au format Excel les heures des employés choisis sur une période, pour la paie."
+        description="Téléchargez au format Excel les heures des employés choisis sur une période, pour la paie (heures travaillées, heures créditées par les absences et les jours fériés)."
       />
       {renderContent()}
     </PageContainer>

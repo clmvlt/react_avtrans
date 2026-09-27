@@ -3,27 +3,41 @@ import type { UserContractComparisonDTO } from '@/models'
 /**
  * Formatage de la page Heures contrat (fonctions locales de ContractHours.vue).
  *
- * Bug B-18 reproduit (MIGRATION.md 8.2, non autorisé à la correction) :
- * - `formatDifference` perd le signe moins (−5,5 h s'affiche « 5h30 », seule la couleur rouge
- *   distingue un écart négatif) ;
- * - l'arrondi des minutes peut donner « 7h60 » (7,999 h).
+ * Bug B-18 corrigé avec l'accord du propriétaire (D8, MIGRATION.md 8.2) : un écart négatif garde
+ * son signe moins et les minutes sont arrondies sans produire « 7h60 ».
+ *
+ * D8 : les heures créditées (absences approuvées + jours fériés chômés) s'ajoutent aux heures
+ * effectuées ; l'écart et la réalisation portent sur ce total. Si l'API ne renvoie pas encore ces
+ * champs, on retombe sur les heures effectuées seules.
  */
 
-export type ContractRow = UserContractComparisonDTO & { fullName: string }
+export type ContractRow = UserContractComparisonDTO & {
+  fullName: string
+  /** Absences + fériés. */
+  heuresCreditees: number
+  /** Effectuées + créditées. */
+  heuresTotal: number
+  /** Total − contrat (null sans contrat). */
+  differenceTotal: number | null
+  /** Total / contrat en % (null sans contrat). */
+  pourcentageTotal: number | null
+}
 
-/** « 7h », « 7h30 » (B-18 : « 7h60 » possible). */
+/** « 7h », « 7h30 ». */
 export function formatContractHours(hours: number | null | undefined): string {
   if (hours === null || hours === undefined) return '0h'
-  const h = Math.floor(hours)
-  const m = Math.round((hours - h) * 60)
+  const totalMinutes = Math.round(hours * 60)
+  const h = Math.floor(totalMinutes / 60)
+  const m = totalMinutes - h * 60
   if (m === 0) return `${h}h`
   return `${h}h${m.toString().padStart(2, '0')}`
 }
 
-/** « +2h30 » ; un écart négatif s'affiche sans signe (B-18). */
+/** « +2h30 », « −5h30 », « 0h ». */
 export function formatDifference(diff: number | null | undefined): string {
   if (diff === null || diff === undefined) return '-'
-  const sign = diff >= 0 ? '+' : ''
+  if (Math.round(Math.abs(diff) * 60) === 0) return '0h'
+  const sign = diff > 0 ? '+' : '−'
   return `${sign}${formatContractHours(Math.abs(diff))}`
 }
 
@@ -53,7 +67,13 @@ export function getProgressBarClass(pct: number | null | undefined): string {
   return 'bg-red-500'
 }
 
-/** Lignes avec le nom complet, filtrées sur le nom et l'e-mail. */
+const round2 = (value: number) => Math.round(value * 100) / 100
+
+/** Heures créditées d'une comparaison (absences + fériés). */
+export const getHeuresCreditees = (comparison: UserContractComparisonDTO) =>
+  round2((comparison.heuresAbsences ?? 0) + (comparison.heuresFeries ?? 0))
+
+/** Lignes avec le nom complet et les totaux D8, filtrées sur le nom et l'e-mail. */
 export function buildContractRows(
   comparisons: UserContractComparisonDTO[],
   search: string,
@@ -61,6 +81,14 @@ export function buildContractRows(
   const rows = comparisons.map((comparison) => ({
     ...comparison,
     fullName: `${comparison.user.firstName || ''} ${comparison.user.lastName || ''}`.trim(),
+    heuresCreditees: getHeuresCreditees(comparison),
+    heuresTotal: comparison.heuresTotal ?? comparison.heuresEffectuees,
+    differenceTotal:
+      comparison.differenceTotal !== undefined ? comparison.differenceTotal : comparison.difference,
+    pourcentageTotal:
+      comparison.pourcentageTotal !== undefined
+        ? comparison.pourcentageTotal
+        : comparison.pourcentageRealisation,
   }))
   if (!search.trim()) return rows
 
@@ -74,6 +102,8 @@ export function buildContractRows(
 
 export type ContractTotals = {
   heuresEffectuees: number
+  /** Absences + fériés de tous les employés. */
+  heuresCreditees: number
   heuresContrat: number
   /** Jours ouvrés du mois, pris sur la première ligne. */
   joursOuvres: number | null
@@ -84,6 +114,7 @@ export type ContractTotals = {
 export function computeContractTotals(comparisons: UserContractComparisonDTO[]): ContractTotals {
   return {
     heuresEffectuees: comparisons.reduce((sum, c) => sum + (c.heuresEffectuees || 0), 0),
+    heuresCreditees: comparisons.reduce((sum, c) => sum + getHeuresCreditees(c), 0),
     heuresContrat: comparisons.reduce((sum, c) => sum + (c.heureContrat || 0), 0),
     joursOuvres: comparisons.length > 0 ? (comparisons[0]?.joursOuvres ?? null) : null,
     usersWithContract: comparisons.filter((c) => c.heureContrat != null).length,

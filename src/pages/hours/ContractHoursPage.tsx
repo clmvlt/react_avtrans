@@ -102,7 +102,7 @@ export default function ContractHoursPage() {
     <PageContainer>
       <PageHeader
         title="Heures contrat"
-        description="Comparez les heures travaillées aux heures prévues au contrat, mois par mois."
+        description="Comparez les heures travaillées et créditées (absences, jours fériés) aux heures du contrat, mois par mois."
         actions={
           <Button
             type="button"
