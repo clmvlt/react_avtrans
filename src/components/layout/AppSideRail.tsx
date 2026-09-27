@@ -21,6 +21,41 @@ const LABEL_CLASS =
 const DIVIDER_CLASS =
   'absolute inset-x-3 top-1/2 border-t border-sidebar-border transition-opacity duration-150 group-hover/rail:opacity-0 group-has-[:focus-visible]/rail:opacity-0 group-has-[[data-state=open]]/rail:opacity-0'
 
+/**
+ * Liste qui défile : barre masquée quand le rail est replié, fine mais bien contrastée quand il
+ * est déplié (propriétés standard pour Chrome, Edge et Firefox ; pseudo-éléments pour Safari).
+ * `overscroll-contain` : arrivé en bout de liste, la page ne prend pas le relais.
+ */
+const SCROLL_CLASS = [
+  'overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+  '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/60 [&::-webkit-scrollbar-track]:bg-transparent',
+  'group-hover/rail:[scrollbar-width:thin] group-hover/rail:[scrollbar-color:var(--muted-foreground)_transparent] group-hover/rail:[&::-webkit-scrollbar]:block',
+  'group-has-[:focus-visible]/rail:[scrollbar-width:thin] group-has-[:focus-visible]/rail:[scrollbar-color:var(--muted-foreground)_transparent] group-has-[:focus-visible]/rail:[&::-webkit-scrollbar]:block',
+  'group-has-[[data-state=open]]/rail:[scrollbar-width:thin] group-has-[[data-state=open]]/rail:[scrollbar-color:var(--muted-foreground)_transparent] group-has-[[data-state=open]]/rail:[&::-webkit-scrollbar]:block',
+].join(' ')
+
+/**
+ * La molette au-dessus du rail ne fait jamais défiler la page. Sur la liste, quand elle déborde,
+ * défilement natif (voir `overscroll-contain`) ; ailleurs (logo, compte) ou quand la liste tient
+ * dans l'écran, l'événement est bloqué et reporté sur la liste. Ctrl + molette (zoom) passe.
+ * Écouteur natif non passif : celui de React ne peut pas appeler `preventDefault`.
+ */
+function containWheel(nav: HTMLElement | null) {
+  if (!nav) return
+  const onWheel = (event: WheelEvent) => {
+    if (event.ctrlKey) return
+    const list = nav.querySelector<HTMLElement>('[data-rail-scroll]')
+    if (!list) return
+    const canScroll = list.scrollHeight > list.clientHeight
+    if (canScroll && list.contains(event.target as Node)) return
+    event.preventDefault()
+    // deltaMode 1 : molette réglée en lignes (Firefox) ; environ 16 px par ligne
+    if (canScroll) list.scrollTop += event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY
+  }
+  nav.addEventListener('wheel', onWheel, { passive: false })
+  return () => nav.removeEventListener('wheel', onWheel)
+}
+
 type AppSideRailProps = {
   onShowChangelog: () => void
   onLogout: () => void
@@ -38,6 +73,7 @@ export function AppSideRail({ onShowChangelog, onLogout }: AppSideRailProps) {
   return (
     <div className="relative hidden w-14 shrink-0 md:block">
       <nav
+        ref={containWheel}
         aria-label="Menu principal"
         className={cn(
           'group/rail fixed inset-y-0 left-0 z-40 flex w-14 flex-col overflow-hidden border-r bg-sidebar text-sidebar-foreground transition-[width,box-shadow] duration-200 ease-out',
@@ -55,8 +91,14 @@ export function AppSideRail({ onShowChangelog, onLogout }: AppSideRailProps) {
           </span>
         </Link>
 
-        {/* Défilement vertical sans barre visible (menu admin plus haut que l'écran) */}
-        <div className="flex min-h-0 flex-1 [scrollbar-width:none] flex-col gap-1 overflow-x-hidden overflow-y-auto px-2 py-2 [&::-webkit-scrollbar]:hidden">
+        {/* Liste qui défile (menu admin plus haut que l'écran) */}
+        <div
+          data-rail-scroll
+          className={cn(
+            'flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto px-2 py-2',
+            SCROLL_CLASS,
+          )}
+        >
           {sections.map((section, index) => (
             <div key={section.title || section.links[0]?.to} className="flex flex-col gap-0.5">
               {section.title && (
