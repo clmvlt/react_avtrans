@@ -9,10 +9,12 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empt
 import { usePermissions } from '@/hooks/usePermissions'
 import type { VehiculeDTO } from '@/models'
 import { useVehicleQuery } from '../../api/useVehicleQuery'
+import { useRelaiDialogs } from '../../hooks/useRelaiDialogs'
 import { getErrorMessage } from '../../lib/errors'
 import { formatDate } from '../../lib/formatters'
 import { INITIAL_KM_VIEW, type KmView } from '../../lib/kmView'
 import { RelaiBadge } from '../RelaiBadge'
+import { RelaiDialogs } from '../relais/RelaiDialogs'
 import { VehicleDetailSkeleton } from './VehicleDetailSkeleton'
 import { VehicleDetailTabs } from './VehicleDetailTabs'
 import { VehicleEditForm } from './VehicleEditForm'
@@ -42,6 +44,8 @@ export function VehicleDetailView({ vehiculeId }: VehicleDetailViewProps) {
   const [isEditing, setIsEditing] = useState(false)
   // Page de l'historique km : un relevé ajouté depuis la fiche la ramène au début
   const [kmView, setKmView] = useState<KmView>(INITIAL_KM_VIEW)
+  // Relais (D9) : mêmes dialogs pour la carte de la fiche et l'onglet « Relais »
+  const relaiDialogs = useRelaiDialogs()
   const vehicule = vehicleQuery.data
 
   const renderContent = () => {
@@ -88,9 +92,16 @@ export function VehicleDetailView({ vehiculeId }: VehicleDetailViewProps) {
             vehiculeId={vehiculeId}
             canManage={canManage}
             onKmAdded={() => setKmView(INITIAL_KM_VIEW)}
+            relaiActions={relaiDialogs.actions}
           />
         )}
-        <VehicleDetailTabs vehiculeId={vehiculeId} kmView={kmView} onKmViewChange={setKmView} />
+        <VehicleDetailTabs
+          vehiculeId={vehiculeId}
+          kmView={kmView}
+          onKmViewChange={setKmView}
+          relaiActions={relaiDialogs.actions}
+        />
+        {canManage && <RelaiDialogs vehiculeId={vehiculeId} state={relaiDialogs} />}
       </>
     )
   }

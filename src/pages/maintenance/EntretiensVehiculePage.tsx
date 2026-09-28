@@ -24,6 +24,7 @@ import { useEntretiensHistory } from '@/features/maintenance/hooks/useEntretiens
 import type { EntretienRow } from '@/features/maintenance/lib/entretienRow'
 import { buildHistoryFilterConfig } from '@/features/maintenance/lib/historySearch'
 import { notifyError } from '@/features/maintenance/lib/notify'
+import { getVehicleOwnKm } from '@/features/vehicles/lib/relais'
 import { useDialogState } from '@/hooks/useDialogState'
 import { cn } from '@/lib/utils'
 import type { TypeEntretienDTO, VehiculeDTO } from '@/models'
@@ -36,7 +37,7 @@ type ValidationState = { open: boolean; typeEntretien: TypeEntretienDTO | null }
 /** « Renault Master · 125 000 km au compteur » (« 0 km » sans relevé, comme le Vue). */
 function describeVehicle(vehicule: VehiculeDTO) {
   const name = `${vehicule.brand ?? ''} ${vehicule.model ?? ''}`.trim()
-  const km = `${vehicule.latestKm?.toLocaleString('fr-FR') || 0} km au compteur`
+  const km = `${getVehicleOwnKm(vehicule).km?.toLocaleString('fr-FR') || 0} km au compteur`
   return [name, km].filter(Boolean).join(' · ')
 }
 

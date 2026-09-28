@@ -25,6 +25,8 @@ type AddKmDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   vehiculeId: string
+  /** Plaque du relais en cours (D9) : le relevé du jour lui sera rattaché par l'API. */
+  relaiImmat?: string
   /** Relevé enregistré : l'historique km revient à la première page. */
   onAdded: () => void
 }
@@ -34,11 +36,22 @@ type AddKmDialogProps = {
  * alors par l'endpoint admin ; sinon, date courante. Le dialog se ferme une fois le véhicule et
  * l'historique rechargés.
  */
-export function AddKmDialog({ open, onOpenChange, vehiculeId, onAdded }: AddKmDialogProps) {
+export function AddKmDialog({
+  open,
+  onOpenChange,
+  vehiculeId,
+  relaiImmat,
+  onAdded,
+}: AddKmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-md">
-        <AddKmForm vehiculeId={vehiculeId} onAdded={onAdded} onClose={() => onOpenChange(false)} />
+        <AddKmForm
+          vehiculeId={vehiculeId}
+          relaiImmat={relaiImmat}
+          onAdded={onAdded}
+          onClose={() => onOpenChange(false)}
+        />
       </DialogContent>
     </Dialog>
   )
@@ -46,11 +59,12 @@ export function AddKmDialog({ open, onOpenChange, vehiculeId, onAdded }: AddKmDi
 
 type AddKmFormProps = {
   vehiculeId: string
+  relaiImmat?: string
   onAdded: () => void
   onClose: () => void
 }
 
-function AddKmForm({ vehiculeId, onAdded, onClose }: AddKmFormProps) {
+function AddKmForm({ vehiculeId, relaiImmat, onAdded, onClose }: AddKmFormProps) {
   const isAdmin = useAuthStore(selectIsAdmin)
   const addKilometrage = useAddKilometrageMutation()
   const form = useForm<KilometrageFormValues>({
@@ -83,6 +97,16 @@ function AddKmForm({ vehiculeId, onAdded, onClose }: AddKmFormProps) {
         </DialogTitle>
         <DialogDescription className="sr-only">Formulaire d'ajout de kilométrage</DialogDescription>
       </DialogHeader>
+
+      {relaiImmat && (
+        <p className="rounded-lg bg-primary/5 px-3 py-2 text-xs text-muted-foreground">
+          Relais en cours : un relevé daté pendant le relais est enregistré pour le véhicule relais{' '}
+          <span className="font-semibold tracking-wide text-foreground uppercase">
+            {relaiImmat}
+          </span>
+          .
+        </p>
+      )}
 
       {addKilometrage.isError && (
         <FormErrorBanner>

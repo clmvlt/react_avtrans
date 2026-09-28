@@ -105,3 +105,7 @@ export { stockCategoriesService } from './stockCategories'
 // Vehicle equipment service
 export * from './vehiculeEquipements'
 export { vehiculeEquipementsService } from './vehiculeEquipements'
+
+// Vehicle relays service (D9)
+export * from './vehiculeRelais'
+export { vehiculeRelaisService } from './vehiculeRelais'

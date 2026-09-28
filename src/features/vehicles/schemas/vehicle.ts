@@ -8,10 +8,13 @@ import type { VehiculeCreateRequest, VehiculeUpdateRequest } from '@/services'
  * modèle non vides (sans trim : des espaces passent) ; aucun autre contrôle (PTAC négatif accepté,
  * VIN limité à 17 caractères par l'input). Tous les champs sont des chaînes ; le PTAC est converti
  * à l'envoi.
+ *
+ * D9 : la plaque relais n'est plus un champ du formulaire. Le véhicule relais se déclare depuis la
+ * fiche (dates, kilométrage, historique) ; le PUT renvoie la plaque relais reçue, que l'API ignore
+ * dès qu'un relais a été déclaré.
  */
 export const vehicleFormSchema = z.object({
   immat: z.string().min(1, "L'immatriculation est requise"),
-  relaiImmat: z.string(),
   brand: z.string().min(1, 'La marque est requise'),
   model: z.string().min(1, 'Le modèle est requis'),
   comment: z.string(),
@@ -30,7 +33,6 @@ export type VehicleFormValues = z.infer<typeof vehicleFormSchema>
 
 export const EMPTY_VEHICLE_FORM: VehicleFormValues = {
   immat: '',
-  relaiImmat: '',
   brand: '',
   model: '',
   comment: '',
@@ -49,7 +51,6 @@ export const EMPTY_VEHICLE_FORM: VehicleFormValues = {
 export function vehicleToFormValues(vehicule: VehiculeDTO): VehicleFormValues {
   return {
     immat: vehicule.immat || '',
-    relaiImmat: vehicule.relaiImmat || '',
     brand: vehicule.brand || '',
     model: vehicule.model || '',
     comment: vehicule.comment || '',
@@ -78,7 +79,6 @@ export function toCreatePayload(
     brand: values.brand,
     model: values.model,
     comment: values.comment,
-    relaiImmat: values.relaiImmat || undefined,
     vin: values.vin || undefined,
     numeroCarteGrise: values.numeroCarteGrise || undefined,
     dateMiseEnCirculation: values.dateMiseEnCirculation || undefined,
@@ -104,14 +104,18 @@ export type VehiclePictureEdit = {
  * Corps de PUT /vehicules/{id} (VehiculeDetail.vue:650) : remplacement complet, champs vides à
  * `null`, commentaire tel quel. La suppression de photo envoie `pictureBase64: ''`, que l'API
  * traite comme « photo inchangée » : le bouton est sans effet côté serveur (MIGRATION.md 8.3).
+ *
+ * @param relaiImmat plaque relais à renvoyer (D9) : celle du véhicule pour la conserver, `null`
+ *                   pour retirer une ancienne plaque saisie à la main
  */
 export function toUpdatePayload(
   values: VehicleFormValues,
   { pictureBase64, removePicture }: VehiclePictureEdit,
+  relaiImmat: string | null,
 ): VehiculeUpdateRequest {
   const payload: Record<string, unknown> = {
     immat: values.immat,
-    relaiImmat: values.relaiImmat || null,
+    relaiImmat,
     brand: values.brand,
     model: values.model,
     comment: values.comment,

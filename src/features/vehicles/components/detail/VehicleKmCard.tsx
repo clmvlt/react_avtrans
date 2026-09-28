@@ -7,7 +7,10 @@ import { VehicleFactCard } from './VehicleFactCard'
 
 type VehicleKmCardProps = {
   vehiculeId: string
+  /** Dernier relevé du véhicule lui-même (hors relais, D9). */
   latestKm: number | undefined
+  /** Plaque du relais en cours (D9), rappelée dans « Ajouter un relevé ». */
+  relaiImmat?: string
   /** Bouton « Ajouter un relevé » (admin ou mécanicien). */
   canAdd: boolean
   onKmAdded: () => void
@@ -21,6 +24,7 @@ type VehicleKmCardProps = {
 export function VehicleKmCard({
   vehiculeId,
   latestKm,
+  relaiImmat,
   canAdd,
   onKmAdded,
   className,
@@ -34,7 +38,7 @@ export function VehicleKmCard({
         label="Kilométrage"
         value={`${formatNumber(latestKm ?? 0)} km`}
         valueClassName="text-primary"
-        hint="Dernier relevé"
+        hint={relaiImmat ? 'Dernier relevé du véhicule' : 'Dernier relevé'}
         action={
           canAdd && (
             <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)}>
@@ -45,7 +49,13 @@ export function VehicleKmCard({
         }
         className={className}
       />
-      <AddKmDialog open={open} onOpenChange={setOpen} vehiculeId={vehiculeId} onAdded={onKmAdded} />
+      <AddKmDialog
+        open={open}
+        onOpenChange={setOpen}
+        vehiculeId={vehiculeId}
+        relaiImmat={relaiImmat}
+        onAdded={onKmAdded}
+      />
     </>
   )
 }

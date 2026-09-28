@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, LoaderCircle } from 'lucide-react'
+import { Check, LoaderCircle, Repeat } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { fileToDataUrl } from '@/lib/fileToDataUrl'
@@ -68,7 +68,7 @@ export function VehicleEditForm({ vehicule, vehiculeId, onDone }: VehicleEditFor
 
   const onSubmit = (values: VehicleFormValues) => {
     setError('')
-    updateVehicle.mutate(toUpdatePayload(values, picture), {
+    updateVehicle.mutate(toUpdatePayload(values, picture, vehicule.relaiImmat ?? null), {
       onSuccess: onDone,
       onError: (err) => setError(getErrorMessage(err, 'Erreur lors de la sauvegarde')),
     })
@@ -121,14 +121,11 @@ export function VehicleEditForm({ vehicule, vehiculeId, onDone }: VehicleEditFor
             />
           </div>
 
-          <VehicleTextField
-            name="relaiImmat"
-            label="Immatriculation du véhicule relais"
-            uppercase
-            placeholder="AB-123-CD"
-            disabled={saving}
-            inputClassName="tracking-wide uppercase"
-          />
+          <p className="flex items-start gap-2 rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+            <Repeat className="mt-0.5 size-3.5 shrink-0" />
+            Véhicule relais (garage, panne…) : il se déclare depuis la fiche, carte « Véhicule
+            relais », avec sa plaque, ses dates et son kilométrage.
+          </p>
 
           <VehicleCommentField placeholder="Informations supplémentaires..." disabled={saving} />
 

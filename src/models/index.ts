@@ -16,6 +16,7 @@ export * from './VehiculePictureDTO';
 export * from './VehiculeFileDTO';
 export * from './VehiculeAdjustInfoDTO';
 export * from './VehiculeEquipementDTO';
+export * from './VehiculeRelaiDTO';
 
 // Service models
 export * from './ServiceDTO';

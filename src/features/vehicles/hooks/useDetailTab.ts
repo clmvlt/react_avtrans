@@ -3,6 +3,7 @@ import { useState } from 'react'
 export const VEHICLE_DETAIL_TABS = [
   'fichiers',
   'kilometrages',
+  'relais',
   'adjustInfos',
   'rapports',
   'equipements',

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useVehiclesQuery } from '@/features/vehicles/api/useVehiclesQuery'
+import type { VehiculeRelaiDTO } from '@/models'
 import type { KilometrageInput } from '../schemas/kilometrage'
 import { KilometrageForm } from './KilometrageForm'
 
@@ -45,10 +46,18 @@ export function KilometrageDialog({
   onSubmit,
 }: KilometrageDialogProps) {
   const vehiclesQuery = useVehiclesQuery({ enabled: open })
-  const vehicleOptions = (vehiclesQuery.data ?? []).map((vehicle) => ({
+  const vehicles = vehiclesQuery.data ?? []
+  const vehicleOptions = vehicles.map((vehicle) => ({
     value: vehicle.id || '',
-    label: `${vehicle.immat} - ${vehicle.brand} ${vehicle.model}`,
+    label: `${vehicle.immat} - ${vehicle.brand} ${vehicle.model}${
+      vehicle.relaiEnCours ? ` · relais ${vehicle.relaiEnCours.immat}` : ''
+    }`,
   }))
+  // D9 : véhicule au garage, le chauffeur relève le compteur du véhicule relais
+  const relaiByVehicule: Record<string, VehiculeRelaiDTO> = {}
+  for (const vehicle of vehicles) {
+    if (vehicle.id && vehicle.relaiEnCours) relaiByVehicule[vehicle.id] = vehicle.relaiEnCours
+  }
 
   const handleOpenChange = (next: boolean) => {
     if (!next && required) return
@@ -102,6 +111,7 @@ export function KilometrageDialog({
         ) : (
           <KilometrageForm
             vehicleOptions={vehicleOptions}
+            relaiByVehicule={relaiByVehicule}
             vehiclesLoading={vehiclesQuery.isLoading}
             defaultVehiculeId={defaultVehiculeId}
             isSaving={isSaving}

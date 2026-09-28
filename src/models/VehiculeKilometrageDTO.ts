@@ -13,6 +13,10 @@ export interface VehiculeKilometrageDTO {
   user?: UserDTO;
   /** Date du relevé */
   createdAt?: Date | string;
+  /** Relais en cours à la date du relevé : le km est celui du véhicule relais — D9 */
+  relaiId?: string | null;
+  /** Immatriculation du véhicule relais du relevé — D9 */
+  relaiImmat?: string | null;
 }
 
 /**

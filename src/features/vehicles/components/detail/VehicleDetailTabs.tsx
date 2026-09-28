@@ -4,12 +4,14 @@ import {
   FolderOpen,
   Gauge,
   MessageSquare,
+  Repeat,
   Wrench,
   type LucideIcon,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useDetailTab, type VehicleDetailTab } from '../../hooks/useDetailTab'
+import type { RelaiActions } from '../../hooks/useRelaiDialogs'
 import { useVehicleFilesUpload } from '../../hooks/useVehicleFilesUpload'
 import type { KmView } from '../../lib/kmView'
 import { VehicleCommentsTab } from '../tabs/comments/VehicleCommentsTab'
@@ -17,10 +19,12 @@ import { VehicleEquipementsTab } from '../tabs/equipements/VehicleEquipementsTab
 import { VehicleFilesTab } from '../tabs/files/VehicleFilesTab'
 import { VehicleKmTab } from '../tabs/kilometrages/VehicleKmTab'
 import { VehicleRapportsTab } from '../tabs/rapports/VehicleRapportsTab'
+import { VehicleRelaisTab } from '../tabs/relais/VehicleRelaisTab'
 
 const TABS: { value: VehicleDetailTab; label: string; icon: LucideIcon }[] = [
   { value: 'fichiers', label: 'Fichiers', icon: FolderOpen },
   { value: 'kilometrages', label: 'Historique km', icon: Gauge },
+  { value: 'relais', label: 'Relais', icon: Repeat },
   { value: 'adjustInfos', label: 'Commentaires', icon: MessageSquare },
   { value: 'rapports', label: 'Rapports', icon: ClipboardList },
   { value: 'equipements', label: 'Équipements', icon: Wrench },
@@ -32,6 +36,8 @@ type VehicleDetailTabsProps = {
   vehiculeId: string
   kmView: KmView
   onKmViewChange: (view: KmView) => void
+  /** Dialogs des relais, tenus par la page (D9). */
+  relaiActions: RelaiActions
 }
 
 /**
@@ -41,7 +47,12 @@ type VehicleDetailTabsProps = {
  * fichiers, la page de l'historique km (tenue par la page) et la page des commentaires. Les
  * rapports et les équipements repartent de zéro à chaque ouverture de leur onglet.
  */
-export function VehicleDetailTabs({ vehiculeId, kmView, onKmViewChange }: VehicleDetailTabsProps) {
+export function VehicleDetailTabs({
+  vehiculeId,
+  kmView,
+  onKmViewChange,
+  relaiActions,
+}: VehicleDetailTabsProps) {
   const { isAdmin, isMechanic } = usePermissions()
   // Toujours vrai derrière la garde « mécanicien » (`isMecanicien` du Vue)
   const canManage = isAdmin || isMechanic
@@ -76,6 +87,10 @@ export function VehicleDetailTabs({ vehiculeId, kmView, onKmViewChange }: Vehicl
             onViewChange={onKmViewChange}
             isAdmin={isAdmin}
           />
+        </TabsContent>
+
+        <TabsContent value="relais" className={CONTENT_CLASS}>
+          <VehicleRelaisTab vehiculeId={vehiculeId} canManage={canManage} actions={relaiActions} />
         </TabsContent>
 
         <TabsContent value="adjustInfos" className={CONTENT_CLASS}>

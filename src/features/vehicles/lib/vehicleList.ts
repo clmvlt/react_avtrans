@@ -1,5 +1,6 @@
 import type { SortingState } from '@tanstack/react-table'
 import type { VehiculeDTO } from '@/models'
+import { getVehicleOwnKm } from './relais'
 
 /**
  * Recherche de la liste (Vehicules.vue:697) : insensible à la casse, sur l'immatriculation,
@@ -17,11 +18,14 @@ export function filterVehicles(vehicles: VehiculeDTO[], search: string): Vehicul
   )
 }
 
-/** Colonnes triables de la liste et valeur comparée (`undefined` = vide, trié en dernier). */
+/**
+ * Colonnes triables de la liste et valeur comparée (`undefined` = vide, trié en dernier). Le
+ * kilométrage est celui du véhicule, pas celui d'un relais en cours (D9).
+ */
 export const VEHICLE_SORT_VALUES = {
   immat: (vehicule: VehiculeDTO) => vehicule.immat ?? undefined,
-  latestKm: (vehicule: VehiculeDTO) => vehicule.latestKm ?? undefined,
-  latestKmDate: (vehicule: VehiculeDTO) => vehicule.latestKmDate ?? undefined,
+  latestKm: (vehicule: VehiculeDTO) => getVehicleOwnKm(vehicule).km,
+  latestKmDate: (vehicule: VehiculeDTO) => getVehicleOwnKm(vehicule).date,
 } satisfies Record<string, (vehicule: VehiculeDTO) => unknown>
 
 export type VehicleSortColumn = keyof typeof VEHICLE_SORT_VALUES

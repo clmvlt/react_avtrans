@@ -23,4 +23,6 @@ export const vehiclesKeys = {
     [...vehiclesKeys.rapports(id), { page, size }] as const,
   /** Équipements d'un véhicule. */
   equipements: (id: string) => [...vehiclesKeys.detail(id), 'equipements'] as const,
+  /** Historique des relais d'un véhicule (D9). */
+  relais: (id: string) => [...vehiclesKeys.detail(id), 'relais'] as const,
 }

@@ -1,4 +1,5 @@
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { getVehicleOwnKm } from '@/features/vehicles/lib/relais'
 import type { TypeEntretienDTO, VehiculeDTO } from '@/models'
 import { getTodayDate } from '@/utils/timeFormatters'
 import { useCreateEntretienMutation } from '../../api/useEntretienMutations'
@@ -32,7 +33,8 @@ export function ValidateEntretienDialog({
         typeEntretienId: typeEntretien.id,
         // Bug B-01 reproduit : date du jour calculée en UTC
         dateEntretien: toNoonDateTime(getTodayDate()),
-        kilometrage: vehicule.latestKm || 0,
+        // Kilométrage du véhicule lui-même, pas celui d'un relais en cours (D9)
+        kilometrage: getVehicleOwnKm(vehicule).km || 0,
         cout: undefined,
         commentaire: '',
         files: undefined,

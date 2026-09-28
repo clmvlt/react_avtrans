@@ -106,24 +106,14 @@ function VehicleCreateForm({ onClose }: VehicleCreateFormProps) {
       <div className="space-y-4">
         {error && <FormErrorBanner>{error}</FormErrorBanner>}
 
-        <div className="grid grid-cols-2 gap-4">
-          <VehicleTextField
-            name="immat"
-            label="Immatriculation *"
-            uppercase
-            placeholder="AB-123-CD"
-            disabled={saving}
-            inputClassName="tracking-wide uppercase"
-          />
-          <VehicleTextField
-            name="relaiImmat"
-            label="Immat. véhicule relais"
-            uppercase
-            placeholder="AB-123-CD"
-            disabled={saving}
-            inputClassName="tracking-wide uppercase"
-          />
-        </div>
+        <VehicleTextField
+          name="immat"
+          label="Immatriculation *"
+          uppercase
+          placeholder="AB-123-CD"
+          disabled={saving}
+          inputClassName="tracking-wide uppercase"
+        />
 
         <div className="grid grid-cols-2 gap-4">
           <VehicleTextField name="brand" label="Marque *" placeholder="Ford" disabled={saving} />

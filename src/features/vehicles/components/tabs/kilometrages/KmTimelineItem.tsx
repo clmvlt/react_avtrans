@@ -1,7 +1,9 @@
 import { Pencil, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { VehiculeKilometrageDTO } from '@/models'
 import { formatDateTime, formatNumber, formatUserName } from '../../../lib/formatters'
+import { RelaiBadge } from '../../RelaiBadge'
 
 type KmTimelineItemProps = {
   kilometrage: VehiculeKilometrageDTO
@@ -12,25 +14,34 @@ type KmTimelineItemProps = {
   onEdit: (kilometrage: VehiculeKilometrageDTO) => void
 }
 
-/** Un relevé de la frise : pastille, « x km », date, crayon admin et auteur du relevé. */
+/**
+ * Un relevé de la frise : pastille, « x km », date, plaque du véhicule relais (D9), crayon admin et
+ * auteur du relevé.
+ */
 export function KmTimelineItem({ kilometrage, isLast, canEdit, onEdit }: KmTimelineItemProps) {
   const { user } = kilometrage
 
   return (
     <div className="relative flex gap-4 pb-6 last:pb-0">
       <div className="flex flex-col items-center">
-        <div className="size-3 shrink-0 rounded-full border-2 border-primary bg-background" />
+        <div
+          className={cn(
+            'size-3 shrink-0 rounded-full border-2 bg-background',
+            kilometrage.relaiId ? 'border-muted-foreground' : 'border-primary',
+          )}
+        />
         {!isLast && <div className="w-px flex-1 bg-border" />}
       </div>
 
       <div className="-mt-0.5 flex-1 space-y-1 pb-2">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-foreground">
             {formatNumber(kilometrage.km)} km
           </span>
           <span className="text-xs text-muted-foreground">
             {formatDateTime(kilometrage.createdAt)}
           </span>
+          {kilometrage.relaiImmat && <RelaiBadge immat={kilometrage.relaiImmat} />}
           {canEdit && (
             <Button
               type="button"

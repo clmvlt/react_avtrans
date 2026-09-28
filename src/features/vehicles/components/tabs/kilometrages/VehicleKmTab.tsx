@@ -25,7 +25,8 @@ type VehicleKmTabProps = {
 /**
  * Onglet « Historique km » (VehiculeKilometragesTab.vue) : graphique des relevés chargés (la page
  * affichée, ou tout après « Voir tout », sans retour possible à la vue paginée), puis la frise
- * dans l'ordre de l'API.
+ * dans l'ordre de l'API. D9 : les relevés d'un véhicule relais restent dans la frise, repérés par
+ * sa plaque, mais pas dans la courbe du véhicule.
  */
 export function VehicleKmTab({ vehiculeId, view, onViewChange, isAdmin }: VehicleKmTabProps) {
   const kmQuery = useVehicleKilometragesQuery({ vehiculeId, ...view })
@@ -50,6 +51,8 @@ export function VehicleKmTab({ vehiculeId, view, onViewChange, isAdmin }: Vehicl
     }
 
     const { kilometrages, page, totalPages, totalElements } = kmQuery.data
+    const vehicleKilometrages = kilometrages.filter((kilometrage) => !kilometrage.relaiId)
+    const relaiCount = kilometrages.length - vehicleKilometrages.length
 
     if (kilometrages.length === 0) {
       return (
@@ -64,7 +67,13 @@ export function VehicleKmTab({ vehiculeId, view, onViewChange, isAdmin }: Vehicl
 
     return (
       <div className="space-y-6">
-        <KmChart kilometrages={kilometrages} />
+        {vehicleKilometrages.length > 0 && <KmChart kilometrages={vehicleKilometrages} />}
+        {relaiCount > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {relaiCount} relevé{relaiCount > 1 ? 's' : ''} de véhicule relais, hors de la courbe du
+            véhicule.
+          </p>
+        )}
 
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">

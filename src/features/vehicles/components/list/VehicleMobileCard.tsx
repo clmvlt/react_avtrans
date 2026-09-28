@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import type { VehiculeDTO } from '@/models'
 import { formatDate, formatNumber } from '../../lib/formatters'
+import { getVehicleOwnKm } from '../../lib/relais'
 import { VehicleIdentity } from '../VehicleIdentity'
 
 type VehicleMobileCardProps = {
@@ -27,6 +28,9 @@ export function VehicleMobileCard({
   onEntretiens,
   onDelete,
 }: VehicleMobileCardProps) {
+  // Kilométrage du véhicule lui-même, hors relais (D9)
+  const { km, date } = getVehicleOwnKm(vehicule)
+
   return (
     <div className="rounded-lg border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
@@ -64,12 +68,8 @@ export function VehicleMobileCard({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-        {!!vehicule.latestKm && (
-          <span className="font-medium text-foreground">{formatNumber(vehicule.latestKm)} km</span>
-        )}
-        {vehicule.latestKmDate && (
-          <span className="text-muted-foreground">{formatDate(vehicule.latestKmDate)}</span>
-        )}
+        {!!km && <span className="font-medium text-foreground">{formatNumber(km)} km</span>}
+        {date && <span className="text-muted-foreground">{formatDate(date)}</span>}
       </div>
       {vehicule.comment && (
         <p className="mt-2 line-clamp-2 text-sm text-muted-foreground italic">{vehicule.comment}</p>

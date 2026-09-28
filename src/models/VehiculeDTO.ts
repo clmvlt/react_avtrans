@@ -1,3 +1,5 @@
+import type { VehiculeRelaiDTO } from './VehiculeRelaiDTO';
+
 /**
  * DTO représentant un véhicule avec ses informations de base et le kilométrage le plus récent
  */
@@ -6,7 +8,7 @@ export interface VehiculeDTO {
   id?: string;
   /** Immatriculation du véhicule */
   immat?: string;
-  /** Immatriculation du véhicule relais (le cas échéant) */
+  /** Immatriculation du véhicule relais en cours, ou ancienne plaque relais saisie à la main (D9) */
   relaiImmat?: string;
   /** Date de création du véhicule */
   createdAt?: Date | string;
@@ -16,10 +18,16 @@ export interface VehiculeDTO {
   brand?: string;
   /** Commentaire optionnel */
   comment?: string;
-  /** Kilométrage le plus récent enregistré */
+  /** Kilométrage courant : celui du véhicule relais pendant un relais en cours (D9) */
   latestKm?: number;
   /** Date du kilométrage le plus récent */
   latestKmDate?: Date | string;
+  /** Dernier relevé du véhicule lui-même, relevés des relais exclus — D9 */
+  vehiculeLatestKm?: number | null;
+  /** Date du dernier relevé du véhicule lui-même — D9 */
+  vehiculeLatestKmDate?: Date | string | null;
+  /** Relais en cours aujourd'hui — D9 */
+  relaiEnCours?: VehiculeRelaiDTO | null;
   /** URL de la photo de profil du véhicule */
   pictureUrl?: string;
   /** Numéro de série / VIN (17 caractères max) */

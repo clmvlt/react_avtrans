@@ -3,6 +3,7 @@ import { DataTableColumnHeader } from '@/components/shared/DataTableColumnHeader
 import { Button } from '@/components/ui/button'
 import type { VehiculeDTO } from '@/models'
 import { formatDate, formatNumber } from '../../lib/formatters'
+import { getVehicleOwnKm } from '../../lib/relais'
 import { compareLikeVue, VEHICLE_SORT_VALUES } from '../../lib/vehicleList'
 import { VehicleIdentity } from '../VehicleIdentity'
 
@@ -48,14 +49,14 @@ export function getVehiclesColumns({
       sortingFn: sortLikeVue,
       sortUndefined: 1,
       header: ({ column }) => <DataTableColumnHeader column={column} title="Kilométrage" />,
-      cell: ({ row }) =>
-        row.original.latestKm ? (
-          <span className="font-medium text-foreground">
-            {formatNumber(row.original.latestKm)} km
-          </span>
+      cell: ({ row }) => {
+        const { km } = getVehicleOwnKm(row.original)
+        return km ? (
+          <span className="font-medium text-foreground">{formatNumber(km)} km</span>
         ) : (
           <span className="text-muted-foreground">-</span>
-        ),
+        )
+      },
     },
     {
       id: 'latestKmDate',
@@ -63,12 +64,14 @@ export function getVehiclesColumns({
       sortingFn: sortLikeVue,
       sortUndefined: 1,
       header: ({ column }) => <DataTableColumnHeader column={column} title="Date du relevé" />,
-      cell: ({ row }) =>
-        row.original.latestKmDate ? (
-          <span>{formatDate(row.original.latestKmDate)}</span>
+      cell: ({ row }) => {
+        const { date } = getVehicleOwnKm(row.original)
+        return date ? (
+          <span>{formatDate(date)}</span>
         ) : (
           <span className="text-muted-foreground">-</span>
-        ),
+        )
+      },
     },
     {
       id: 'comment',
