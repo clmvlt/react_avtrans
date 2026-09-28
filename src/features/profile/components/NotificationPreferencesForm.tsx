@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useUpdateNotificationPreferencesMutation } from '../api/useUpdateNotificationPreferencesMutation'
 import {
   NOTIFICATION_CHANNEL_OPTIONS,
-  getVisiblePreferenceFields,
+  NOTIFICATION_PREFERENCE_FIELDS,
   type NotificationPreferencesValues,
 } from '../lib/notificationChannels'
 import {
@@ -17,19 +17,17 @@ import {
 
 type NotificationPreferencesFormProps = {
   preferences: NotificationPreferencesValues
-  isAdmin: boolean
   /** Retour en lecture (après « Annuler » ou un enregistrement réussi) */
   onDone: () => void
 }
 
 /**
  * Préférences de notification en édition : un canal par type d'événement.
- * Les six clés sont toujours envoyées ; pour un non-admin, `serviceModification` (masquée) part
- * avec sa valeur affichée, « SITE » par défaut si l'API ne la renvoyait pas (comme le Vue).
+ * Les six clés sont toujours envoyées ; `serviceModification` (plus affichée) part avec sa valeur
+ * reçue, « SITE » par défaut si l'API ne la renvoyait pas (comme le Vue).
  */
 export function NotificationPreferencesForm({
   preferences,
-  isAdmin,
   onDone,
 }: NotificationPreferencesFormProps) {
   const updatePreferences = useUpdateNotificationPreferencesMutation()
@@ -62,7 +60,7 @@ export function NotificationPreferencesForm({
       </p>
 
       <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-        {getVisiblePreferenceFields(isAdmin).map((preference) => (
+        {NOTIFICATION_PREFERENCE_FIELDS.map((preference) => (
           <Controller
             key={preference.key}
             name={preference.key}

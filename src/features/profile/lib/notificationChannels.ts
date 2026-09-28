@@ -16,18 +16,20 @@ export function getNotificationChannelLabel(value?: string): string {
 
 export type NotificationPreferenceKey = keyof Required<NotificationPreferencesDTO>
 
-/** Les six préférences, toujours renseignées (le Vue part de « SITE » pour chacune). */
+/** Les six préférences de l'API, toujours renseignées (le Vue part de « SITE » pour chacune). */
 export type NotificationPreferencesValues = Record<NotificationPreferenceKey, NotificationChannel>
 
 type NotificationPreferenceField = {
   key: NotificationPreferenceKey
   label: string
   hint: string
-  /** Visible et modifiable par un administrateur seulement */
-  adminOnly?: boolean
 }
 
-/** Préférences affichées sur /profile, dans l'ordre du Vue. */
+/**
+ * Préférences affichées sur /profile, dans l'ordre du Vue. `serviceModification` n'y est plus :
+ * l'API ne notifie plus les modifications de pointage (demande du propriétaire, 28/09/2026) ; sa
+ * valeur reste envoyée telle quelle.
+ */
 export const NOTIFICATION_PREFERENCE_FIELDS: NotificationPreferenceField[] = [
   { key: 'acompte', label: 'Acomptes', hint: "Notifications pour les demandes d'acompte" },
   { key: 'absence', label: 'Absences', hint: "Notifications pour les demandes d'absence" },
@@ -42,18 +44,7 @@ export const NOTIFICATION_PREFERENCE_FIELDS: NotificationPreferenceField[] = [
     hint: 'Notifications pour les rapports de véhicule',
   },
   { key: 'todo', label: 'Todos', hint: 'Notifications pour les tâches assignées' },
-  {
-    key: 'serviceModification',
-    label: 'Modifications de pointage par un autre admin',
-    hint: 'Notifications quand un autre administrateur ajoute, modifie ou supprime un pointage',
-    adminOnly: true,
-  },
 ]
-
-/** Champs visibles selon le rôle (`serviceModification` : administrateurs seulement). */
-export function getVisiblePreferenceFields(isAdmin: boolean): NotificationPreferenceField[] {
-  return NOTIFICATION_PREFERENCE_FIELDS.filter((field) => isAdmin || !field.adminOnly)
-}
 
 /** Préférences reçues de l'API, « SITE » pour toute valeur absente (comme le Vue). */
 export function toNotificationPreferencesValues(

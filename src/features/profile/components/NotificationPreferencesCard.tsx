@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Bell, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
+  NOTIFICATION_PREFERENCE_FIELDS,
   getNotificationChannelLabel,
-  getVisiblePreferenceFields,
   type NotificationPreferencesValues,
 } from '../lib/notificationChannels'
 import { InfoTile } from './InfoTile'
@@ -12,15 +12,10 @@ import { ProfileSection } from './ProfileSection'
 
 type NotificationPreferencesCardProps = {
   preferences: NotificationPreferencesValues
-  /** « Modifications de pointage par un autre admin » : administrateurs seulement */
-  isAdmin: boolean
 }
 
 /** Section « Préférences de notifications » de /profile, en lecture ou en édition. */
-export function NotificationPreferencesCard({
-  preferences,
-  isAdmin,
-}: NotificationPreferencesCardProps) {
+export function NotificationPreferencesCard({ preferences }: NotificationPreferencesCardProps) {
   const [isEditing, setIsEditing] = useState(false)
 
   return (
@@ -37,18 +32,14 @@ export function NotificationPreferencesCard({
       }
     >
       {isEditing ? (
-        <NotificationPreferencesForm
-          preferences={preferences}
-          isAdmin={isAdmin}
-          onDone={() => setIsEditing(false)}
-        />
+        <NotificationPreferencesForm preferences={preferences} onDone={() => setIsEditing(false)} />
       ) : (
         <div className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
             Vos préférences de notifications actuelles.
           </p>
           <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
-            {getVisiblePreferenceFields(isAdmin).map((preference) => (
+            {NOTIFICATION_PREFERENCE_FIELDS.map((preference) => (
               <InfoTile
                 key={preference.key}
                 label={preference.label}

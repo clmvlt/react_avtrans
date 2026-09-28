@@ -7,14 +7,12 @@ import { NotificationPreferencesCard } from '@/features/profile/components/Notif
 import { ProfileInfoCard } from '@/features/profile/components/ProfileInfoCard'
 import { ProfileSkeleton } from '@/features/profile/components/ProfileSkeleton'
 import { useNotificationPreferences } from '@/features/profile/hooks/useNotificationPreferences'
-import { selectIsAdmin, useAuthStore } from '@/stores/auth-store'
 
 /**
  * /profile : informations personnelles, préférences de notifications, mot de passe.
  * Chaque section passe seule de la lecture à l'édition, comme dans le Vue.
  */
 export default function ProfilePage() {
-  const isAdmin = useAuthStore(selectIsAdmin)
   const profileQuery = useProfileQuery()
   const preferences = useNotificationPreferences(profileQuery.data)
 
@@ -37,7 +35,7 @@ export default function ProfilePage() {
         ) : (
           <div className="space-y-6">
             <ProfileInfoCard user={profileQuery.data} />
-            <NotificationPreferencesCard preferences={preferences} isAdmin={isAdmin} />
+            <NotificationPreferencesCard preferences={preferences} />
             <ChangePasswordCard />
           </div>
         )}
