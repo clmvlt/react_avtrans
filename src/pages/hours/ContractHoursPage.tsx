@@ -27,8 +27,8 @@ import { cn } from '@/lib/utils'
 /**
  * Heures contrat / heures effectuées par employé pour un mois (admin). Le choix du mois, sous
  * l'en-tête, reste disponible pendant le chargement et après une erreur (le Vue le masquait, sans
- * « Réessayer » : corrigé par construction, MIGRATION.md 8.1). D10 : prévision de fin de mois
- * pour le mois en cours et les mois à venir.
+ * « Réessayer » : corrigé par construction, MIGRATION.md 8.1). D10 : réalisation prévue à la fin
+ * du mois, pour le mois en cours et les mois à venir.
  */
 export default function ContractHoursPage() {
   // Mois courant figé à l'ouverture de la page (valeur initiale, « Mois actuel », années)
@@ -67,7 +67,9 @@ export default function ContractHoursPage() {
     const { comparisons, joursOuvresRestants } = comparisonQuery.data
     const filteredRows = buildContractRows(comparisons, search)
     const rows = sortRowsLikeVue(filteredRows, sorting, getContractSortValue)
-    const showForecast = shouldShowForecast(period, current, comparisons)
+    const forecast = shouldShowForecast(period, current, comparisons)
+      ? { joursOuvresRestantsMois: joursOuvresRestants }
+      : null
 
     return (
       <div
@@ -78,7 +80,7 @@ export default function ContractHoursPage() {
       >
         <ContractStatsGrid
           totals={computeContractTotals(comparisons)}
-          joursOuvresRestants={showForecast ? joursOuvresRestants : null}
+          joursOuvresRestants={forecast ? joursOuvresRestants : null}
         />
 
         <div className="space-y-4">
@@ -94,17 +96,13 @@ export default function ContractHoursPage() {
             <p className="text-sm text-muted-foreground">{rows.length} employé(s)</p>
             {rows.length === 0 && <ListEmptyState icon={FileText} message="Aucun employé trouvé" />}
             {rows.map((row, index) => (
-              <ContractComparisonCard
-                key={row.user.uuid ?? index}
-                row={row}
-                showForecast={showForecast}
-              />
+              <ContractComparisonCard key={row.user.uuid ?? index} row={row} forecast={forecast} />
             ))}
           </div>
 
           <ContractComparisonTable
             rows={rows}
-            showForecast={showForecast}
+            forecast={forecast}
             sorting={sorting}
             onSortingChange={setSorting}
           />

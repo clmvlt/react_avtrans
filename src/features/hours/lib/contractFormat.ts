@@ -10,8 +10,9 @@ import type { UserContractComparisonDTO } from '@/models'
  * effectuées ; l'écart et la réalisation portent sur ce total. Si l'API ne renvoie pas encore ces
  * champs, on retombe sur les heures effectuées seules.
  *
- * D10 : prévision de fin de mois calculée par l'API (total actuel + jours ouvrés restants au
- * rythme du contrat), affichée pour le mois en cours et les mois à venir.
+ * D10 : prévision de fin de mois calculée par l'API (total actuel + jours ouvrés restants, vacances
+ * et fériés déduits, au rythme du contrat), affichée en réalisation prévue pour le mois en cours
+ * et les mois à venir.
  */
 
 export type ContractRow = UserContractComparisonDTO & {
@@ -24,6 +25,8 @@ export type ContractRow = UserContractComparisonDTO & {
   differenceTotal: number | null
   /** Total / contrat en % (null sans contrat). */
   pourcentageTotal: number | null
+  /** Prévision de fin de mois / contrat en % (null sans contrat ou sans prévision) — D10. */
+  pourcentagePrevisionnel: number | null
 }
 
 /** « 7h », « 7h30 ». */
@@ -97,6 +100,10 @@ export function buildContractRows(
       comparison.pourcentageTotal !== undefined
         ? comparison.pourcentageTotal
         : comparison.pourcentageRealisation,
+    pourcentagePrevisionnel:
+      comparison.heuresPrevisionnelles != null && comparison.heureContrat
+        ? Math.round((comparison.heuresPrevisionnelles / comparison.heureContrat) * 10000) / 100
+        : null,
   }))
   if (!search.trim()) return rows
 
@@ -159,6 +166,12 @@ export function getYearOptions(currentYear: number) {
 }
 
 type MonthYear = { month: number; year: number }
+
+/**
+ * Réalisation prévue à la fin du mois (D10) : jours ouvrés restants du mois sans les absences (pour
+ * chiffrer les jours d'absence déduits de chaque employé) ; `null` = colonne masquée (mois passé).
+ */
+export type ContractForecastColumn = { joursOuvresRestantsMois: number | null } | null
 
 /**
  * Prévision de fin de mois (D10) à afficher : mois en cours ou à venir (un mois passé n'a plus de

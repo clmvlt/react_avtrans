@@ -10,6 +10,7 @@ import {
   formatPercentage,
   getDifferenceClass,
   getPercentageClass,
+  type ContractForecastColumn,
   type ContractRow,
 } from '../lib/contractFormat'
 import { ContractCreditedHours } from './ContractCreditedHours'
@@ -18,15 +19,22 @@ import { ContractProgressBar } from './ContractProgressBar'
 
 const CENTER = { headerClassName: 'text-center', cellClassName: 'text-center' }
 
-const FORECAST_COLUMN: ColumnDef<ContractRow, unknown> = {
-  id: 'heuresPrevisionnelles',
-  accessorFn: (row) => row.heuresPrevisionnelles,
-  header: ({ column }) => <DataTableColumnHeader column={column} title="Prévision" />,
-  cell: ({ row }) => <ContractForecast row={row.original} />,
+const buildForecastColumn = (
+  joursOuvresRestantsMois: number | null,
+): ColumnDef<ContractRow, unknown> => ({
+  id: 'pourcentagePrevisionnel',
+  accessorFn: (row) => row.pourcentagePrevisionnel,
+  header: ({ column }) => <DataTableColumnHeader column={column} title="Réalisation prévue" />,
+  cell: ({ row }) => (
+    <ContractForecast row={row.original} joursOuvresRestantsMois={joursOuvresRestantsMois} />
+  ),
   meta: CENTER,
-}
+})
 
-const buildColumns = (count: number, showForecast: boolean): ColumnDef<ContractRow, unknown>[] => [
+const buildColumns = (
+  count: number,
+  forecast: ContractForecastColumn,
+): ColumnDef<ContractRow, unknown>[] => [
   {
     id: 'fullName',
     accessorFn: (row) => row.fullName,
@@ -105,58 +113,33 @@ const buildColumns = (count: number, showForecast: boolean): ColumnDef<ContractR
     },
     meta: CENTER,
   },
-  ...(showForecast ? [FORECAST_COLUMN] : []),
-  {
-    id: 'joursTravailles',
-    accessorFn: (row) => row.joursTravailles,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Jours travaillés" />,
-    cell: ({ row }) => (
-      <>
-        <span className="font-medium text-foreground">{row.original.joursTravailles}</span>
-        <span className="text-muted-foreground"> / {row.original.joursOuvres}</span>
-      </>
-    ),
-    meta: CENTER,
-  },
-  {
-    id: 'moyenneHeuresParJour',
-    accessorFn: (row) => row.moyenneHeuresParJour,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Moy. / jour" />,
-    cell: ({ row }) =>
-      row.original.moyenneHeuresParJour != null ? (
-        <span className="font-medium text-foreground">
-          {formatContractHours(row.original.moyenneHeuresParJour)}
-        </span>
-      ) : (
-        <span className="text-muted-foreground">-</span>
-      ),
-    meta: CENTER,
-  },
+  ...(forecast ? [buildForecastColumn(forecast.joursOuvresRestantsMois)] : []),
 ]
 
 type ContractComparisonTableProps = {
   /** Lignes déjà filtrées et triées (tri du Vue, partagé avec les cartes mobiles). */
   rows: ContractRow[]
-  /** Colonne « Prévision » de fin de mois (D10). */
-  showForecast: boolean
+  /** Colonne « Réalisation prévue » (D10), `null` pour un mois passé. */
+  forecast: ContractForecastColumn
   sorting: SortingState
   onSortingChange: OnChangeFn<SortingState>
 }
 
 /**
- * Tableau desktop contrat / heures, neuf colonnes triables. D8 : heures créditées (absences +
- * fériés) et total ; l'écart et la réalisation portent sur le total. D10 : dixième colonne,
- * prévision de fin de mois, pour le mois en cours et les mois à venir.
+ * Tableau desktop contrat / heures, colonnes triables. D8 : heures créditées (absences + fériés)
+ * et total ; l'écart et la réalisation portent sur le total. D10 : « Réalisation prévue » à la fin
+ * du mois pour le mois en cours et les mois à venir (les jours travaillés et la moyenne par jour
+ * ont été retirés à la demande du propriétaire).
  */
 export function ContractComparisonTable({
   rows,
-  showForecast,
+  forecast,
   sorting,
   onSortingChange,
 }: ContractComparisonTableProps) {
   return (
     <DataTable
-      columns={buildColumns(rows.length, showForecast)}
+      columns={buildColumns(rows.length, forecast)}
       data={rows}
       getRowId={(row, index) => row.user.uuid ?? String(index)}
       sorting={sorting}
