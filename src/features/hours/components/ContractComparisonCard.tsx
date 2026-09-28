@@ -82,7 +82,7 @@ export function ContractComparisonCard({ row, forecast }: ContractComparisonCard
             <ContractForecast
               row={row}
               joursOuvresRestantsMois={forecast.joursOuvresRestantsMois}
-              className="mt-1"
+              variant="tile"
             />
           </Tile>
         </div>
