@@ -35,6 +35,16 @@ export interface UserContractComparisonDTO {
   differenceTotal?: number | null
   /** (total/contrat)*100 (null si pas de contrat) — D8 */
   pourcentageTotal?: number | null
+  /** Jours ouvrés restants d'aujourd'hui inclus (lun.-ven., fériés et absences approuvées déduits, demi-journée = 0,5) ; 0 pour un mois passé — D10 */
+  joursOuvresRestants?: number
+  /** Heures d'un jour ouvré selon le contrat (hebdo / 5), null sans contrat — D10 */
+  heuresParJourContrat?: number | null
+  /** Heures encore attendues d'ici la fin du mois (heures pointées aujourd'hui déduites), null sans contrat — D10 */
+  heuresRestantesPrevues?: number | null
+  /** Total actuel + heures restantes prévues, null sans contrat — D10 */
+  heuresPrevisionnelles?: number | null
+  /** Prévision - contrat, null sans contrat — D10 */
+  differencePrevisionnelle?: number | null
 }
 
 /**
@@ -55,4 +65,6 @@ export interface UsersContractComparisonListResponse {
   year: number
   month: number
   users: UserContractComparisonDTO[]
+  /** Jours ouvrés restants du mois, d'aujourd'hui inclus (lun.-ven., hors fériés) ; 0 pour un mois passé — D10 */
+  joursOuvresRestants?: number
 }

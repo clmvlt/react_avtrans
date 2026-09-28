@@ -10,10 +10,13 @@ import {
   type ContractRow,
 } from '../lib/contractFormat'
 import { ContractCreditedHours } from './ContractCreditedHours'
+import { ContractForecast } from './ContractForecast'
 import { ContractProgressBar } from './ContractProgressBar'
 
 type ContractComparisonCardProps = {
   row: ContractRow
+  /** Tuile « Prévision » de fin de mois (D10). */
+  showForecast: boolean
 }
 
 function Tile({ label, children }: { label: string; children: ReactNode }) {
@@ -26,10 +29,10 @@ function Tile({ label, children }: { label: string; children: ReactNode }) {
 }
 
 /**
- * Carte mobile : heures effectuées, créditées (D8), total, contrat, écart, réalisation, jours et
- * moyenne.
+ * Carte mobile : heures effectuées, créditées (D8), total, contrat, écart, réalisation, jours,
+ * moyenne et prévision de fin de mois (D10).
  */
-export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
+export function ContractComparisonCard({ row, showForecast }: ContractComparisonCardProps) {
   return (
     <div className="rounded-xl border bg-card p-4">
       <UserIdentity user={row.user} showEmail={false}>
@@ -72,7 +75,9 @@ export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
         </Tile>
       </div>
 
-      <div className="mt-2 grid grid-cols-2 gap-2 text-center">
+      <div
+        className={cn('mt-2 grid gap-2 text-center', showForecast ? 'grid-cols-3' : 'grid-cols-2')}
+      >
         <Tile label="Jours travaillés">
           <p className="text-sm font-semibold text-foreground">
             {row.joursTravailles}
@@ -84,6 +89,11 @@ export function ContractComparisonCard({ row }: ContractComparisonCardProps) {
             {row.moyenneHeuresParJour != null ? formatContractHours(row.moyenneHeuresParJour) : '-'}
           </p>
         </Tile>
+        {showForecast && (
+          <Tile label="Prévision">
+            <ContractForecast row={row} className="text-sm" />
+          </Tile>
+        )}
       </div>
 
       {row.heureContrat != null && row.heureContrat > 0 && (

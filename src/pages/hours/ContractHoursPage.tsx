@@ -19,6 +19,7 @@ import {
   getContractSortValue,
   getCurrentMonthYear,
   getYearOptions,
+  shouldShowForecast,
 } from '@/features/hours/lib/contractFormat'
 import { sortRowsLikeVue } from '@/features/hours/lib/legacySort'
 import { cn } from '@/lib/utils'
@@ -26,7 +27,8 @@ import { cn } from '@/lib/utils'
 /**
  * Heures contrat / heures effectuées par employé pour un mois (admin). Le choix du mois, sous
  * l'en-tête, reste disponible pendant le chargement et après une erreur (le Vue le masquait, sans
- * « Réessayer » : corrigé par construction, MIGRATION.md 8.1).
+ * « Réessayer » : corrigé par construction, MIGRATION.md 8.1). D10 : prévision de fin de mois
+ * pour le mois en cours et les mois à venir.
  */
 export default function ContractHoursPage() {
   // Mois courant figé à l'ouverture de la page (valeur initiale, « Mois actuel », années)
@@ -62,9 +64,10 @@ export default function ContractHoursPage() {
       )
     }
 
-    const comparisons = comparisonQuery.data
+    const { comparisons, joursOuvresRestants } = comparisonQuery.data
     const filteredRows = buildContractRows(comparisons, search)
     const rows = sortRowsLikeVue(filteredRows, sorting, getContractSortValue)
+    const showForecast = shouldShowForecast(period, current, comparisons)
 
     return (
       <div
@@ -73,7 +76,10 @@ export default function ContractHoursPage() {
           comparisonQuery.isPlaceholderData && 'opacity-60',
         )}
       >
-        <ContractStatsGrid totals={computeContractTotals(comparisons)} />
+        <ContractStatsGrid
+          totals={computeContractTotals(comparisons)}
+          joursOuvresRestants={showForecast ? joursOuvresRestants : null}
+        />
 
         <div className="space-y-4">
           <HoursSearchInput
@@ -88,11 +94,20 @@ export default function ContractHoursPage() {
             <p className="text-sm text-muted-foreground">{rows.length} employé(s)</p>
             {rows.length === 0 && <ListEmptyState icon={FileText} message="Aucun employé trouvé" />}
             {rows.map((row, index) => (
-              <ContractComparisonCard key={row.user.uuid ?? index} row={row} />
+              <ContractComparisonCard
+                key={row.user.uuid ?? index}
+                row={row}
+                showForecast={showForecast}
+              />
             ))}
           </div>
 
-          <ContractComparisonTable rows={rows} sorting={sorting} onSortingChange={setSorting} />
+          <ContractComparisonTable
+            rows={rows}
+            showForecast={showForecast}
+            sorting={sorting}
+            onSortingChange={setSorting}
+          />
         </div>
       </div>
     )

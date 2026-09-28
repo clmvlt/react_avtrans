@@ -1,9 +1,20 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import type { UsersContractComparisonListResponse } from '@/models'
+import type { UserContractComparisonDTO, UsersContractComparisonListResponse } from '@/models'
 import { usersService } from '@/services'
 import { hoursKeys } from './queryKeys'
 
-const toComparisons = (response: UsersContractComparisonListResponse) => response.users ?? []
+export type ContractComparisonData = {
+  comparisons: UserContractComparisonDTO[]
+  /** Jours ouvrés restants du mois (D10), null si l'API ne les renvoie pas encore. */
+  joursOuvresRestants: number | null
+}
+
+const toComparisonData = (
+  response: UsersContractComparisonListResponse,
+): ContractComparisonData => ({
+  comparisons: response.users ?? [],
+  joursOuvresRestants: response.joursOuvresRestants ?? null,
+})
 
 /**
  * Heures contrat / heures effectuées de chaque employé pour un mois (GET /users/contract-hours).
@@ -13,7 +24,7 @@ export function useContractComparisonQuery(year: number, month: number) {
   return useQuery({
     queryKey: hoursKeys.contractComparison(year, month),
     queryFn: () => usersService.getContractComparison(year, month),
-    select: toComparisons,
+    select: toComparisonData,
     placeholderData: keepPreviousData,
   })
 }

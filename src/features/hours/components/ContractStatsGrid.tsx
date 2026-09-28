@@ -1,17 +1,19 @@
 import { useId } from 'react'
 import { CalendarCheck, Clock, FileText, Users } from 'lucide-react'
 import { StatCard } from '@/components/shared/StatCard'
-import { formatContractHours, type ContractTotals } from '../lib/contractFormat'
+import { formatContractHours, formatJours, type ContractTotals } from '../lib/contractFormat'
 
 type ContractStatsGridProps = {
   totals: ContractTotals
+  /** Jours ouvrés restants du mois (D10), masqués si null. */
+  joursOuvresRestants: number | null
 }
 
 /**
  * Heures effectuées, heures créditées (absences + fériés, D8), heures contrat et employés avec
- * contrat.
+ * contrat. Le titre rappelle les jours ouvrés du mois et, pour le mois en cours, ceux qui restent.
  */
-export function ContractStatsGrid({ totals }: ContractStatsGridProps) {
+export function ContractStatsGrid({ totals, joursOuvresRestants }: ContractStatsGridProps) {
   const titleId = useId()
 
   return (
@@ -22,6 +24,12 @@ export function ContractStatsGrid({ totals }: ContractStatsGridProps) {
           <span className="font-normal text-muted-foreground">
             {' '}
             · {totals.joursOuvres} jours ouvrés
+          </span>
+        )}
+        {joursOuvresRestants != null && (
+          <span className="font-normal text-muted-foreground">
+            {' '}
+            · {formatJours(joursOuvresRestants)} restant{joursOuvresRestants > 1 ? 's' : ''}
           </span>
         )}
       </h2>

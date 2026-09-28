@@ -13,11 +13,20 @@ import {
   type ContractRow,
 } from '../lib/contractFormat'
 import { ContractCreditedHours } from './ContractCreditedHours'
+import { ContractForecast } from './ContractForecast'
 import { ContractProgressBar } from './ContractProgressBar'
 
 const CENTER = { headerClassName: 'text-center', cellClassName: 'text-center' }
 
-const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
+const FORECAST_COLUMN: ColumnDef<ContractRow, unknown> = {
+  id: 'heuresPrevisionnelles',
+  accessorFn: (row) => row.heuresPrevisionnelles,
+  header: ({ column }) => <DataTableColumnHeader column={column} title="Prévision" />,
+  cell: ({ row }) => <ContractForecast row={row.original} />,
+  meta: CENTER,
+}
+
+const buildColumns = (count: number, showForecast: boolean): ColumnDef<ContractRow, unknown>[] => [
   {
     id: 'fullName',
     accessorFn: (row) => row.fullName,
@@ -96,6 +105,7 @@ const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
     },
     meta: CENTER,
   },
+  ...(showForecast ? [FORECAST_COLUMN] : []),
   {
     id: 'joursTravailles',
     accessorFn: (row) => row.joursTravailles,
@@ -127,22 +137,26 @@ const buildColumns = (count: number): ColumnDef<ContractRow, unknown>[] => [
 type ContractComparisonTableProps = {
   /** Lignes déjà filtrées et triées (tri du Vue, partagé avec les cartes mobiles). */
   rows: ContractRow[]
+  /** Colonne « Prévision » de fin de mois (D10). */
+  showForecast: boolean
   sorting: SortingState
   onSortingChange: OnChangeFn<SortingState>
 }
 
 /**
  * Tableau desktop contrat / heures, neuf colonnes triables. D8 : heures créditées (absences +
- * fériés) et total ; l'écart et la réalisation portent sur le total.
+ * fériés) et total ; l'écart et la réalisation portent sur le total. D10 : dixième colonne,
+ * prévision de fin de mois, pour le mois en cours et les mois à venir.
  */
 export function ContractComparisonTable({
   rows,
+  showForecast,
   sorting,
   onSortingChange,
 }: ContractComparisonTableProps) {
   return (
     <DataTable
-      columns={buildColumns(rows.length)}
+      columns={buildColumns(rows.length, showForecast)}
       data={rows}
       getRowId={(row, index) => row.user.uuid ?? String(index)}
       sorting={sorting}

@@ -9,6 +9,9 @@ import type { UserContractComparisonDTO } from '@/models'
  * D8 : les heures créditées (absences approuvées + jours fériés chômés) s'ajoutent aux heures
  * effectuées ; l'écart et la réalisation portent sur ce total. Si l'API ne renvoie pas encore ces
  * champs, on retombe sur les heures effectuées seules.
+ *
+ * D10 : prévision de fin de mois calculée par l'API (total actuel + jours ouvrés restants au
+ * rythme du contrat), affichée pour le mois en cours et les mois à venir.
  */
 
 export type ContractRow = UserContractComparisonDTO & {
@@ -53,6 +56,11 @@ export function getDifferenceClass(diff: number | null | undefined): string {
 }
 
 /** ≥ 100 % vert, ≥ 80 % ambre, sinon rouge. */
+/** « 3 », « 9,5 » (jours ouvrés restants, demi-journées comprises). */
+export function formatJours(jours: number | null | undefined): string {
+  return (jours ?? 0).toLocaleString('fr-FR', { maximumFractionDigits: 1 })
+}
+
 export function getPercentageClass(pct: number | null | undefined): string {
   if (pct === null || pct === undefined) return 'text-muted-foreground'
   if (pct >= 100) return 'text-green-600 dark:text-green-400'
@@ -148,6 +156,21 @@ export function getYearOptions(currentYear: number) {
     years.push({ value: String(y), label: String(y) })
   }
   return years
+}
+
+type MonthYear = { month: number; year: number }
+
+/**
+ * Prévision de fin de mois (D10) à afficher : mois en cours ou à venir (un mois passé n'a plus de
+ * jour restant, la prévision y vaut le total), et API qui la calcule.
+ */
+export function shouldShowForecast(
+  period: MonthYear,
+  current: MonthYear,
+  comparisons: UserContractComparisonDTO[],
+): boolean {
+  const isPast = period.year * 12 + period.month < current.year * 12 + current.month
+  return !isPast && comparisons.some((c) => c.joursOuvresRestants !== undefined)
 }
 
 /** Mois et année courants (valeurs initiales et « Mois actuel »). */
