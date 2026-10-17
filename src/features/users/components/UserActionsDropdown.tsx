@@ -1,4 +1,13 @@
-import { CalendarOff, ClipboardList, Clock, Mail, MoreVertical, Pencil, Trash2 } from 'lucide-react'
+import {
+  CalendarOff,
+  ClipboardList,
+  Clock,
+  IdCard,
+  Mail,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -25,6 +34,11 @@ export function UserActionsDropdown({ user, actions }: UserActionsDropdownProps)
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem onSelect={() => actions.goToHub(user)}>
+          <IdCard className="mr-2 size-4" />
+          Fiche employé
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => actions.goToServices(user)}>
           <ClipboardList className="mr-2 size-4" />
           Services

@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { CalendarOff, ClipboardList, Clock, Mail, Pencil, Trash2 } from 'lucide-react'
+import { CalendarOff, ClipboardList, Clock, IdCard, Mail, Pencil, Trash2 } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -28,6 +28,10 @@ export function UserRowContextMenu({ user, actions, children }: UserRowContextMe
           {`${user.firstName ?? ''} ${user.lastName ?? ''}`}
         </ContextMenuLabel>
         <ContextMenuSeparator />
+        <ContextMenuItem onSelect={() => actions.goToHub(user)}>
+          <IdCard className="size-4 text-current" />
+          Fiche employé
+        </ContextMenuItem>
         <ContextMenuItem onSelect={() => actions.goToServices(user)}>
           <ClipboardList className="size-4 text-current" />
           Services

@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { Banknote, CalendarX2, ClipboardList, Clock } from 'lucide-react'
+import { Banknote, CalendarX2, ClipboardList, Clock, IdCard } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -28,6 +28,10 @@ export function PresenceUserContextMenu({ user, actions, children }: PresenceUse
           {user.firstName} {user.lastName}
         </ContextMenuLabel>
         <ContextMenuSeparator />
+        <ContextMenuItem onSelect={() => actions.goToHub(user)}>
+          <IdCard className="size-4 text-current" />
+          Fiche employé
+        </ContextMenuItem>
         <ContextMenuItem onSelect={() => actions.goToServices(user)}>
           <ClipboardList className="size-4 text-current" />
           Gérer les services

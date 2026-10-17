@@ -19,6 +19,8 @@ type AbsenceDialogsProps = {
   dialogs: ReturnType<typeof useDialogState<AbsenceDialogType, AbsenceDTO>>
   /** Après une création, une modification, une validation ou une suppression. */
   onChanged: () => void
+  /** Employé présélectionné dans « Nouvelle absence » (fiche employé). */
+  defaultUserUuid?: string
 }
 
 /**
@@ -27,7 +29,7 @@ type AbsenceDialogsProps = {
  * « Approuver », « Refuser », « Modifier » et « Modifier les heures » passent directement au dialog
  * concerné.
  */
-export function AbsenceDialogs({ dialogs, onChanged }: AbsenceDialogsProps) {
+export function AbsenceDialogs({ dialogs, onChanged, defaultUserUuid }: AbsenceDialogsProps) {
   const { item, type } = dialogs
   const validate = useValidateAbsenceMutation()
   const deleteAbsence = useDeleteAbsenceMutation()
@@ -71,6 +73,7 @@ export function AbsenceDialogs({ dialogs, onChanged }: AbsenceDialogsProps) {
         onOpenChange={dialogs.onOpenChange}
         absence={type === 'edit' ? item : null}
         onSaved={onChanged}
+        defaultUserUuid={defaultUserUuid}
       />
 
       <AbsenceDetailDialog

@@ -9,6 +9,8 @@
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
   --font-heading: var(--font-sans);
+  /* Très grands écrans (fiche employé : colonnes supplémentaires à partir de 1700 px) */
+  --breakpoint-3xl: 106.25rem;
 }
 
 @theme inline {

@@ -24,6 +24,8 @@ type CouchetteCreateDialogProps = {
   onOpenChange: (open: boolean) => void
   /** Couchette créée (dialog déjà fermé) : la page recharge la page 1. */
   onCreated: () => void
+  /** Employé présélectionné (fiche employé). */
+  defaultUserUuid?: string
 }
 
 /** « Nouvelle couchette » : création par un admin pour un employé (CouchetteCreateModal.vue). */
@@ -31,6 +33,7 @@ export function CouchetteCreateDialog({
   open,
   onOpenChange,
   onCreated,
+  defaultUserUuid = '',
 }: CouchetteCreateDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -41,6 +44,7 @@ export function CouchetteCreateDialog({
         </DialogHeader>
         {/* Monté à chaque ouverture : formulaire vide, comme le `resetForm` du Vue */}
         <CouchetteCreateForm
+          defaultUserUuid={defaultUserUuid}
           onCancel={() => onOpenChange(false)}
           onCreated={() => {
             onOpenChange(false)
@@ -53,22 +57,23 @@ export function CouchetteCreateDialog({
 }
 
 type CouchetteCreateFormProps = {
+  defaultUserUuid: string
   onCancel: () => void
   onCreated: () => void
 }
 
-function CouchetteCreateForm({ onCancel, onCreated }: CouchetteCreateFormProps) {
+function CouchetteCreateForm({ defaultUserUuid, onCancel, onCreated }: CouchetteCreateFormProps) {
   const usersQuery = useUsersQuery()
   const createCouchette = useCreateCouchetteForUserMutation()
   const saving = createCouchette.isPending
 
   const form = useForm<CouchetteCreateFormValues>({
     resolver: zodResolver(couchetteCreateSchema),
-    defaultValues: { userUuid: '', date: '' },
+    defaultValues: { userUuid: defaultUserUuid, date: '' },
   })
 
   // GET /users renvoie aussi les masqués : seuls les visibles sont proposés pour une création.
-  const userOptions = selectableUsers(usersQuery.data ?? [])
+  const userOptions = selectableUsers(usersQuery.data ?? [], [defaultUserUuid])
     .filter((user) => user.uuid)
     .map((user) => ({ value: user.uuid ?? '', label: `${user.firstName} ${user.lastName}` }))
 

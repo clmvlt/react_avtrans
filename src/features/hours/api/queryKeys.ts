@@ -7,4 +7,7 @@ export const hoursKeys = {
   contractComparisons: () => [...usersKeys.all, 'contract-hours'] as const,
   contractComparison: (year: number, month: number) =>
     [...hoursKeys.contractComparisons(), { year, month }] as const,
+  /** GET /users/{uuid}/contract-hours (fiche employé) */
+  userContractComparison: (userUuid: string, year: number, month: number) =>
+    [...hoursKeys.contractComparisons(), 'user', userUuid, { year, month }] as const,
 }

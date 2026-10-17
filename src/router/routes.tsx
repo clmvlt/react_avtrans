@@ -99,6 +99,11 @@ export const routes: RouteObject[] = [
                     lazy: page(() => import('@/pages/common/ServicesMonitoringPage')),
                   },
                   { path: '/users', lazy: page(() => import('@/pages/users/UsersPage')) },
+                  // Hors parité : fiche employé (employé et onglet dans `?employe=` / `?onglet=`)
+                  {
+                    path: '/employes',
+                    lazy: page(() => import('@/pages/users/EmployeeHubPage')),
+                  },
                   // UserEdit.vue est cassée et orpheline dans le Vue (MIGRATION.md, Q-USEREDIT)
                   { path: '/users/:uuid', element: <Navigate to="/users" replace /> },
                   {

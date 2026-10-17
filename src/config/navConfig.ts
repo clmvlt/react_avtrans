@@ -11,6 +11,7 @@ import {
   Download,
   FileUp,
   History,
+  IdCard,
   ListChecks,
   Package,
   PenLine,
@@ -91,6 +92,7 @@ export const navSections: NavSectionConfig[] = [
   {
     title: 'Personnel',
     links: [
+      { to: '/employes', label: 'Fiche employé', lucideIcon: IdCard, requiredRoles: ADMIN },
       { to: '/users', label: 'Utilisateurs', lucideIcon: Users, requiredRoles: ADMIN },
       { to: '/services', label: 'Présences', lucideIcon: UserCheck, requiredRoles: ADMIN },
       { to: '/planning', label: 'Planning', lucideIcon: CalendarDays, requiredRoles: ADMIN },

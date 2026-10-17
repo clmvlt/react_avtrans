@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { adminServicesKeys } from '../api/queryKeys'
 import { useUserServicesQuery } from '../api/useUserServicesQuery'
+import type { AdminServiceFilters } from '../lib/serviceFilters'
 import { useServiceFilters } from './useServiceFilters'
 
 /**
@@ -28,6 +29,8 @@ export function useUserServicesList(userUuid: string) {
     /** Changement de page (avec les filtres saisis, comme le Vue) */
     goToPage: (page: number) => filters.load(page),
     apply: () => reload(0),
+    /** Affiche directement ces filtres (première page) */
+    show: (next: AdminServiceFilters) => filters.applyFilters(next),
     reset: () => {
       filters.reset()
       refresh()

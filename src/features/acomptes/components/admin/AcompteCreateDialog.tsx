@@ -28,10 +28,17 @@ type AcompteCreateDialogProps = {
   onOpenChange: (open: boolean) => void
   /** Après la création (la page recharge la première page). */
   onSaved: () => void
+  /** Employé présélectionné (fiche employé). */
+  defaultUserUuid?: string
 }
 
 /** Création d'un acompte pour un employé (port d'`AcompteEditModal.vue`, création seulement). */
-export function AcompteCreateDialog({ open, onOpenChange, onSaved }: AcompteCreateDialogProps) {
+export function AcompteCreateDialog({
+  open,
+  onOpenChange,
+  onSaved,
+  defaultUserUuid = '',
+}: AcompteCreateDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-md">
@@ -40,18 +47,23 @@ export function AcompteCreateDialog({ open, onOpenChange, onSaved }: AcompteCrea
           <DialogDescription>Créer un nouvel acompte pour un employé</DialogDescription>
         </DialogHeader>
         {/* Monté à chaque ouverture : formulaire et erreurs repartent de zéro. */}
-        <AcompteCreateBody onClose={() => onOpenChange(false)} onSaved={onSaved} />
+        <AcompteCreateBody
+          defaultUserUuid={defaultUserUuid}
+          onClose={() => onOpenChange(false)}
+          onSaved={onSaved}
+        />
       </DialogContent>
     </Dialog>
   )
 }
 
 type AcompteCreateBodyProps = {
+  defaultUserUuid: string
   onClose: () => void
   onSaved: () => void
 }
 
-function AcompteCreateBody({ onClose, onSaved }: AcompteCreateBodyProps) {
+function AcompteCreateBody({ defaultUserUuid, onClose, onSaved }: AcompteCreateBodyProps) {
   const id = useId()
   const usersQuery = useUsersQuery()
   const createAcompte = useCreateAcompteForUserMutation()
@@ -60,7 +72,7 @@ function AcompteCreateBody({ onClose, onSaved }: AcompteCreateBodyProps) {
   const form = useForm<AdminAcompteCreateValues>({
     resolver: zodResolver(adminAcompteCreateSchema),
     // Montant initial « 0 », affiché tel quel comme le Vue
-    defaultValues: { userUuid: '', montant: '0', raison: '', approved: false },
+    defaultValues: { userUuid: defaultUserUuid, montant: '0', raison: '', approved: false },
   })
 
   if (usersQuery.isPending) {

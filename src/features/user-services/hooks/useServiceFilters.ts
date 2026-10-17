@@ -37,6 +37,12 @@ export function useServiceFilters() {
     /** Filtres et page de la requête en cours */
     request,
     load,
+    /** Filtres donnés saisis et appliqués d'un coup, panneau ouvert (jour choisi dans un calendrier) */
+    applyFilters: (next: AdminServiceFilters) => {
+      setDraft(next)
+      setRequest({ filters: next, page: 0 })
+      setShowFilters(true)
+    },
     /** Filtres vidés, première page */
     reset: () => {
       setDraft(EMPTY_SERVICE_FILTERS)

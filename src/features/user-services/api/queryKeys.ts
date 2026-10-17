@@ -12,6 +12,9 @@ export const adminServicesKeys = {
   userServices: (userUuid: string) => [...adminServicesKeys.all, 'user', userUuid] as const,
   userServicesPage: (userUuid: string, filters: AdminServiceFilters, page: number) =>
     [...adminServicesKeys.userServices(userUuid), { ...filters, page }] as const,
+  /** Tous les pointages d'un employé sur une plage de jours (fiche employé : journée, calendrier) */
+  range: (userUuid: string, startDate: string, endDate: string) =>
+    [...adminServicesKeys.userServices(userUuid), 'range', startDate, endDate] as const,
   /** Pointage en cours d'un employé (GET /services/admin/{uuid}/active) */
   active: (userUuid: string) => [...adminServicesKeys.all, 'active', userUuid] as const,
   /** Heures travaillées, toutes périodes confondues (GET /services/admin/hours/{uuid}) */

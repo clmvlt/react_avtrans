@@ -38,6 +38,8 @@ type AbsenceFormDialogProps = {
   absence: AbsenceDTO | null
   /** Après enregistrement (la page recharge sa liste). */
   onSaved: () => void
+  /** Employé présélectionné à la création (fiche employé). */
+  defaultUserUuid?: string
 }
 
 /** Création ou modification d'une absence par un admin (port d'`AbsenceEditModal.vue`). */
@@ -46,6 +48,7 @@ export function AbsenceFormDialog({
   onOpenChange,
   absence,
   onSaved,
+  defaultUserUuid = '',
 }: AbsenceFormDialogProps) {
   const isEditMode = !!absence?.uuid
 
@@ -64,6 +67,7 @@ export function AbsenceFormDialog({
         <AbsenceFormBody
           key={absence?.uuid ?? 'new'}
           absence={absence}
+          defaultUserUuid={defaultUserUuid}
           onClose={() => onOpenChange(false)}
           onSaved={onSaved}
         />
@@ -74,12 +78,13 @@ export function AbsenceFormDialog({
 
 type AbsenceFormBodyProps = {
   absence: AbsenceDTO | null
+  defaultUserUuid: string
   onClose: () => void
   onSaved: () => void
 }
 
 /** Valeurs initiales : absence existante, ou aujourd'hui (date UTC du Vue, bug B-01 conservé). */
-function getDefaultValues(absence: AbsenceDTO | null): AbsenceFormValues {
+function getDefaultValues(absence: AbsenceDTO | null, defaultUserUuid: string): AbsenceFormValues {
   if (absence?.uuid) {
     return {
       userUuid: absence.user?.uuid || '',
@@ -94,7 +99,7 @@ function getDefaultValues(absence: AbsenceDTO | null): AbsenceFormValues {
   }
   const today = getTodayDate()
   return {
-    userUuid: '',
+    userUuid: defaultUserUuid,
     startDate: today,
     endDate: today,
     period: 'FULL_DAY',
@@ -105,7 +110,7 @@ function getDefaultValues(absence: AbsenceDTO | null): AbsenceFormValues {
   }
 }
 
-function AbsenceFormBody({ absence, onClose, onSaved }: AbsenceFormBodyProps) {
+function AbsenceFormBody({ absence, defaultUserUuid, onClose, onSaved }: AbsenceFormBodyProps) {
   const isEditMode = !!absence?.uuid
   const typesQuery = useAbsenceTypesQuery()
   const usersQuery = useUsersQuery({ enabled: !isEditMode })
@@ -114,7 +119,7 @@ function AbsenceFormBody({ absence, onClose, onSaved }: AbsenceFormBodyProps) {
 
   const form = useForm<AbsenceFormValues>({
     resolver: zodResolver(isEditMode ? adminAbsenceEditSchema : adminAbsenceCreateSchema),
-    defaultValues: getDefaultValues(absence),
+    defaultValues: getDefaultValues(absence, defaultUserUuid),
   })
 
   const saving = createAbsence.isPending || updateAbsence.isPending

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Empty } from '@/components/ui/empty'
 import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { hasRunningLine } from '@/lib/serviceLines'
+import { cn } from '@/lib/utils'
 import type { UserServicesPage } from '../api/useUserServicesQuery'
 import { groupServicesByDay } from '../lib/groupServicesByDay'
 import { ServiceDayCard } from './ServiceDayCard'
@@ -22,6 +23,8 @@ type ServicesDayListProps = {
   handlers: ServiceRowHandlers
   onAdd: () => void
   onAddForDate: (date: string) => void
+  /** Classes de la liste des journées (ex. deux colonnes sur très grand écran) */
+  listClassName?: string
 }
 
 /**
@@ -38,6 +41,7 @@ export function ServicesDayList({
   handlers,
   onAdd,
   onAddForDate,
+  listClassName,
 }: ServicesDayListProps) {
   const services = data?.content ?? []
   // Hook appelé avant les retours anticipés (règles des hooks)
@@ -60,7 +64,7 @@ export function ServicesDayList({
   return (
     <div className="space-y-4">
       {days.length > 0 ? (
-        <div className="space-y-4">
+        <div className={cn('space-y-4', listClassName)}>
           {days.map((day) => (
             <ServiceDayCard
               key={day.date}

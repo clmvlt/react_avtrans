@@ -1,4 +1,4 @@
-import { Banknote, CalendarX2, ClipboardList, Clock, MoreVertical } from 'lucide-react'
+import { Banknote, CalendarX2, ClipboardList, Clock, IdCard, MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -33,6 +33,11 @@ export function PresenceUserDropdown({ user, actions }: PresenceUserDropdownProp
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem onSelect={() => actions.goToHub(user)}>
+          <IdCard className="mr-2 size-4" />
+          Fiche employé
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => actions.reloadToServices(user)}>
           <ClipboardList className="mr-2 size-4" />
           Services

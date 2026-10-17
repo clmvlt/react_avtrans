@@ -19,13 +19,20 @@ type AcompteDialogsProps = {
   onCreated: () => void
   /** Après une validation ou une suppression (rechargement de la page courante). */
   onChanged: () => void
+  /** Employé présélectionné dans « Nouvel acompte » (fiche employé). */
+  defaultUserUuid?: string
 }
 
 /**
  * Dialogs de la page admin des acomptes : création, détail, approbation / refus, suppression.
  * Depuis le détail, « Approuver » et « Refuser » passent directement au dialog de validation.
  */
-export function AcompteDialogs({ dialogs, onCreated, onChanged }: AcompteDialogsProps) {
+export function AcompteDialogs({
+  dialogs,
+  onCreated,
+  onChanged,
+  defaultUserUuid,
+}: AcompteDialogsProps) {
   const { item, type } = dialogs
   const validate = useValidateAcompteMutation()
   const deleteAcompte = useDeleteAcompteMutation()
@@ -68,6 +75,7 @@ export function AcompteDialogs({ dialogs, onCreated, onChanged }: AcompteDialogs
         open={dialogs.isOpen('create')}
         onOpenChange={dialogs.onOpenChange}
         onSaved={onCreated}
+        defaultUserUuid={defaultUserUuid}
       />
 
       <AcompteDetailDialog
