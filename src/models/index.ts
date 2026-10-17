@@ -20,6 +20,7 @@ export * from './VehiculeRelaiDTO';
 
 // Service models
 export * from './ServiceDTO';
+export * from './HeuresPeriodeDTO';
 export * from './ServiceModificationDTO';
 
 // Entretien and TypeEntretien models

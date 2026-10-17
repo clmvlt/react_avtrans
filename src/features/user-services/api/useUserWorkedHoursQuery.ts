@@ -1,12 +1,16 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { liveQueryOptions, receive, type Received } from '@/lib/liveCounter'
 import { userServicesService, type HoursQueryParams, type WorkedHoursDTO } from '@/services'
 import type { ApiResponse } from '@/types'
 import { adminServicesKeys } from './queryKeys'
 
 /** La réponse est enveloppée (`data`) ou nue selon les versions de l'API, comme le prévoyait le Vue. */
-function toWorkedHours(response: ApiResponse<WorkedHoursDTO> | WorkedHoursDTO): WorkedHoursDTO {
-  const envelope = response as ApiResponse<WorkedHoursDTO>
-  return (envelope.data ? envelope.data : response) as WorkedHoursDTO
+function toWorkedHours({
+  data,
+  receivedAt,
+}: Received<ApiResponse<WorkedHoursDTO> | WorkedHoursDTO>): Received<WorkedHoursDTO> {
+  const envelope = data as ApiResponse<WorkedHoursDTO>
+  return { data: (envelope.data ? envelope.data : data) as WorkedHoursDTO, receivedAt }
 }
 
 type UseUserWorkedHoursQueryOptions = {
@@ -15,9 +19,10 @@ type UseUserWorkedHoursQueryOptions = {
 }
 
 /**
- * Heures travaillées d'un employé, en heures décimales (jour, semaine, mois, année, mois dernier ;
- * ou une seule période selon `params`). Partagé par le dialog « Heures travaillées » et les
- * cartes de stats des pointages d'un employé (même clé pour `params = {}`).
+ * Heures nettes d'un employé (jour, semaine, mois, année, mois dernier ; ou une seule période
+ * selon `params`), chacune en `HeuresPeriodeDTO` qui avance en direct si `enCours`. Partagé par le
+ * dialog « Heures travaillées » et les cartes de stats des pointages d'un employé (même clé pour
+ * `params = {}`).
  */
 export function useUserWorkedHoursQuery(
   userUuid: string | undefined,
@@ -26,9 +31,10 @@ export function useUserWorkedHoursQuery(
 ) {
   return useQuery({
     queryKey: adminServicesKeys.hours(userUuid ?? '', params),
-    queryFn: () => userServicesService.getUserWorkedHours(userUuid ?? '', params),
+    queryFn: () => receive(userServicesService.getUserWorkedHours(userUuid ?? '', params)),
     select: toWorkedHours,
     enabled: !!userUuid,
     placeholderData: keepPrevious ? keepPreviousData : undefined,
+    ...liveQueryOptions,
   })
 }

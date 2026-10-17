@@ -45,6 +45,13 @@ export interface UserContractComparisonDTO {
   heuresPrevisionnelles?: number | null
   /** Prévision - contrat, null sans contrat — D10 */
   differencePrevisionnelle?: number | null
+  /**
+   * Un service du mois est en cours hors pause : heuresEffectuees, difference, heuresTotal et
+   * differenceTotal avancent du temps écoulé (heuresPrevisionnelles reste stable) — D12
+   */
+  enCours?: boolean
+  /** Instant de calcul (heure serveur) — D12 */
+  calculeLe?: string
 }
 
 /**

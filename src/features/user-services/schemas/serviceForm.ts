@@ -15,6 +15,8 @@ export const serviceFormSchema = z
     hasEnd: z.boolean(),
     finDate: z.string(),
     finTime: z.string(),
+    /** Pause : service de rattachement (UUID) ; vide = automatique, l'API prend le service en cours au début de la pause (D12) */
+    serviceParentUuid: z.string(),
   })
   .superRefine((values, ctx) => {
     if (!values.hasEnd) return

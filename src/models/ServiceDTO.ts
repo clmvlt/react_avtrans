@@ -1,12 +1,20 @@
 /**
- * Service DTO
+ * Service DTO (D12) : un service de travail (`isBreak = false`) porte ses pauses ; une pause
+ * (`isBreak = true`) porte son service. Toutes les durées sont calculées par l'API à l'instant
+ * `calculeLe` ; l'affichage en direct ajoute le temps écoulé depuis la réception
+ * (`src/lib/liveCounter.ts`) : à `duree` si `enCours`, à `dureeTravail` si `enCours && !enPause`,
+ * à `dureePauses` si `enPause`.
  */
 export interface ServiceDTO {
   uuid?: string;
   debut?: Date | string;
   fin?: Date | string;
-  /** Durée en SECONDES. Si fin == null : durée calculée à la volée (now - debut) */
+  /** Durée BRUTE de la ligne en secondes, à `calculeLe` (en cours : calculeLe - debut) */
   duree?: number;
+  /** Instant de calcul des durées (heure serveur) : affichage ou debug, jamais comparé à l'horloge du PC */
+  calculeLe?: string;
+  /** La ligne n'a pas de fin */
+  enCours?: boolean;
   isBreak?: boolean;
   /** Latitude GPS de début */
   latitude?: number;
@@ -27,6 +35,18 @@ export interface ServiceDTO {
   modifiedByUuid?: string | null;
   /** "Prénom Nom" de l'administrateur auteur de la dernière modification */
   modifiedByName?: string | null;
+
+  /** Service uniquement : pauses du service, par début croissant (une pause après minuit reste dans son service) */
+  pauses?: ServiceDTO[];
+  /** Service uniquement : durée des pauses en secondes, ramenées dans les bornes du service */
+  dureePauses?: number;
+  /** Service uniquement : temps de travail net en secondes (duree - dureePauses) */
+  dureeTravail?: number;
+  /** Service uniquement : service en cours ET une pause en cours */
+  enPause?: boolean;
+
+  /** Pause uniquement : UUID du service de travail auquel elle appartient */
+  serviceParentUuid?: string;
 }
 
 /**
@@ -89,6 +109,8 @@ export interface ServiceCreateRequest {
   latitudeEnd?: number;
   longitudeEnd?: number;
   isBreak?: boolean;
+  /** Pause uniquement : service de rattachement (absent : service en cours au début de la pause) — D12 */
+  serviceParentUuid?: string;
 }
 
 /**
@@ -102,6 +124,8 @@ export interface ServiceUpdateRequest {
   latitudeEnd?: number;
   longitudeEnd?: number;
   isBreak?: boolean;
+  /** Pause uniquement : service de rattachement (absent : service en cours au début de la pause) — D12 */
+  serviceParentUuid?: string;
 }
 
 /**

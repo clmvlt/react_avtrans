@@ -1,17 +1,20 @@
 import type { LucideIcon } from 'lucide-react'
 import { Calendar, CalendarDays, CalendarMinus, CalendarRange, Sun } from 'lucide-react'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
+import { isPeriodRunning, livePeriodHours, type Received } from '@/lib/liveCounter'
 import { cn } from '@/lib/utils'
 import type { WorkedHoursDTO } from '@/services'
 import { formatHoursValue } from '../../lib/hoursPeriod'
 
 type HoursStatsGridProps = {
-  hours: WorkedHoursDTO
+  /** Heures nettes par période (D12), avec l'instant de réception */
+  hours: Received<WorkedHoursDTO>
   /** Rechargement en cours : cartes estompées et inactives */
   loading: boolean
 }
 
 type HoursCard = {
-  key: keyof WorkedHoursDTO
+  key: 'day' | 'week' | 'month' | 'year' | 'lastMonth'
   label: string
   icon: LucideIcon
   borderClass: string
@@ -56,8 +59,15 @@ const CARDS: HoursCard[] = [
   },
 ]
 
-/** Cartes des heures renvoyées par l'API (seules les périodes présentes dans la réponse). */
+/**
+ * Cartes des heures renvoyées par l'API (seules les périodes présentes dans la réponse) ; une
+ * période en cours avance en direct.
+ */
 export function HoursStatsGrid({ hours, loading }: HoursStatsGridProps) {
+  const cards = CARDS.filter((card) => hours.data[card.key] !== undefined)
+  const running = cards.some((card) => isPeriodRunning(hours.data[card.key]))
+  const elapsed = useLiveElapsed(hours.receivedAt, running)
+
   return (
     <div
       className={cn(
@@ -65,27 +75,25 @@ export function HoursStatsGrid({ hours, loading }: HoursStatsGridProps) {
         loading && 'pointer-events-none opacity-50',
       )}
     >
-      {CARDS.filter((card) => hours[card.key] !== undefined).map(
-        ({ key, label, icon: Icon, borderClass, iconClass }) => (
-          <div
-            key={key}
-            className={cn(
-              'flex items-center gap-4 rounded-lg border-l-4 bg-muted/50 p-4',
-              borderClass,
-            )}
-          >
-            <div className={cn('flex size-12 items-center justify-center rounded-lg', iconClass)}>
-              <Icon className="size-6" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="text-2xl font-semibold text-foreground">
-                {formatHoursValue(hours[key])}
-              </p>
-            </div>
+      {cards.map(({ key, label, icon: Icon, borderClass, iconClass }) => (
+        <div
+          key={key}
+          className={cn(
+            'flex items-center gap-4 rounded-lg border-l-4 bg-muted/50 p-4',
+            borderClass,
+          )}
+        >
+          <div className={cn('flex size-12 items-center justify-center rounded-lg', iconClass)}>
+            <Icon className="size-6" />
           </div>
-        ),
-      )}
+          <div>
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="text-2xl font-semibold text-foreground">
+              {formatHoursValue(livePeriodHours(hours.data[key], elapsed))}
+            </p>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

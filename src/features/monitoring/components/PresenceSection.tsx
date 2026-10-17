@@ -9,12 +9,20 @@ type PresenceSectionProps = {
   /** Pastille du titre */
   dotClass: string
   users: UserWithStatusDTO[]
+  receivedAt: number
   color: PresenceColor
   actions: MonitoringActions
 }
 
 /** Section « Présents » ou « En pause » : titre avec compteur puis grille ; rien si vide. */
-export function PresenceSection({ title, dotClass, users, color, actions }: PresenceSectionProps) {
+export function PresenceSection({
+  title,
+  dotClass,
+  users,
+  receivedAt,
+  color,
+  actions,
+}: PresenceSectionProps) {
   if (users.length === 0) return null
 
   return (
@@ -24,7 +32,7 @@ export function PresenceSection({ title, dotClass, users, color, actions }: Pres
         {title}
         <span className="text-sm font-normal text-muted-foreground">({users.length})</span>
       </h2>
-      <PresenceGrid users={users} color={color} actions={actions} />
+      <PresenceGrid users={users} receivedAt={receivedAt} color={color} actions={actions} />
     </section>
   )
 }

@@ -2,8 +2,12 @@ import { useId } from 'react'
 import { LoaderCircle, Pause, Play, Square } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useDayKey } from '@/hooks/useDayChange'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
+import { isLineRunning, liveDurations } from '@/lib/liveCounter'
+import { formatSince } from '@/lib/serviceLines'
 import { cn } from '@/lib/utils'
-import { calculateDuration, formatTime } from '@/utils/timeFormatters'
+import { formatDuration } from '@/utils/timeFormatters'
 import {
   getStatusBadgeClass,
   getStatusDotClass,
@@ -23,8 +27,9 @@ type UserStatusCardProps = {
 
 /**
  * Statut actuel de l'employé et boutons pour pointer à sa place (pleine largeur sur téléphone).
- * Bug B-26 reproduit : la durée du pointage en cours est calculée au rendu, sans minuterie
- * (elle reste figée tant que la carte n'est pas redessinée).
+ * En service : début du service (avec sa date s'il a commencé un autre jour) et temps de travail
+ * net ; en pause : début et durée de la pause. Les durées viennent de l'API et avancent en direct
+ * (D12 ; B-26 : elles restaient figées).
  */
 export function UserStatusCard({
   statusInfo,
@@ -35,7 +40,10 @@ export function UserStatusCard({
   onEndBreak,
 }: UserStatusCardProps) {
   const titleId = useId()
-  const { status, activeServiceStart } = statusInfo
+  const { status, service, pause, receivedAt } = statusInfo
+  const todayKey = useDayKey()
+  const elapsed = useLiveElapsed(receivedAt, !!service && isLineRunning(service))
+  const durations = service ? liveDurations(service, elapsed) : null
   const spinner = <LoaderCircle className="size-4 animate-spin" />
 
   return (
@@ -55,12 +63,22 @@ export function UserStatusCard({
             {getStatusText(status)}
           </Badge>
         </div>
-        {activeServiceStart && (
+        {service && durations && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Play className="size-4 text-green-500" />
-            <span>Depuis {formatTime(activeServiceStart)}</span>
-            <span className="rounded-md bg-muted px-2 py-0.5 font-mono font-medium">
-              {calculateDuration(activeServiceStart)}
+            {pause ? (
+              <Pause className="size-4 text-amber-500" />
+            ) : (
+              <Play className="size-4 text-green-500" />
+            )}
+            <span>
+              {pause ? 'En pause depuis' : 'Depuis'}{' '}
+              {formatSince(pause ? pause.debut : service.debut, todayKey)}
+            </span>
+            <span
+              className="rounded-md bg-muted px-2 py-0.5 font-mono font-medium tabular-nums"
+              title={pause ? 'Durée de la pause' : 'Temps de travail net, pauses déduites'}
+            >
+              {formatDuration(pause ? durations.dureePause : durations.dureeTravail)}
             </span>
           </div>
         )}

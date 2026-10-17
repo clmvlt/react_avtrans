@@ -4,10 +4,12 @@ import { ServiceTimeline } from './ServiceTimeline'
 
 type HistoryDayItemProps = {
   day: DayGroup
+  /** Secondes écoulées depuis la réception de l'historique (service en cours) */
+  elapsed: number
 }
 
-/** Carte d'un jour de l'historique : date, nombre de services, total, frise dépliable. */
-export function HistoryDayItem({ day }: HistoryDayItemProps) {
+/** Carte d'un jour de l'historique : date, nombre de services, total net, frise dépliable. */
+export function HistoryDayItem({ day, elapsed }: HistoryDayItemProps) {
   return (
     <AccordionItem
       value={day.date}
@@ -26,7 +28,7 @@ export function HistoryDayItem({ day }: HistoryDayItemProps) {
         </span>
       </AccordionTrigger>
       <AccordionContent className="border-t px-4 py-1">
-        <ServiceTimeline services={day.services} />
+        <ServiceTimeline lines={day.services} elapsed={elapsed} />
       </AccordionContent>
     </AccordionItem>
   )

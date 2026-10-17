@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { userServicesService, type ServiceUpdateRequest } from '@/services/userServices'
+import { userServicesService, type ServiceCreateRequest } from '@/services/userServices'
 import { invalidateUserServices } from './invalidateUserServices'
 
 /** Boutons de la carte de statut. */
@@ -7,41 +7,46 @@ export type AdminServiceAction = 'start' | 'end' | 'startBreak' | 'endBreak'
 
 type AdminServiceActionVariables = {
   action: AdminServiceAction
-  /** Pointage en cours (fin du service ou de la pause) */
-  activeServiceUuid: string | null
+  /** Service de travail en cours (« Terminer le service ») */
+  serviceUuid: string | null
+  /** Pause en cours (« Terminer la pause ») */
+  pauseUuid: string | null
 }
 
+/** Le type local du service n'a pas `isBreak`, que l'API accepte (comme `useAdminServiceMutations`). */
+type CreateRequest = ServiceCreateRequest & { isBreak?: boolean }
+
 /**
- * Démarrer / terminer le service ou la pause d'un employé, avec les mêmes appels que le Vue
+ * Démarrer / terminer le service ou la pause d'un employé, avec les mêmes routes que le Vue
  * (`createService` / `validateService`, heure de l'appareil en ISO UTC).
  *
- * Bug B-07 reproduit : « Démarrer une pause » fait 3 appels non atomiques (création, lecture du
- * pointage actif, passage en pause). Si l'API renvoie le service principal comme pointage actif,
- * c'est lui qui devient une pause.
+ * D12 : « Démarrer une pause » crée directement une pause, que l'API rattache au service en cours
+ * (bug B-07 corrigé par construction : l'ancien enchaînement création + lecture + passage en
+ * pause est refusé, l'employé ayant déjà un service en cours). « Terminer la pause » clôt la pause
+ * en cours, et non plus la ligne renvoyée comme pointage actif (toujours le service).
  */
 export function useAdminServiceActionMutation(userUuid: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ action, activeServiceUuid }: AdminServiceActionVariables) => {
+    mutationFn: async ({ action, serviceUuid, pauseUuid }: AdminServiceActionVariables) => {
       const now = new Date().toISOString()
       switch (action) {
         case 'start':
           await userServicesService.createService({ userUuid, debut: now })
           return
         case 'startBreak': {
-          await userServicesService.createService({ userUuid, debut: now })
-          const response = await userServicesService.getActiveService(userUuid)
-          if (response?.service?.uuid) {
-            const request: ServiceUpdateRequest = { isBreak: true }
-            await userServicesService.validateService(response.service.uuid, request)
-          }
+          const request: CreateRequest = { userUuid, debut: now, isBreak: true }
+          await userServicesService.createService(request)
           return
         }
         case 'end':
+          if (!serviceUuid) return
+          await userServicesService.validateService(serviceUuid, { fin: now })
+          return
         case 'endBreak':
-          if (!activeServiceUuid) return
-          await userServicesService.validateService(activeServiceUuid, { fin: now })
+          if (!pauseUuid) return
+          await userServicesService.validateService(pauseUuid, { fin: now })
           return
       }
     },

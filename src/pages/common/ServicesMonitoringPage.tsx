@@ -33,7 +33,7 @@ type ServicesMonitoringContentProps = {
 }
 
 function ServicesMonitoringContent({ onRetry }: ServicesMonitoringContentProps) {
-  const { users, isLoading, error } = useMonitoringUsers()
+  const { users, receivedAt, isLoading, error } = useMonitoringUsers()
   const [search, setSearch] = useState('')
   const [showAbsent, setShowAbsent] = useState(false)
   const hoursDialog = useDialogState<'hours', UserWithStatusDTO>()
@@ -82,6 +82,7 @@ function ServicesMonitoringContent({ onRetry }: ServicesMonitoringContentProps) 
             title="Présents"
             dotClass="bg-green-500"
             users={filtered.present}
+            receivedAt={receivedAt}
             color="green"
             actions={actions}
           />
@@ -89,11 +90,13 @@ function ServicesMonitoringContent({ onRetry }: ServicesMonitoringContentProps) 
             title="En pause"
             dotClass="bg-amber-500"
             users={filtered.onBreak}
+            receivedAt={receivedAt}
             color="amber"
             actions={actions}
           />
           <AbsentSection
             users={filtered.absent}
+            receivedAt={receivedAt}
             open={showAbsent}
             onOpenChange={setShowAbsent}
             actions={actions}

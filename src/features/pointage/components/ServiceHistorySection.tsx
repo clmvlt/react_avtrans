@@ -6,6 +6,8 @@ import { Accordion } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
+import { hasRunningLine } from '@/lib/serviceLines'
 import type { useServiceHistoryQuery } from '../api/useServiceHistoryQuery'
 import { groupHistoryByDay } from '../lib/groupHistoryByDay'
 import { HistoryDayItem } from './HistoryDayItem'
@@ -32,7 +34,9 @@ export function ServiceHistorySection({
   onResetFilters,
 }: ServiceHistorySectionProps) {
   const [openDays, setOpenDays] = useState<OpenDaysState | null>(null)
-  const days = groupHistoryByDay(query.data?.content ?? [])
+  const lines = query.data?.content ?? []
+  const elapsed = useLiveElapsed(query.data?.receivedAt, hasRunningLine(lines))
+  const days = groupHistoryByDay(lines, elapsed)
   // Comme le Vue : après chaque chargement de l'historique, seul le jour le plus récent est déplié
   const openValue =
     openDays?.dataUpdatedAt === query.dataUpdatedAt ? openDays.days : days[0] ? [days[0].date] : []
@@ -94,7 +98,7 @@ export function ServiceHistorySection({
           className="flex flex-col gap-2"
         >
           {days.map((day) => (
-            <HistoryDayItem key={day.date} day={day} />
+            <HistoryDayItem key={day.date} day={day} elapsed={elapsed} />
           ))}
         </Accordion>
         <SimplePagination

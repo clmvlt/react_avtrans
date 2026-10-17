@@ -19,9 +19,12 @@ import {
   getContractSortValue,
   getCurrentMonthYear,
   getYearOptions,
+  hasRunningComparison,
   shouldShowForecast,
+  toLiveComparisons,
 } from '@/features/hours/lib/contractFormat'
 import { sortRowsLikeVue } from '@/features/hours/lib/legacySort'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { cn } from '@/lib/utils'
 
 /**
@@ -37,6 +40,11 @@ export default function ContractHoursPage() {
   const [search, setSearch] = useState('')
   const [sorting, setSorting] = useState<SortingState>([])
   const comparisonQuery = useContractComparisonQuery(period.year, period.month)
+  // Compteurs en direct (D12) : un service en cours fait avancer les heures du mois
+  const elapsed = useLiveElapsed(
+    comparisonQuery.data?.receivedAt,
+    hasRunningComparison(comparisonQuery.data?.comparisons ?? []),
+  )
 
   const renderContent = () => {
     if (comparisonQuery.isPending) {
@@ -64,7 +72,8 @@ export default function ContractHoursPage() {
       )
     }
 
-    const { comparisons, joursOuvresRestants } = comparisonQuery.data
+    const { joursOuvresRestants } = comparisonQuery.data
+    const comparisons = toLiveComparisons(comparisonQuery.data.comparisons, elapsed)
     const filteredRows = buildContractRows(comparisons, search)
     const rows = sortRowsLikeVue(filteredRows, sorting, getContractSortValue)
     const forecast = shouldShowForecast(period, current, comparisons)

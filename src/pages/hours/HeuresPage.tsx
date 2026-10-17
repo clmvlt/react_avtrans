@@ -5,6 +5,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
+import { hoursKeys } from '@/features/hours/api/queryKeys'
 import { useUsersWithHoursQuery } from '@/features/hours/api/useUsersWithHoursQuery'
 import { HoursPageSkeleton } from '@/features/hours/components/HoursPageSkeleton'
 import { HoursSearchInput } from '@/features/hours/components/HoursSearchInput'
@@ -17,15 +18,22 @@ import {
   computeHoursTotals,
   filterUserHoursRows,
   getUserHoursSortValue,
+  hasRunningHours,
 } from '@/features/hours/lib/hoursFormat'
 import { sortRowsLikeVue } from '@/features/hours/lib/legacySort'
+import { useInvalidateOnDayChange } from '@/hooks/useDayChange'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { cn } from '@/lib/utils'
 
 /** Heures de tous les employés (admin) : totaux, recherche, cartes mobiles et tableau triable. */
 export default function HeuresPage() {
   const hoursQuery = useUsersWithHoursQuery()
+  useInvalidateOnDayChange(hoursKeys.usersWithHours())
   const [search, setSearch] = useState('')
   const [sorting, setSorting] = useState<SortingState>([])
+  const entries = hoursQuery.data?.users ?? []
+  // Compteurs en direct (D12) : les périodes en cours avancent entre deux réponses
+  const elapsed = useLiveElapsed(hoursQuery.data?.receivedAt, hasRunningHours(entries))
 
   const renderContent = () => {
     if (hoursQuery.isPending) {
@@ -53,8 +61,7 @@ export default function HeuresPage() {
       )
     }
 
-    const entries = hoursQuery.data
-    const filteredRows = filterUserHoursRows(buildUserHoursRows(entries), search)
+    const filteredRows = filterUserHoursRows(buildUserHoursRows(entries, elapsed), search)
     // Tri du Vue, B-19 compris (Date.parse sur les nombres d'heures)
     const rows = sortRowsLikeVue(filteredRows, sorting, getUserHoursSortValue, {
       parseDates: true,
@@ -62,7 +69,7 @@ export default function HeuresPage() {
 
     return (
       <div className="space-y-6">
-        <HoursStatsGrid totals={computeHoursTotals(entries)} />
+        <HoursStatsGrid totals={computeHoursTotals(entries, elapsed)} />
 
         <div className="space-y-4">
           <HoursSearchInput

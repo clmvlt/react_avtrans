@@ -1,15 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
+import { liveQueryOptions, receive, type Received } from '@/lib/liveCounter'
 import type { ServiceDTO } from '@/models'
 import { userServicesService } from '@/services'
 import { pointageKeys } from './queryKeys'
 
-const toServices = (response: ServiceDTO[] | null) => (Array.isArray(response) ? response : [])
+const toServices = ({ data, receivedAt }: Received<ServiceDTO[] | null>) => ({
+  data: Array.isArray(data) ? data : [],
+  receivedAt,
+})
 
-/** Services et pauses du jour de l'utilisateur connecté (GET /services/user/daily, tableau nu). */
+/**
+ * Services de travail débutés aujourd'hui par l'utilisateur connecté, avec leurs pauses imbriquées
+ * (GET /services/user/daily, tableau nu ; plus aucune pause au premier niveau depuis D12).
+ */
 export function useDailyServicesQuery() {
   return useQuery({
     queryKey: pointageKeys.daily(),
-    queryFn: () => userServicesService.getDailyServices(),
+    queryFn: () => receive(userServicesService.getDailyServices()),
     select: toServices,
+    ...liveQueryOptions,
   })
 }

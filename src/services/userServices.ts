@@ -1,5 +1,5 @@
 import { apiClient } from '@/api'
-import type { ServiceDTO, ServiceModificationDTO, ServiceModificationSearchRequest } from '@/models'
+import type { HeuresPeriodeDTO, ServiceDTO, ServiceModificationDTO, ServiceModificationSearchRequest } from '@/models'
 import type { SuccessMessageResponse, ApiResponse, PagedResponse } from '@/types'
 
 /**
@@ -20,15 +20,16 @@ export type ServiceStartRequest = GpsLocationRequest
 export type ServiceEndRequest = GpsLocationRequest
 
 /**
- * Worked hours response
- * Values are in hours (decimal format)
+ * Worked hours response — D12 : chaque période est un HeuresPeriodeDTO (secondes, heures, enCours)
+ * calculé à `calculeLe`. Avec `?period=`, seule cette période est présente.
  */
 export interface WorkedHoursDTO {
-  year?: number
-  month?: number
-  week?: number
-  day?: number
-  lastMonth?: number
+  calculeLe?: string
+  year?: HeuresPeriodeDTO
+  month?: HeuresPeriodeDTO
+  week?: HeuresPeriodeDTO
+  day?: HeuresPeriodeDTO
+  lastMonth?: HeuresPeriodeDTO
 }
 
 /**
@@ -75,6 +76,8 @@ export interface ServiceCreateRequest {
   latitude?: number
   longitude?: number
   comment?: string
+  /** Pause uniquement : service de rattachement (absent : service en cours au début de la pause) — D12 */
+  serviceParentUuid?: string
 }
 
 /**
@@ -86,22 +89,14 @@ export interface ServiceUpdateRequest {
   latitude?: number
   longitude?: number
   isBreak?: boolean
+  /** Pause uniquement : service de rattachement — D12 */
+  serviceParentUuid?: string
 }
 
 /**
- * Active service data
+ * Active service data — D12 : toujours le service de travail en cours, avec ses pauses
  */
-export interface ActiveServiceData {
-  uuid: string
-  debut: string
-  fin?: string | null
-  duree?: number
-  isBreak: boolean
-  latitude?: number
-  longitude?: number
-  isAdmin?: boolean
-  userUuid: string
-}
+export type ActiveServiceData = ServiceDTO
 
 /**
  * Active service response (admin)

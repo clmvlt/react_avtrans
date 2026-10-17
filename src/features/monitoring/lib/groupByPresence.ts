@@ -30,8 +30,8 @@ export function filterPresenceGroups(groups: PresenceGroups, search: string): Pr
 }
 
 /**
- * Heures du jour en « 7h05 », « 0h00 » si nulles. Bug B-18 reproduit : l'arrondi des minutes peut
- * donner « 7h60 ».
+ * Heures décimales en « 7h05 », « 0h00 » si nulles (heures du jour, `hoursToday` en direct, D12).
+ * Bug B-18 reproduit : l'arrondi des minutes peut donner « 7h60 ».
  */
 export function formatHoursToday(hours?: number): string {
   if (!hours || hours === 0) return '0h00'

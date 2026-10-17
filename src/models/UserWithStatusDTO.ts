@@ -1,29 +1,13 @@
 import { UserStatus } from '../enums'
+import type { HeuresPeriodeDTO } from './HeuresPeriodeDTO'
 import type { RoleDTO } from './RoleDTO'
+import type { ServiceDTO } from './ServiceDTO'
 
 /**
- * Service actif de l'utilisateur
+ * Service actif de l'utilisateur (D12) : toujours le service de travail, avec ses pauses,
+ * `enPause` et `dureeTravail`
  */
-export interface ActiveServiceDTO {
-  /** UUID du service */
-  uuid: string
-  /** Date et heure de debut du service */
-  debut: string
-  /** Date et heure de fin du service (null si en cours) */
-  fin: string | null
-  /** Duree du service en secondes */
-  duree: number
-  /** Indique si c'est une pause */
-  isBreak: boolean
-  /** Latitude de la position */
-  latitude: number | null
-  /** Longitude de la position */
-  longitude: number | null
-  /** Indique si le service a ete cree par un admin */
-  isAdmin: boolean
-  /** UUID de l'utilisateur */
-  userUuid: string
-}
+export type ActiveServiceDTO = ServiceDTO
 
 /**
  * Utilisateur avec son statut de presence actuel
@@ -45,8 +29,10 @@ export interface UserWithStatusDTO {
   isCouchette?: boolean
   /** Statut de presence : PRESENT (en service), ON_BREAK (en pause), ABSENT (pas de service actif) */
   status?: UserStatus
-  /** Service actif (si present ou en pause) */
+  /** Service de travail en cours avec ses pauses (si present ou en pause) */
   activeService?: ActiveServiceDTO | null
-  /** Heures travaillees aujourd'hui */
-  hoursToday?: number
+  /** Heures travaillees nettes des services debutes aujourd'hui */
+  hoursToday?: HeuresPeriodeDTO
+  /** Instant de calcul (heure serveur) */
+  calculeLe?: string
 }

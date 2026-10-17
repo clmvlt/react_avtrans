@@ -66,6 +66,7 @@ export function ServiceFormDialog({
 
         {target && (
           <ServiceForm
+            userUuid={userUuid}
             isEdit={isEdit}
             defaultValues={target.values}
             coordinates={target.coordinates}

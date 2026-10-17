@@ -1,16 +1,18 @@
 import { useId } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { Calendar, CalendarDays, CalendarRange, Sun } from 'lucide-react'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
+import { isPeriodRunning, livePeriodHours, type Received } from '@/lib/liveCounter'
 import { cn } from '@/lib/utils'
 import type { WorkedHoursDTO } from '@/services'
 import { formatHoursMinutes } from '@/utils/timeFormatters'
 
 type WorkedHoursStatsProps = {
-  hours: WorkedHoursDTO
+  hours: Received<WorkedHoursDTO>
 }
 
 type StatItem = {
-  key: keyof WorkedHoursDTO
+  key: 'day' | 'week' | 'month' | 'lastMonth'
   label: string
   icon: LucideIcon
   iconClass: string
@@ -33,9 +35,14 @@ const STATS: StatItem[] = [
   },
 ]
 
-/** Heures travaillées de l'employé : aujourd'hui, semaine, mois, mois dernier. */
+/**
+ * Heures nettes de l'employé selon l'API : aujourd'hui, semaine, mois, mois dernier. Une période
+ * avec un service en cours avance en direct.
+ */
 export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
   const titleId = useId()
+  const running = STATS.some(({ key }) => isPeriodRunning(hours.data[key]))
+  const elapsed = useLiveElapsed(hours.receivedAt, running)
 
   return (
     <section aria-labelledby={titleId} className="space-y-3">
@@ -58,7 +65,7 @@ export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
                 {label}
               </p>
               <p className="font-mono text-lg font-bold text-foreground sm:text-xl">
-                {formatHoursMinutes(hours[key])}
+                {formatHoursMinutes(livePeriodHours(hours.data[key], elapsed))}
               </p>
             </div>
           </div>

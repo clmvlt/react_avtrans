@@ -3,9 +3,10 @@ import type { ServiceDTO } from '@/models'
 /** État du pointage : hors service, en service ou en pause. */
 export type PointageStatus = 'off' | 'working' | 'break'
 
+/** D'après le service de travail en cours (GET /services/active), qui porte `enPause` (D12). */
 export function getPointageStatus(activeService: ServiceDTO | null): PointageStatus {
   if (!activeService) return 'off'
-  return activeService.isBreak ? 'break' : 'working'
+  return activeService.enPause ? 'break' : 'working'
 }
 
 export const STATUS_TEXT: Record<PointageStatus, string> = {

@@ -1,21 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
+import { liveQueryOptions, receive, type Received } from '@/lib/liveCounter'
 import { userServicesService, type WorkedHoursDTO } from '@/services'
 import { pointageKeys } from './queryKeys'
 
-/** Heures décimales normalisées (0 si absentes), comme `loadData` de Pointage.vue. */
-const toWorkedHours = (response: WorkedHoursDTO | null) => ({
-  day: response?.day || 0,
-  week: response?.week || 0,
-  month: response?.month || 0,
-  year: response?.year || 0,
-  lastMonth: response?.lastMonth || 0,
+const toWorkedHours = ({ data, receivedAt }: Received<WorkedHoursDTO | null>) => ({
+  data: data ?? {},
+  receivedAt,
 })
 
-/** Heures travaillées de l'utilisateur connecté, toutes périodes (GET /services/hours). */
+/**
+ * Heures nettes de l'utilisateur connecté, toutes périodes (GET /services/hours) : chaque période
+ * est un `HeuresPeriodeDTO` qui avance en direct s'il est `enCours`.
+ */
 export function useMyWorkedHoursQuery() {
   return useQuery({
     queryKey: pointageKeys.hours(),
-    queryFn: () => userServicesService.getWorkedHours(),
+    queryFn: () => receive(userServicesService.getWorkedHours()),
     select: toWorkedHours,
+    ...liveQueryOptions,
   })
 }

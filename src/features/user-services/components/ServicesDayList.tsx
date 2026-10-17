@@ -3,8 +3,9 @@ import { DataTablePagination } from '@/components/shared/DataTablePagination'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Empty } from '@/components/ui/empty'
-import type { ServiceDTO } from '@/models'
-import type { PagedResponse } from '@/types'
+import { useLiveElapsed } from '@/hooks/useLiveElapsed'
+import { hasRunningLine } from '@/lib/serviceLines'
+import type { UserServicesPage } from '../api/useUserServicesQuery'
 import { groupServicesByDay } from '../lib/groupServicesByDay'
 import { ServiceDayCard } from './ServiceDayCard'
 import type { ServiceRowHandlers } from './ServiceRowActions'
@@ -12,7 +13,7 @@ import { ServicesListSkeleton } from './ServicesListSkeleton'
 
 type ServicesDayListProps = {
   /** Page reçue (la précédente reste affichée pendant le chargement d'une autre page) */
-  data: PagedResponse<ServiceDTO> | undefined
+  data: UserServicesPage | undefined
   isLoading: boolean
   isFetching: boolean
   isError: boolean
@@ -23,7 +24,10 @@ type ServicesDayListProps = {
   onAddForDate: (date: string) => void
 }
 
-/** Pointages de la page, regroupés par journée, avec états de chargement, d'erreur et vide. */
+/**
+ * Pointages de la page, regroupés par journée, avec états de chargement, d'erreur et vide. La durée
+ * d'un pointage en cours et le total de sa journée avancent en direct.
+ */
 export function ServicesDayList({
   data,
   isLoading,
@@ -35,6 +39,10 @@ export function ServicesDayList({
   onAdd,
   onAddForDate,
 }: ServicesDayListProps) {
+  const services = data?.content ?? []
+  // Hook appelé avant les retours anticipés (règles des hooks)
+  const elapsed = useLiveElapsed(data?.receivedAt, hasRunningLine(services))
+
   if (isLoading) return <ServicesListSkeleton />
 
   if (isError) {
@@ -47,8 +55,7 @@ export function ServicesDayList({
     )
   }
 
-  const services = data?.content ?? []
-  const days = groupServicesByDay(services)
+  const days = groupServicesByDay(services, elapsed)
 
   return (
     <div className="space-y-4">

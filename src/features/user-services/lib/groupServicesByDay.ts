@@ -1,7 +1,9 @@
-import { toLocalDateKey } from '@/lib/dates'
+import { parseLocalDateKey, toLocalDateKey } from '@/lib/dates'
+import { liveLineSeconds } from '@/lib/liveCounter'
+import { groupLinesByServiceDay, sumWorkSeconds } from '@/lib/serviceLines'
 import type { ServiceDTO } from '@/models'
 
-/** Pointage d'une journée, avec ses badges de décalage de jour. */
+/** Pointage d'une journée, avec ses badges de décalage de jour et sa durée affichée. */
 export type ServiceDayItem = ServiceDTO & {
   /** « 10 juin » si le pointage commence un autre jour que l'en-tête */
   startDayLabel: string
@@ -9,6 +11,8 @@ export type ServiceDayItem = ServiceDTO & {
   /** « 10 juin » si le pointage franchit minuit */
   endDayLabel: string
   endDayTooltip: string
+  /** Temps net d'un service (`dureeTravail`), durée d'une pause, en direct si en cours (s) */
+  durationSeconds: number
 }
 
 export type ServiceDay = {
@@ -20,7 +24,9 @@ export type ServiceDay = {
   dateFormatted: string
   /** Services et pauses mêlés, dans l'ordre chronologique */
   allServices: ServiceDayItem[]
-  /** « 7h 30min » : durée des services moins durée des pauses */
+  /** La journée contient au moins un service de travail (sinon, pas de total) */
+  hasWork: boolean
+  /** « 7h 30min » : somme des temps nets des services */
   totalHours: string
   totalSeconds: number
 }
@@ -50,43 +56,19 @@ function relativeDayTooltip(target: Date, reference: Date): string {
 }
 
 /**
- * Regroupe une page de pointages par journée (servicesByDay de useUserServices.ts) :
- * - une pause est rattachée au service de travail qui la contient (pause de nuit), sinon à sa date ;
+ * Regroupe une page de pointages par journée (servicesByDay de useUserServices.ts), D12 :
+ * - un service compte sur son jour de début, même s'il finit le lendemain ; ses pauses le suivent
+ *   (`serviceParentUuid`), y compris après minuit (badges de décalage de jour) ;
  * - chaque journée est triée chronologiquement, les journées de la plus récente à la plus ancienne ;
- * - total = durée des services moins durée des pauses.
- * Bug B-26 reproduit : le calcul porte sur la page affichée (20 pointages), le total d'une journée
- * à cheval sur deux pages est donc faux.
+ * - total = somme des temps nets (`dureeTravail`) des services, pauses déjà déduites par l'API ;
+ *   `elapsed` fait avancer un pointage en cours.
+ * Le calcul porte sur la page affichée (20 pointages) : une journée dont les services sont répartis
+ * sur deux pages n'a ici que le total de ceux de la page (B-26).
  */
-export function groupServicesByDay(services: ServiceDTO[]): ServiceDay[] {
-  const workIntervals = services
-    .filter((s) => !s.isBreak)
-    .map((s) => ({
-      start: time(s.debut),
-      end: s.fin ? time(s.fin) : Infinity,
-      dateKey: toLocalDateKey(new Date(s.debut ?? '')),
-    }))
-
-  const resolveDayKey = (service: ServiceDTO): string => {
-    if (service.isBreak) {
-      const startTime = time(service.debut)
-      const container = workIntervals.find((w) => startTime >= w.start && startTime <= w.end)
-      if (container) return container.dateKey
-    }
-    return toLocalDateKey(new Date(service.debut ?? ''))
-  }
-
-  const grouped = new Map<string, ServiceDTO[]>()
-  for (const service of services) {
-    const dateKey = resolveDayKey(service)
-    const list = grouped.get(dateKey)
-    if (list) list.push(service)
-    else grouped.set(dateKey, [service])
-  }
-
-  return [...grouped.entries()]
+export function groupServicesByDay(services: ServiceDTO[], elapsed = 0): ServiceDay[] {
+  return [...groupLinesByServiceDay(services).entries()]
     .map(([dateKey, dayServices]): ServiceDay => {
-      const [y, m, d] = dateKey.split('-').map(Number)
-      const date = new Date(y || 1970, (m || 1) - 1, d || 1)
+      const date = parseLocalDateKey(dateKey) ?? new Date(dateKey)
 
       const allServices = [...dayServices]
         .sort((a, b) => time(a.debut) - time(b.debut))
@@ -102,12 +84,11 @@ export function groupServicesByDay(services: ServiceDTO[]): ServiceDay[] {
             startDayTooltip: startsOtherDay ? relativeDayTooltip(debutDate, date) : '',
             endDayLabel: finDate && endsOtherDay ? formatShortDate(finDate) : '',
             endDayTooltip: finDate && endsOtherDay ? relativeDayTooltip(finDate, debutDate) : '',
+            durationSeconds: liveLineSeconds(s, elapsed),
           }
         })
 
-      const sum = (list: ServiceDTO[]) => list.reduce((total, s) => total + (s.duree || 0), 0)
-      const totalSeconds =
-        sum(dayServices.filter((s) => !s.isBreak)) - sum(dayServices.filter((s) => s.isBreak))
+      const totalSeconds = sumWorkSeconds(dayServices, elapsed)
       const hours = Math.floor(totalSeconds / 3600)
       const minutes = Math.floor((totalSeconds % 3600) / 60)
 
@@ -120,9 +101,10 @@ export function groupServicesByDay(services: ServiceDTO[]): ServiceDay[] {
           year: 'numeric',
         }),
         allServices,
+        hasWork: dayServices.some((s) => !s.isBreak),
         totalHours: minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`,
         totalSeconds,
       }
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => b.date.localeCompare(a.date))
 }

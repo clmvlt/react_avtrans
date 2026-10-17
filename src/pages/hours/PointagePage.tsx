@@ -40,7 +40,7 @@ export default function PointagePage() {
 
   const actionButtons = (
     <PointageActions
-      status={getPointageStatus(data.activeService)}
+      status={getPointageStatus(data.active.data)}
       loading={actions.isPending}
       layout="row"
       onStart={actions.start}
@@ -67,8 +67,9 @@ export default function PointagePage() {
         {/* Colonne gauche : état, compteurs, services du jour */}
         <div className="space-y-4">
           <StatusHeroCard
-            activeService={data.activeService}
-            todayServices={data.todayServices}
+            active={data.active}
+            todayServices={data.today.data}
+            hours={data.hours}
             locationDenied={geolocation.permission === 'denied'}
             onRetryLocation={() => void geolocation.requestLocation()}
             showKilometrageReminder={kilometrage.mustEnterToday}
@@ -76,8 +77,8 @@ export default function PointagePage() {
           >
             {actionButtons}
           </StatusHeroCard>
-          <WorkedHoursStats hours={data.workedHours} />
-          <TodayServicesCard services={data.todayServices} activeService={data.activeService} />
+          <WorkedHoursStats hours={data.hours} />
+          <TodayServicesCard today={data.today} />
         </div>
 
         {/* Colonne droite : historique */}

@@ -1,26 +1,29 @@
 import { ArrowRight, ClipboardList } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
+import { isLineRunning, liveLineSeconds } from '@/lib/liveCounter'
 import { cn } from '@/lib/utils'
 import type { ServiceDTO } from '@/models'
 import { formatDuration } from '@/utils/timeFormatters'
 import { toTime } from '../lib/formatters'
 
 type ServiceTimelineProps = {
-  services: ServiceDTO[]
-  /** UUID du service en cours : sa durée est calculée en direct à partir de `elapsedMs` */
-  activeUuid?: string
-  elapsedMs?: number
+  /** Services et pauses, dans l'ordre d'affichage */
+  lines: ServiceDTO[]
+  /** Secondes écoulées depuis la réception : les lignes en cours avancent d'autant */
+  elapsed?: number
   emptyText?: string
 }
 
-/** Frise verticale des services et pauses (ServiceTimeline.vue). */
+/**
+ * Frise verticale des services et pauses (ServiceTimeline.vue). Durée d'un service = temps net
+ * (`dureeTravail`), d'une pause = `duree`, calculées par l'API et en direct pour une ligne en cours.
+ */
 export function ServiceTimeline({
-  services,
-  activeUuid,
-  elapsedMs = 0,
+  lines,
+  elapsed = 0,
   emptyText = 'Aucun service enregistré',
 }: ServiceTimelineProps) {
-  if (!services.length) {
+  if (!lines.length) {
     return (
       <Empty className="gap-2 p-0 py-6 md:p-0 md:py-6">
         <EmptyMedia className="mb-0">
@@ -31,24 +34,16 @@ export function ServiceTimeline({
     )
   }
 
-  const isActive = (service: ServiceDTO) => !!activeUuid && service.uuid === activeUuid
-
-  const durationOf = (service: ServiceDTO) => {
-    if (service.fin) return formatDuration(service.duree || 0)
-    if (isActive(service)) return formatDuration(Math.floor(elapsedMs / 1000))
-    return '--'
-  }
-
   return (
     <ol className="relative ml-1.5 border-l border-border pl-5">
-      {services.map((service, index) => (
+      {lines.map((service, index) => (
         <li key={service.uuid ?? index} className="relative py-2.5">
           {/* Point sur la frise */}
           <span
             className={cn(
               'absolute top-[1.05rem] left-[calc(-1.25rem_-_5.5px)] size-2.5 rounded-full ring-4 ring-card',
               service.isBreak ? 'bg-amber-500' : 'bg-green-500',
-              isActive(service) && 'animate-pulse',
+              isLineRunning(service) && 'animate-pulse',
             )}
           />
 
@@ -77,12 +72,12 @@ export function ServiceTimeline({
             <span
               className={cn(
                 'shrink-0 font-mono text-sm tabular-nums',
-                isActive(service)
+                isLineRunning(service)
                   ? 'font-semibold text-green-600 dark:text-green-400'
                   : 'text-muted-foreground',
               )}
             >
-              {durationOf(service)}
+              {formatDuration(liveLineSeconds(service, elapsed))}
             </span>
           </div>
         </li>

@@ -5,6 +5,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { UserAvatar } from '@/components/shared/UserAvatar'
 import { Button } from '@/components/ui/button'
 import { useServiceHistory } from '@/features/service-history/hooks/useServiceHistory'
+import { adminServicesKeys } from '@/features/user-services/api/queryKeys'
 import { useDeleteAdminServiceMutation } from '@/features/user-services/api/useAdminServiceMutations'
 import { useUserActiveServiceQuery } from '@/features/user-services/api/useUserActiveServiceQuery'
 import { useUserWorkedHoursQuery } from '@/features/user-services/api/useUserWorkedHoursQuery'
@@ -21,6 +22,7 @@ import { useServiceDialogs } from '@/features/user-services/hooks/useServiceDial
 import { useUserServicesList } from '@/features/user-services/hooks/useUserServicesList'
 import { ABSENT_STATUS } from '@/features/user-services/lib/serviceStatus'
 import { useUserQuery } from '@/features/users/api/useUserQuery'
+import { useInvalidateOnDayChange } from '@/hooks/useDayChange'
 
 /** Toutes les heures travaillées (même clé que la période « Toutes » du dialog des heures). */
 const ALL_HOURS_PARAMS = {}
@@ -43,8 +45,9 @@ type UserServicesContentProps = {
 function UserServicesContent({ userUuid }: UserServicesContentProps) {
   const userQuery = useUserQuery(userUuid)
   const statusQuery = useUserActiveServiceQuery(userUuid)
-  // Échec silencieux ; pas rechargé après une action (bug B-26 reproduit)
+  // Échec silencieux ; rechargé après une action et au changement de jour (compteurs en direct, D12)
   const hoursQuery = useUserWorkedHoursQuery(userUuid, ALL_HOURS_PARAMS)
+  useInvalidateOnDayChange(adminServicesKeys.userHours(userUuid))
   const list = useUserServicesList(userUuid)
   const { filters, query: servicesQuery } = list
   const dialogs = useServiceDialogs()
@@ -53,9 +56,7 @@ function UserServicesContent({ userUuid }: UserServicesContentProps) {
 
   // En chargement ou en erreur : absent, comme le Vue
   const statusInfo = statusQuery.data ?? ABSENT_STATUS
-  const actions = useAdminServiceActions(userUuid, statusInfo.activeServiceUuid, () =>
-    filters.load(0),
-  )
+  const actions = useAdminServiceActions(userUuid, statusInfo, () => filters.load(0))
 
   const user = userQuery.data
   const userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : ''

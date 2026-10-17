@@ -1,5 +1,6 @@
 import { addDaysToKey } from '@/lib/dates'
 import type { ServiceDTO } from '@/models'
+import type { ServiceSearchParams } from '@/services'
 import { getCurrentTime, getTodayDate, toLocalDateTimeString } from '@/utils/timeFormatters'
 import type { ServiceFormValues } from '../schemas/serviceForm'
 
@@ -35,6 +36,8 @@ export type AdminServicePayload = {
   latitudeEnd?: number
   longitudeEnd?: number
   isBreak: boolean
+  /** Pause : service de rattachement choisi (absent : automatique ou inchangé) — D12 */
+  serviceParentUuid?: string
 }
 
 /**
@@ -52,6 +55,7 @@ export function createServiceFormValues(date?: string): ServiceFormValues {
     hasEnd: true,
     finDate: day,
     finTime: now,
+    serviceParentUuid: '',
   }
 }
 
@@ -66,6 +70,7 @@ export function editServiceFormValues(service: ServiceDTO): ServiceFormValues {
     hasEnd: !!service.fin,
     finDate: fin ? fin.split('T')[0] || '' : '',
     finTime: fin ? fin.split('T')[1] || '' : '',
+    serviceParentUuid: service.serviceParentUuid ?? '',
   }
 }
 
@@ -83,10 +88,15 @@ export function serviceCoordinates(service: ServiceDTO): ServiceCoordinates {
  * Corps de la requête, comme useUserServices.ts : dates en heure locale naïve (`…T08:00:00`) ;
  * sans fin (« en cours ») la fin est omise, et l'API garde l'ancienne (impossible de rouvrir un
  * pointage, MIGRATION.md 8.3) ; une coordonnée à 0 est omise aussi.
+ *
+ * D12 : le service d'une pause n'est envoyé que s'il a été choisi et qu'il change
+ * (`initialParentUuid`) ; sinon l'API rattache la pause au service qui couvre son début, et
+ * re-rattache automatiquement une pause déplacée hors de son service.
  */
 export function toServicePayload(
   values: ServiceFormValues,
   coordinates: ServiceCoordinates,
+  initialParentUuid = '',
 ): AdminServicePayload {
   const finDate = values.hasEnd ? values.finDate : ''
   const finTime = values.hasEnd ? values.finTime : ''
@@ -98,7 +108,45 @@ export function toServicePayload(
     latitudeEnd: coordinates.latitudeEnd || undefined,
     longitudeEnd: coordinates.longitudeEnd || undefined,
     isBreak: values.isBreak,
+    serviceParentUuid:
+      values.isBreak && values.serviceParentUuid && values.serviceParentUuid !== initialParentUuid
+        ? values.serviceParentUuid
+        : undefined,
   }
+}
+
+/**
+ * Corps de recherche des services pouvant contenir une pause commençant le jour `date` : services
+ * de travail débutés ce jour-là ou la veille (service de nuit), du plus récent au plus ancien.
+ */
+export function parentCandidatesSearch(date: string): ServiceSearchParams {
+  return {
+    page: 0,
+    size: 50,
+    isBreak: false,
+    startDate: `${addDaysToKey(date, -1)}T00:00:00`,
+    endDate: `${date}T23:59:59`,
+    sortBy: 'debut',
+    sortDirection: 'desc',
+  }
+}
+
+const formatDayTime = (value: ServiceDTO['debut']) => {
+  const date = new Date(value ?? '')
+  if (!value || Number.isNaN(date.getTime())) return ''
+  const day = date.toLocaleDateString('fr-FR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+  })
+  const time = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return `${day} ${time}`
+}
+
+/** Libellé d'un service proposé pour une pause : « lun. 12/10 21:00 → mar. 13/10 05:00 ». */
+export function formatParentServiceLabel(service: ServiceDTO): string {
+  const fin = service.fin ? formatDayTime(service.fin) : 'en cours'
+  return `${formatDayTime(service.debut)} → ${fin}`
 }
 
 type DurationFields = Pick<

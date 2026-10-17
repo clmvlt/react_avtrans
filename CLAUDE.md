@@ -14,6 +14,7 @@ Ce projet est la **migration de l'app Vue 3** `D:\3_PROJET\AVTRANS\pointage2026\
 - Dev : `npm run dev` (port 5173, `host 0.0.0.0`). Pour lancer le Vue à côté : `npx vite --port 5174` depuis `vue_avtrans` (le CORS de l'API accepte toutes les origines).
 - Build : `npm run build` (`tsc -b && vite build && node scripts/prerender.cjs` : type-check, bundle compressé gzip + brotli, puis pré-rendu de la landing ; `PRERENDER_STRICT=1` pour échouer si le pré-rendu échoue)
 - Type-check : `npm run typecheck`
+- Tests : `npm test` (Vitest, fonctions pures de `src/lib` et `src/features/*/lib`, fuseau Europe/Paris)
 - Lint : `npm run lint` (échoue au moindre warning)
 - Format : `npm run format` / `npm run format:check`
 - Preview : `npm run preview`
@@ -115,6 +116,10 @@ src/
 - Mutations : invalider les clés concernées ; mises à jour optimistes seulement là où le Vue le fait déjà (todos, stock, paiement d'acompte).
 - Bouton d'action désactivé pendant `isPending` : pas de double requête.
 - Déconnexion : `queryClient.clear()` en plus du reset du store.
+
+## Heures et compteurs en direct (D12, `MIGRATION.md` section 14)
+- Aucun total d'heures n'est calculé à partir des lignes de pointage : on affiche `dureeTravail`, `duree` et les `HeuresPeriodeDTO` de l'API. Une pause appartient à son service (`serviceParentUuid`, `pauses`) et un service compte sur son jour de début.
+- Une valeur qui avance : `queryFn: () => receive(service.x())` (instant de réception sur `performance.now()`), `useLiveElapsed(receivedAt, avance)` puis les fonctions de `src/lib/liveCounter.ts`. Jamais de comparaison de `calculeLe` avec l'horloge du PC. Requêtes concernées : `...liveQueryOptions` et `useInvalidateOnDayChange`.
 
 ## État client
 - **Zustand : uniquement `src/stores/auth-store.ts`**. Le state ne se modifie que via les actions du store.

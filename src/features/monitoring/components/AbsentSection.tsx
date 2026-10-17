@@ -7,6 +7,7 @@ import { PresenceGrid } from './PresenceGrid'
 
 type AbsentSectionProps = {
   users: UserWithStatusDTO[]
+  receivedAt: number
   open: boolean
   onOpenChange: (open: boolean) => void
   actions: MonitoringActions
@@ -16,7 +17,13 @@ type AbsentSectionProps = {
  * Section « Absents », repliée par défaut (« Afficher » / « Masquer » en bout de ligne). Comme le
  * Vue, les résultats d'une recherche y restent cachés tant qu'elle est repliée.
  */
-export function AbsentSection({ users, open, onOpenChange, actions }: AbsentSectionProps) {
+export function AbsentSection({
+  users,
+  receivedAt,
+  open,
+  onOpenChange,
+  actions,
+}: AbsentSectionProps) {
   if (users.length === 0) return null
 
   return (
@@ -41,7 +48,7 @@ export function AbsentSection({ users, open, onOpenChange, actions }: AbsentSect
           </CollapsibleTrigger>
         </h2>
         <CollapsibleContent className="data-[state=closed]:animate-out data-[state=closed]:duration-150 data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:animate-in data-[state=open]:duration-200 data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2">
-          <PresenceGrid users={users} color="gray" actions={actions} />
+          <PresenceGrid users={users} receivedAt={receivedAt} color="gray" actions={actions} />
         </CollapsibleContent>
       </section>
     </Collapsible>

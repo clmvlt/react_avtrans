@@ -27,7 +27,9 @@ export function useMonitoringUsers() {
   }
 
   return {
-    users: query.data ?? [],
+    users: query.data?.users ?? [],
+    /** Réception de la dernière réponse : base des compteurs en direct */
+    receivedAt: query.data?.receivedAt ?? 0,
     /** Premier chargement sans données à afficher */
     isLoading: query.isPending || (!initialLoad.done && !query.data),
     /** Erreur du premier chargement, jamais effacée (B-16) */

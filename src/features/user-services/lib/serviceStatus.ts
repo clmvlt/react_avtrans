@@ -1,3 +1,5 @@
+import { currentPause, type Received } from '@/lib/liveCounter'
+import type { ServiceDTO } from '@/models'
 import type { ActiveServiceResponse } from '@/services'
 
 /** Statut d'un employé d'après son pointage en cours. */
@@ -5,28 +7,37 @@ export type AdminUserStatus = 'PRESENT' | 'ON_BREAK' | 'ABSENT'
 
 export type AdminUserStatusInfo = {
   status: AdminUserStatus
-  /** Début du pointage en cours (ISO), `null` si absent */
-  activeServiceStart: string | null
-  activeServiceUuid: string | null
+  /** Service de travail en cours, avec ses pauses ; `null` si absent */
+  service: ServiceDTO | null
+  /** Pause en cours du service (« Terminer la pause »), `null` sinon */
+  pause: ServiceDTO | null
+  /** Réception de la réponse (`performance.now()`) : base des durées en direct */
+  receivedAt: number
 }
 
 export const ABSENT_STATUS: AdminUserStatusInfo = {
   status: 'ABSENT',
-  activeServiceStart: null,
-  activeServiceUuid: null,
+  service: null,
+  pause: null,
+  receivedAt: 0,
 }
 
 /**
- * Statut déduit de GET /services/admin/{uuid}/active : pointage en cours = en service, ou en pause
- * si c'est une pause ; sinon (ou en cas d'erreur, côté page) absent.
+ * Statut déduit de GET /services/admin/{uuid}/active, qui renvoie toujours le service de travail
+ * (D12) : en pause si `enPause`, sinon en service ; absent sans service (ou en cas d'erreur, côté
+ * page).
  */
-export function toStatusInfo(response: ActiveServiceResponse | null): AdminUserStatusInfo {
-  const service = response?.service
-  if (!response?.success || !service) return ABSENT_STATUS
+export function toStatusInfo({
+  data,
+  receivedAt,
+}: Received<ActiveServiceResponse | null>): AdminUserStatusInfo {
+  const service = data?.service
+  if (!data?.success || !service) return ABSENT_STATUS
   return {
-    status: service.isBreak ? 'ON_BREAK' : 'PRESENT',
-    activeServiceStart: service.debut,
-    activeServiceUuid: service.uuid,
+    status: service.enPause ? 'ON_BREAK' : 'PRESENT',
+    service,
+    pause: service.enPause ? currentPause(service) : null,
+    receivedAt,
   }
 }
 

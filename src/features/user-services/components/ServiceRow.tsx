@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { isLineRunning } from '@/lib/liveCounter'
 import { cn } from '@/lib/utils'
 import { formatDuration, formatTime } from '@/utils/timeFormatters'
 import type { ServiceDayItem } from '../lib/groupServicesByDay'
@@ -14,7 +15,10 @@ type ServiceRowProps = {
 
 const toText = (value: Date | string | undefined) => (value ? String(value) : null)
 
-/** Un service ou une pause : horaires, badges (pause, décalage de jour, en cours, modifié), durée. */
+/**
+ * Un service ou une pause : horaires, badges (pause, décalage de jour, en cours, modifié), durée
+ * (temps net d'un service, durée d'une pause, en direct si en cours).
+ */
 export function ServiceRow({ service, handlers }: ServiceRowProps) {
   const fin = formatTime(toText(service.fin))
 
@@ -45,7 +49,7 @@ export function ServiceRow({ service, handlers }: ServiceRowProps) {
             <span className="font-medium text-foreground">{fin || '--:--'}</span>
             <DayOffsetBadge label={service.endDayLabel} tooltip={service.endDayTooltip} />
           </span>
-          {!service.fin && (
+          {isLineRunning(service) && (
             <Badge
               variant="outline"
               className="animate-pulse border-green-500/50 font-sans text-green-600 dark:text-green-400"
@@ -55,9 +59,12 @@ export function ServiceRow({ service, handlers }: ServiceRowProps) {
           )}
           <ModifiedBadge service={service} onOpenHistory={() => handlers.onHistory(service.uuid)} />
         </div>
-        {!!service.duree && (
-          <span className="font-mono text-sm text-muted-foreground">
-            {formatDuration(service.duree)}
+        {(service.durationSeconds > 0 || isLineRunning(service)) && (
+          <span
+            className="font-mono text-sm text-muted-foreground tabular-nums"
+            title={service.isBreak ? 'Durée de la pause' : 'Temps de travail net, pauses déduites'}
+          >
+            {formatDuration(service.durationSeconds)}
           </span>
         )}
       </div>

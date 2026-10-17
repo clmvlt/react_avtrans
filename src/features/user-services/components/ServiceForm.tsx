@@ -17,9 +17,12 @@ import {
 } from '../lib/serviceForm'
 import { serviceFormSchema, type ServiceFormValues } from '../schemas/serviceForm'
 import { DateTimeFields } from './DateTimeFields'
+import { ParentServiceField } from './ParentServiceField'
 import { ServiceTypeToggle } from './ServiceTypeToggle'
 
 type ServiceFormProps = {
+  /** Employé : services proposés comme service d'une pause */
+  userUuid: string
   isEdit: boolean
   defaultValues: ServiceFormValues
   coordinates: ServiceCoordinates
@@ -29,8 +32,13 @@ type ServiceFormProps = {
   onCancel: () => void
 }
 
-/** Formulaire d'un pointage (création ou modification), monté à chaque ouverture du dialog. */
+/**
+ * Formulaire d'un pointage (création ou modification), monté à chaque ouverture du dialog. Pour une
+ * pause, choix facultatif de son service (D12). Une erreur de l'API (pause hors de son service, fin
+ * avant le début…) s'affiche telle quelle sous le formulaire.
+ */
 export function ServiceForm({
+  userUuid,
   isEdit,
   defaultValues,
   coordinates,
@@ -70,7 +78,7 @@ export function ServiceForm({
 
   const submit = (values: ServiceFormValues) => {
     setFormError('')
-    onSubmit(toServicePayload(values, coordinates), setFormError)
+    onSubmit(toServicePayload(values, coordinates, defaultValues.serviceParentUuid), setFormError)
   }
 
   return (
@@ -96,6 +104,22 @@ export function ServiceForm({
           </div>
         }
       />
+
+      {isBreak && (
+        <Controller
+          name="serviceParentUuid"
+          control={form.control}
+          render={({ field }) => (
+            <ParentServiceField
+              userUuid={userUuid}
+              date={debutDate}
+              value={field.value}
+              onChange={field.onChange}
+              currentParentUuid={defaultValues.serviceParentUuid}
+            />
+          )}
+        />
+      )}
 
       <CheckboxCard
         checked={hasEnd}

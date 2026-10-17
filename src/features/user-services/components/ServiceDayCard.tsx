@@ -11,7 +11,7 @@ type ServiceDayCardProps = {
   onAddForDate: (date: string) => void
 }
 
-/** Une journée : nom et date, total travaillé, ajout, puis ses services et pauses. */
+/** Une journée : nom et date, total travaillé net, ajout, puis ses services et pauses. */
 export function ServiceDayCard({ day, handlers, onAddForDate }: ServiceDayCardProps) {
   return (
     <div className="overflow-hidden rounded-xl border bg-card">
@@ -21,13 +21,15 @@ export function ServiceDayCard({ day, handlers, onAddForDate }: ServiceDayCardPr
           <span className="text-sm text-muted-foreground">{day.dateFormatted}</span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <div
-            className="flex items-center gap-1.5 rounded-md bg-background px-2.5 py-1.5 text-sm font-semibold text-primary"
-            title="Total travaillé ce jour"
-          >
-            <Clock className="size-4" />
-            <span>{day.totalHours}</span>
-          </div>
+          {day.hasWork && (
+            <div
+              className="flex items-center gap-1.5 rounded-md bg-background px-2.5 py-1.5 text-sm font-semibold text-primary"
+              title="Total travaillé ce jour, pauses déduites"
+            >
+              <Clock className="size-4" />
+              <span>{day.totalHours}</span>
+            </div>
+          )}
           <Button
             type="button"
             variant="outline"

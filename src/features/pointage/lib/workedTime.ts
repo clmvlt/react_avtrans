@@ -1,51 +1,40 @@
+import type { LiveDurations } from '@/lib/liveCounter'
 import type { ServiceDTO } from '@/models'
 
-const toMs = (date: Date | string) => new Date(date).getTime()
+/**
+ * Temps affichés par la carte d'état. Aucun total n'est recalculé à partir des lignes brutes
+ * (D12) : les durées viennent de l'API (`dureeTravail`, `duree` des pauses) et avancent en direct
+ * (`liveDurations`). Seul le segment en cours (depuis la fin de la dernière pause) est déduit,
+ * à partir des horodatages de l'API, jamais de l'horloge du PC.
+ */
+
+const toMs = (value: ServiceDTO['debut']) => new Date(value ?? '').getTime()
+
+/** Segment de travail en cours d'un service hors pause : depuis quand, et sa durée (s). */
+export type WorkSegment = {
+  start: ServiceDTO['debut']
+  seconds: number
+}
 
 /**
- * Temps travaillé du jour en direct (ms), repris tel quel de Pointage.vue (`todayWorkedTime`) :
- * services terminés moins les pauses **terminées** ; le service en cours ajoute `elapsedMs` ;
- * pendant une pause, le travail est figé au début de la pause.
- *
- * Bug B-14 reproduit (MIGRATION.md 8.2, Q-PAUSES) : ce chrono retranche les pauses, alors que le
- * total par jour de l'historique (`groupHistoryByDay`) ne les retranche pas.
+ * Segment en cours : depuis la fin de la dernière pause terminée, ou depuis le début du service.
+ * Durée = durée brute du service − (début du segment − début du service).
  */
-export function computeTodayWorkedMs(
-  todayServices: ServiceDTO[],
-  activeService: ServiceDTO | null,
-  elapsedMs: number,
-): number {
-  let totalWorkMs = 0
-  let totalBreakMs = 0
-
-  for (const service of todayServices) {
-    const startTime = service.debut ? toMs(service.debut) : 0
-    if (!startTime) continue
-
-    if (service.isBreak) {
-      // Seules les pauses terminées sont retranchées : une pause en cours fige le chrono
-      if (service.fin) {
-        totalBreakMs += service.duree ? service.duree * 1000 : toMs(service.fin) - startTime
-      }
-    } else if (service.fin) {
-      totalWorkMs += service.duree ? service.duree * 1000 : toMs(service.fin) - startTime
-    } else if (activeService && !activeService.isBreak) {
-      // Service en cours (hors pause)
-      totalWorkMs += elapsedMs
-    } else if (activeService?.isBreak && activeService.debut) {
-      // En pause : le travail est figé au début de la pause
-      totalWorkMs += toMs(activeService.debut) - startTime
-    }
+export function currentWorkSegment(service: ServiceDTO, durations: LiveDurations): WorkSegment {
+  const lastEnded = [...(service.pauses ?? [])].reverse().find((pause) => !!pause.fin)
+  if (!lastEnded?.fin) return { start: service.debut, seconds: durations.duree }
+  const offset = Math.round((toMs(lastEnded.fin) - toMs(service.debut)) / 1000)
+  return {
+    start: lastEnded.fin,
+    seconds: Number.isNaN(offset) ? durations.duree : Math.max(0, durations.duree - offset),
   }
-
-  return Math.max(0, totalWorkMs - totalBreakMs)
 }
 
 const pad2 = (value: number) => value.toString().padStart(2, '0')
 
-/** Chrono « HH:MM:SS » (largeur stable, lisible d'un coup d'œil). */
-export function formatClock(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000)
+/** Chrono « HH:MM:SS » à partir de secondes (largeur stable, lisible d'un coup d'œil). */
+export function formatClock(seconds: number): string {
+  const totalSeconds = Math.max(0, Math.floor(seconds))
   const h = Math.floor(totalSeconds / 3600)
   const m = Math.floor((totalSeconds % 3600) / 60)
   const s = totalSeconds % 60

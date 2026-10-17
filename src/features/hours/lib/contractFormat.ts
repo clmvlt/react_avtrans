@@ -1,3 +1,4 @@
+import { liveContractComparison } from '@/lib/liveCounter'
 import type { UserContractComparisonDTO } from '@/models'
 
 /**
@@ -13,6 +14,9 @@ import type { UserContractComparisonDTO } from '@/models'
  * D10 : prévision de fin de mois calculée par l'API (total actuel + jours ouvrés restants, vacances
  * et fériés déduits, au rythme du contrat), affichée en réalisation prévue pour le mois en cours
  * et les mois à venir.
+ *
+ * D12 : un mois avec un service en cours (`enCours`) avance en direct : heures effectuées, total,
+ * écarts et réalisations ; la prévision de fin de mois reste stable (`liveContractComparison`).
  */
 
 export type ContractRow = UserContractComparisonDTO & {
@@ -79,6 +83,14 @@ export function getProgressBarClass(pct: number | null | undefined): string {
 }
 
 const round2 = (value: number) => Math.round(value * 100) / 100
+
+/** Au moins un employé a un service en cours sur le mois : ses compteurs avancent. */
+export const hasRunningComparison = (comparisons: UserContractComparisonDTO[]) =>
+  comparisons.some((comparison) => comparison.enCours === true)
+
+/** Comparaisons à l'instant affiché (`elapsed` secondes après la réception de la réponse). */
+export const toLiveComparisons = (comparisons: UserContractComparisonDTO[], elapsed: number) =>
+  comparisons.map((comparison) => liveContractComparison(comparison, elapsed))
 
 /** Heures créditées d'une comparaison (absences + fériés). */
 export const getHeuresCreditees = (comparison: UserContractComparisonDTO) =>
