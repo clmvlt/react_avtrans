@@ -10,11 +10,11 @@ import {
   liveLineSeconds,
   livePeriodHours,
 } from '@/lib/liveCounter'
-import { formatSince, startDayKey } from '@/lib/serviceLines'
+import { formatSince } from '@/lib/serviceLines'
 import { cn } from '@/lib/utils'
 import type { UserWithStatusDTO } from '@/models'
 import type { MonitoringActions } from '../hooks/useMonitoringActions'
-import { formatHoursToday } from '../lib/groupByPresence'
+import { formatHoursToday, isServiceOutsideWorkday, workdayHint } from '../lib/groupByPresence'
 import { PresenceUserContextMenu } from './PresenceUserContextMenu'
 import { PresenceUserDropdown } from './PresenceUserDropdown'
 
@@ -47,10 +47,9 @@ type PresenceUserCardProps = {
 
 /**
  * Carte d'un employé : lien vers ses pointages, avatar avec pastille de présence, heure de début
- * (du service, ou de la pause en cours) et heures nettes du jour (aussi sur téléphone) ; menu
- * « ⋮ » et clic droit. Les heures avancent en direct entre deux rafraîchissements (D12). Un service
- * commencé un autre jour (service de nuit) ne compte pas dans les heures du jour : son temps net
- * s'affiche à part.
+ * (du service, ou de la pause en cours) et heures nettes de la journée de travail (aussi sur
+ * téléphone) ; menu « ⋮ » et clic droit. Les heures avancent en direct entre deux rafraîchissements
+ * (D12). Après minuit, un salarié de nuit garde la journée de la veille : « Journée du 12/10 ».
  */
 export function PresenceUserCard({ user, receivedAt, color, actions }: PresenceUserCardProps) {
   const statusText = getStatusText(user.status)
@@ -61,8 +60,11 @@ export function PresenceUserCard({ user, receivedAt, color, actions }: PresenceU
   const running = isPeriodRunning(user.hoursToday) || (!!service && isLineRunning(service))
   const elapsed = useLiveElapsed(receivedAt, running)
   const hoursToday = livePeriodHours(user.hoursToday, elapsed)
-  const nightService = !!service && startDayKey(service) !== todayKey
-  const serviceHours = service && nightService ? liveLineSeconds(service, elapsed) / 3600 : 0
+  const serviceHours =
+    service && isServiceOutsideWorkday(user, service, todayKey)
+      ? liveLineSeconds(service, elapsed) / 3600
+      : 0
+  const hint = workdayHint(user, todayKey)
 
   return (
     <PresenceUserContextMenu user={user} actions={actions}>
@@ -106,6 +108,7 @@ export function PresenceUserCard({ user, receivedAt, color, actions }: PresenceU
           {hoursToday > 0 && (
             <div className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground tabular-nums">
               {formatHoursToday(hoursToday)}
+              {hint && <span className="font-normal"> · {hint}</span>}
             </div>
           )}
           {serviceHours > 0 && (

@@ -1,4 +1,6 @@
-import type { UserWithStatusDTO } from '@/models'
+import { startDayKey } from '@/lib/serviceLines'
+import { formatOtherWorkdayHint } from '@/lib/workday'
+import type { ServiceDTO, UserWithStatusDTO } from '@/models'
 
 export type PresenceGroups = {
   present: UserWithStatusDTO[]
@@ -27,6 +29,27 @@ export function filterPresenceGroups(groups: PresenceGroups, search: string): Pr
     onBreak: groups.onBreak.filter(matches),
     absent: groups.absent.filter(matches),
   }
+}
+
+/**
+ * Mention à côté de `hoursToday` quand il porte sur la journée de la veille (service de nuit) :
+ * « Journée du 12/10 », vide sinon.
+ */
+export const workdayHint = (user: UserWithStatusDTO, todayKey: string) =>
+  formatOtherWorkdayHint(user.journee, todayKey)
+
+/**
+ * Le service en cours est-il hors de la journée comptée dans `hoursToday` ? Seulement sans
+ * `journee` (ancienne API) pour un service commencé un autre jour : son temps net s'affiche alors
+ * à part. Avec `journee`, la journée d'un service de nuit est déjà celle de `hoursToday`.
+ */
+export function isServiceOutsideWorkday(
+  user: UserWithStatusDTO,
+  service: ServiceDTO | null,
+  todayKey: string,
+): boolean {
+  if (!service) return false
+  return startDayKey(service) !== (user.journee || todayKey)
 }
 
 /**

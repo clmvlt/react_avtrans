@@ -1,9 +1,11 @@
 import { useId } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { Calendar, CalendarDays, CalendarRange, Sun } from 'lucide-react'
+import { useDayKey } from '@/hooks/useDayChange'
 import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { isPeriodRunning, livePeriodHours, type Received } from '@/lib/liveCounter'
 import { cn } from '@/lib/utils'
+import { formatWorkdayLabel } from '@/lib/workday'
 import type { WorkedHoursDTO } from '@/services'
 import { formatHoursMinutes } from '@/utils/timeFormatters'
 
@@ -36,11 +38,13 @@ const STATS: StatItem[] = [
 ]
 
 /**
- * Heures nettes de l'employé selon l'API : aujourd'hui, semaine, mois, mois dernier. Une période
- * avec un service en cours avance en direct.
+ * Heures nettes de l'employé selon l'API : journée de travail en cours (« Journée du 12/10 » pour
+ * un service de nuit commencé la veille), semaine, mois, mois dernier. Une période avec un service
+ * en cours avance en direct.
  */
 export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
   const titleId = useId()
+  const todayKey = useDayKey()
   const running = STATS.some(({ key }) => isPeriodRunning(hours.data[key]))
   const elapsed = useLiveElapsed(hours.receivedAt, running)
 
@@ -62,7 +66,7 @@ export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
             </div>
             <div>
               <p className="text-[10px] tracking-wide text-muted-foreground uppercase sm:text-xs">
-                {label}
+                {key === 'day' ? formatWorkdayLabel(hours.data.jour, todayKey) : label}
               </p>
               <p className="font-mono text-lg font-bold text-foreground sm:text-xl">
                 {formatHoursMinutes(livePeriodHours(hours.data[key], elapsed))}

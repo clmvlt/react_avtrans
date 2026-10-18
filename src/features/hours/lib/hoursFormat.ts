@@ -1,11 +1,15 @@
 import { isPeriodRunning, livePeriodHours } from '@/lib/liveCounter'
+import { formatOtherWorkdayHint } from '@/lib/workday'
 import type { UserHoursDTO, UserWithHoursDTO } from '@/models'
 
 /** Ligne de la page Heures : entrée de l'API + champs à plat pour le tri et l'affichage. */
 export type UserHoursRow = UserWithHoursDTO & {
   fullName: string
   statusSort: string
+  /** Journée de travail en cours (la veille pour un service de nuit) */
   hoursDay: number
+  /** « Journée du 12/10 » si `hoursDay` porte sur la veille, vide sinon */
+  dayHint: string
   hoursWeek: number
   hoursMonth: number
   hoursLastMonth: number
@@ -49,9 +53,13 @@ const periodHours = (
 
 /**
  * Entrées avec un utilisateur, aplaties pour le tri. `elapsed` (secondes depuis la réception) fait
- * avancer les périodes en cours.
+ * avancer les périodes en cours ; `todayKey` (`YYYY-MM-DD`) repère une journée de la veille.
  */
-export function buildUserHoursRows(entries: UserWithHoursDTO[], elapsed = 0): UserHoursRow[] {
+export function buildUserHoursRows(
+  entries: UserWithHoursDTO[],
+  elapsed = 0,
+  todayKey = '',
+): UserHoursRow[] {
   return entries
     .filter((entry) => entry.user != null)
     .map((entry) => ({
@@ -59,6 +67,7 @@ export function buildUserHoursRows(entries: UserWithHoursDTO[], elapsed = 0): Us
       fullName: `${entry.user?.firstName || ''} ${entry.user?.lastName || ''}`.trim(),
       statusSort: entry.user?.status || '',
       hoursDay: periodHours(entry.hours, 'hoursDay', elapsed),
+      dayHint: todayKey ? formatOtherWorkdayHint(entry.hours?.jour, todayKey) : '',
       hoursWeek: periodHours(entry.hours, 'hoursWeek', elapsed),
       hoursMonth: periodHours(entry.hours, 'hoursMonth', elapsed),
       hoursLastMonth: periodHours(entry.hours, 'hoursLastMonth', elapsed),

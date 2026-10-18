@@ -16,8 +16,13 @@ const hoursColumn = (id: HoursColumnKey, title: string): ColumnDef<UserHoursRow,
   accessorFn: (row) => row[id],
   header: ({ column }) => <DataTableColumnHeader column={column} title={title} />,
   cell: ({ row }) => (
-    <span className={cn('text-lg font-bold', getHoursClass(row.original[id]))}>
-      {formatDecimalHours(row.original[id])}
+    <span className="inline-flex flex-col items-center">
+      <span className={cn('text-lg font-bold', getHoursClass(row.original[id]))}>
+        {formatDecimalHours(row.original[id])}
+      </span>
+      {id === 'hoursDay' && row.original.dayHint && (
+        <span className="text-xs text-muted-foreground">{row.original.dayHint}</span>
+      )}
     </span>
   ),
   meta: CENTER,

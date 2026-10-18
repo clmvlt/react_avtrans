@@ -5,7 +5,6 @@ import { useUserContractComparisonQuery } from '@/features/hours/api/useUserCont
 import { useUserWorkedHoursQuery } from '@/features/user-services/api/useUserWorkedHoursQuery'
 import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { isPeriodRunning, liveContractComparison, livePeriodSeconds } from '@/lib/liveCounter'
-import type { WorkedHoursDTO } from '@/services'
 import { formatDayHours } from '../lib/formatters'
 import { currentYearMonth, formatMonthTitle } from '../lib/monthCalendar'
 import { ContractProgress } from './ContractProgress'
@@ -14,7 +13,7 @@ import { HubCard } from './HubCard'
 /** Même clé que la carte « Aujourd'hui » et les pointages d'un employé. */
 const ALL_HOURS_PARAMS = {}
 
-const PERIODS: { key: keyof Omit<WorkedHoursDTO, 'calculeLe'>; label: string }[] = [
+const PERIODS: { key: 'week' | 'month' | 'lastMonth' | 'year'; label: string }[] = [
   { key: 'week', label: 'Semaine' },
   { key: 'month', label: 'Mois' },
   { key: 'lastMonth', label: 'Mois dernier' },

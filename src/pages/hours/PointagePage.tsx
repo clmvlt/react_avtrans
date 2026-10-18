@@ -68,8 +68,7 @@ export default function PointagePage() {
         <div className="space-y-4">
           <StatusHeroCard
             active={data.active}
-            todayServices={data.today.data}
-            hours={data.hours}
+            workday={data.today}
             locationDenied={geolocation.permission === 'denied'}
             onRetryLocation={() => void geolocation.requestLocation()}
             showKilometrageReminder={kilometrage.mustEnterToday}

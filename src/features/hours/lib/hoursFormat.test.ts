@@ -34,6 +34,19 @@ describe('buildUserHoursRows', () => {
   it('une période absente vaut 0', () => {
     expect(buildUserHoursRows(entries)[1]?.hoursWeek).toBe(0)
   })
+
+  it('signale une journée de la veille (service de nuit) à côté des heures du jour', () => {
+    const night: UserWithHoursDTO[] = [
+      {
+        user: { uuid: 'u3' },
+        hours: { hoursDay: { secondes: 0, heures: 0, enCours: true }, jour: '2026-10-12' },
+      },
+      { user: { uuid: 'u4' }, hours: { jour: '2026-10-13' } },
+    ]
+    const [nightRow, dayRow] = buildUserHoursRows(night, 0, '2026-10-13')
+    expect(nightRow?.dayHint).toBe('Journée du 12/10')
+    expect(dayRow?.dayHint).toBe('')
+  })
 })
 
 describe('computeHoursTotals', () => {

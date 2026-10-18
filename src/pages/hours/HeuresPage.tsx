@@ -21,7 +21,7 @@ import {
   hasRunningHours,
 } from '@/features/hours/lib/hoursFormat'
 import { sortRowsLikeVue } from '@/features/hours/lib/legacySort'
-import { useInvalidateOnDayChange } from '@/hooks/useDayChange'
+import { useDayKey, useInvalidateOnDayChange } from '@/hooks/useDayChange'
 import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { cn } from '@/lib/utils'
 
@@ -33,6 +33,7 @@ export default function HeuresPage() {
   const [sorting, setSorting] = useState<SortingState>([])
   const entries = hoursQuery.data?.users ?? []
   // Compteurs en direct (D12) : les périodes en cours avancent entre deux réponses
+  const todayKey = useDayKey()
   const elapsed = useLiveElapsed(hoursQuery.data?.receivedAt, hasRunningHours(entries))
 
   const renderContent = () => {
@@ -61,7 +62,7 @@ export default function HeuresPage() {
       )
     }
 
-    const filteredRows = filterUserHoursRows(buildUserHoursRows(entries, elapsed), search)
+    const filteredRows = filterUserHoursRows(buildUserHoursRows(entries, elapsed, todayKey), search)
     // Tri du Vue, B-19 compris (Date.parse sur les nombres d'heures)
     const rows = sortRowsLikeVue(filteredRows, sorting, getUserHoursSortValue, {
       parseDates: true,

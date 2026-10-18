@@ -28,8 +28,28 @@ export interface WorkedHoursDTO {
   year?: HeuresPeriodeDTO
   month?: HeuresPeriodeDTO
   week?: HeuresPeriodeDTO
+  /** Sans paramètre de date : journée de travail en cours (la veille pour un service de nuit) */
   day?: HeuresPeriodeDTO
+  /** Jour (`YYYY-MM-DD`) de la période `day` */
+  jour?: string
   lastMonth?: HeuresPeriodeDTO
+}
+
+/**
+ * Journée de travail en cours — GET /services/user/daily. `date` est le jour de début de ses
+ * services : aujourd'hui, ou la veille pour un service de nuit en cours ou terminé après minuit,
+ * tant qu'aucun service n'a commencé aujourd'hui (`aujourdhui` vaut alors `false`).
+ */
+export interface JourneeTravailResponse {
+  success: boolean
+  /** Jour de rattachement `YYYY-MM-DD` */
+  date: string
+  aujourdhui: boolean
+  /** Temps net de la journée à `calculeLe`, qui avance si `enCours` */
+  heures: HeuresPeriodeDTO
+  /** Services de travail de la journée par début croissant, chacun avec ses `pauses` */
+  services: ServiceDTO[]
+  calculeLe?: string
 }
 
 /**
@@ -225,12 +245,11 @@ export class UserServicesService {
   }
 
   /**
-   * Get daily services for the authenticated user
-   * Returns all services for the current day (from 00:00 to 23:59)
-   * @returns Promise with daily services
+   * Journée de travail en cours de l'utilisateur connecté (services avec leurs pauses et temps net)
+   * @returns Promise with the current workday
    */
-  async getDailyServices(): Promise<ServiceDTO[]> {
-    return apiClient.get<ServiceDTO[]>('services/user/daily')
+  async getDailyServices(): Promise<JourneeTravailResponse> {
+    return apiClient.get<JourneeTravailResponse>('services/user/daily')
   }
 
   // Admin methods

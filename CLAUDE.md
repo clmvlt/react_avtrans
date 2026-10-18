@@ -120,6 +120,7 @@ src/
 
 ## Heures et compteurs en direct (D12, `MIGRATION.md` section 14)
 - Aucun total d'heures n'est calculé à partir des lignes de pointage : on affiche `dureeTravail`, `duree` et les `HeuresPeriodeDTO` de l'API. Une pause appartient à son service (`serviceParentUuid`, `pauses`) et un service compte sur son jour de début.
+- Journée de travail (D14, `MIGRATION.md` section 16) : « aujourd'hui » = la journée de travail en cours selon l'API (`date`/`aujourdhui` de `/services/user/daily`, `jour` des heures, `journee` des présences), la veille pour un service de nuit après minuit. Ne jamais la recalculer ; libellés et heures avec leur jour : `src/lib/workday.ts`.
 - Une valeur qui avance : `queryFn: () => receive(service.x())` (instant de réception sur `performance.now()`), `useLiveElapsed(receivedAt, avance)` puis les fonctions de `src/lib/liveCounter.ts`. Jamais de comparaison de `calculeLe` avec l'horloge du PC. Requêtes concernées : `...liveQueryOptions` et `useInvalidateOnDayChange`.
 
 ## État client

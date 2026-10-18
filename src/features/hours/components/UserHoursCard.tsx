@@ -7,11 +7,19 @@ type UserHoursCardProps = {
   row: UserHoursRow
 }
 
-function HoursTile({ label, hours }: { label: string; hours: number }) {
+type HoursTileProps = {
+  label: string
+  hours: number
+  /** Précision sous la valeur (« Journée du 12/10 ») */
+  hint?: string
+}
+
+function HoursTile({ label, hours, hint }: HoursTileProps) {
   return (
     <div className="rounded-lg bg-muted/50 p-2">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className={cn('text-lg font-bold', getHoursClass(hours))}>{formatDecimalHours(hours)}</p>
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   )
 }
@@ -25,7 +33,7 @@ export function UserHoursCard({ row }: UserHoursCardProps) {
       </UserIdentity>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-        <HoursTile label="Jour" hours={row.hoursDay} />
+        <HoursTile label="Jour" hours={row.hoursDay} hint={row.dayHint} />
         <HoursTile label="Semaine" hours={row.hoursWeek} />
         <HoursTile label="Mois" hours={row.hoursMonth} />
       </div>

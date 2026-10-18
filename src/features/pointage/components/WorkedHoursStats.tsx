@@ -1,7 +1,9 @@
 import { Calendar, CalendarDays, CalendarRange, Sun } from 'lucide-react'
 import { StatCard } from '@/components/shared/StatCard'
+import { useDayKey } from '@/hooks/useDayChange'
 import { useLiveElapsed } from '@/hooks/useLiveElapsed'
 import { isPeriodRunning, livePeriodHours, type Received } from '@/lib/liveCounter'
+import { formatWorkdayLabel } from '@/lib/workday'
 import type { WorkedHoursDTO } from '@/services'
 import { formatHours } from '@/utils/timeFormatters'
 
@@ -37,11 +39,12 @@ const STATS = [
 ] as const
 
 /**
- * Heures nettes du jour, de la semaine, du mois et du mois dernier, calculées par l'API ; une
- * période en cours avance en direct. Un service compte sur son jour de début : à 3 h du matin,
- * « Aujourd'hui » ne compte pas le service de nuit commencé la veille.
+ * Heures nettes de la journée de travail, de la semaine, du mois et du mois dernier, calculées par
+ * l'API ; une période en cours avance en direct. La première tuile porte sur la journée de travail
+ * en cours : « Journée du 12/10 » après minuit pour un service de nuit commencé la veille.
  */
 export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
+  const todayKey = useDayKey()
   const running = STATS.some(({ key }) => isPeriodRunning(hours.data[key]))
   const elapsed = useLiveElapsed(hours.receivedAt, running)
 
@@ -56,7 +59,7 @@ export function WorkedHoursStats({ hours }: WorkedHoursStatsProps) {
           variant="compact"
           icon={stat.icon}
           iconClassName={stat.iconClassName}
-          label={stat.label}
+          label={stat.key === 'day' ? formatWorkdayLabel(hours.data.jour, todayKey) : stat.label}
           value={formatHours(livePeriodHours(hours.data[stat.key], elapsed))}
         />
       ))}

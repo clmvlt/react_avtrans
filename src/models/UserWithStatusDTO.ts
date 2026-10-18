@@ -31,8 +31,10 @@ export interface UserWithStatusDTO {
   status?: UserStatus
   /** Service de travail en cours avec ses pauses (si present ou en pause) */
   activeService?: ActiveServiceDTO | null
-  /** Heures travaillees nettes des services debutes aujourd'hui */
+  /** Heures travaillees nettes de la journee de travail en cours (la veille pour un service de nuit) */
   hoursToday?: HeuresPeriodeDTO
+  /** Jour (`YYYY-MM-DD`) de rattachement de `hoursToday` */
+  journee?: string
   /** Instant de calcul (heure serveur) */
   calculeLe?: string
 }

@@ -1,10 +1,11 @@
 import { ArrowRight, ClipboardList } from 'lucide-react'
 import { Empty, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { isLineRunning, liveLineSeconds } from '@/lib/liveCounter'
+import { startDayKey } from '@/lib/serviceLines'
 import { cn } from '@/lib/utils'
 import type { ServiceDTO } from '@/models'
+import { formatTimeInWorkday } from '@/lib/workday'
 import { formatDuration } from '@/utils/timeFormatters'
-import { toTime } from '../lib/formatters'
 
 type ServiceTimelineProps = {
   /** Services et pauses, dans l'ordre d'affichage */
@@ -12,7 +13,15 @@ type ServiceTimelineProps = {
   /** Secondes écoulées depuis la réception : les lignes en cours avancent d'autant */
   elapsed?: number
   emptyText?: string
+  /**
+   * Jour de la journée affichée (`YYYY-MM-DD`) : une heure qui tombe un autre jour (fin d'un
+   * service de nuit) est suivie de son jour, « 06:00 (mar. 13/10) »
+   */
+  dayKey?: string
 }
+
+const sameDay = (a: ServiceDTO['debut'], b: ServiceDTO['fin']) =>
+  !!a && !!b && new Date(a).toDateString() === new Date(b).toDateString()
 
 /**
  * Frise verticale des services et pauses (ServiceTimeline.vue). Durée d'un service = temps net
@@ -22,6 +31,7 @@ export function ServiceTimeline({
   lines,
   elapsed = 0,
   emptyText = 'Aucun service enregistré',
+  dayKey,
 }: ServiceTimelineProps) {
   if (!lines.length) {
     return (
@@ -49,11 +59,19 @@ export function ServiceTimeline({
 
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-foreground tabular-nums">
-                <span>{toTime(service.debut)}</span>
+              <div className="flex flex-wrap items-center gap-x-1.5 text-sm font-medium text-foreground tabular-nums">
+                {/* Début et fin le même jour hors journée (pause après minuit) : le jour une seule fois */}
+                <span>
+                  {formatTimeInWorkday(
+                    service.debut,
+                    service.fin && sameDay(service.debut, service.fin)
+                      ? (startDayKey(service) ?? dayKey)
+                      : dayKey,
+                  )}
+                </span>
                 <ArrowRight className="size-3 shrink-0 text-muted-foreground" />
                 {service.fin ? (
-                  <span>{toTime(service.fin)}</span>
+                  <span>{formatTimeInWorkday(service.fin, dayKey)}</span>
                 ) : (
                   <span className="text-xs font-normal text-muted-foreground italic">en cours</span>
                 )}

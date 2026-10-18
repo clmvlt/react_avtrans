@@ -13,6 +13,7 @@ import { parseLocalDateKey } from '@/lib/dates'
 import { isLineRunning, isPeriodRunning, liveDurations, livePeriodSeconds } from '@/lib/liveCounter'
 import { formatSince, hasRunningLine, startDayKey } from '@/lib/serviceLines'
 import { cn } from '@/lib/utils'
+import { isWorkdayToday } from '@/lib/workday'
 import { formatDuration } from '@/utils/timeFormatters'
 import { formatClock } from '../lib/formatters'
 import { PRESENCE_DOT_CLASSES, PRESENCE_LABELS } from '../lib/presence'
@@ -37,7 +38,9 @@ type TodayCardProps = {
 
 /**
  * Journée de l'employé : présence, heures nettes du jour qui avancent en direct, boutons pour
- * pointer à sa place (mêmes actions que ses pointages) et frise des pointages du jour.
+ * pointer à sa place (mêmes actions que ses pointages) et frise des pointages de la journée. La
+ * journée est celle de l'API (`jour` des heures) : après minuit, un salarié de nuit garde celle de
+ * la veille tant qu'il n'a pas repris de service.
  */
 export function TodayCard({ userUuid, onShowServices, onActionDone }: TodayCardProps) {
   const todayKey = useDayKey()
@@ -46,7 +49,10 @@ export function TodayCard({ userUuid, onShowServices, onActionDone }: TodayCardP
   const actions = useAdminServiceActions(userUuid, statusInfo, onActionDone)
   const hoursQuery = useUserWorkedHoursQuery(userUuid, ALL_HOURS_PARAMS)
   useInvalidateOnDayChange(adminServicesKeys.userHours(userUuid))
-  const todayQuery = useUserServicesRangeQuery(userUuid, todayKey, todayKey)
+  // Journée de travail en cours selon l'API : la veille pour un service de nuit après minuit
+  const dayKey = hoursQuery.data?.data.jour || todayKey
+  const isToday = isWorkdayToday(dayKey, todayKey)
+  const todayQuery = useUserServicesRangeQuery(userUuid, dayKey, dayKey)
 
   const { status, service, pause } = statusInfo
   const hoursDay = hoursQuery.data?.data.day
@@ -57,10 +63,10 @@ export function TodayCard({ userUuid, onShowServices, onActionDone }: TodayCardP
   const linesElapsed = useLiveElapsed(todayQuery.data?.receivedAt, hasRunningLine(lines))
 
   const durations = service ? liveDurations(service, serviceElapsed) : null
-  // Service de nuit commencé la veille : il compte sur la veille, pas dans « aujourd'hui » (D12)
-  const startedEarlier = !!service && startDayKey(service) !== todayKey
+  // Service en cours d'une autre journée que celle affichée : son temps net s'affiche à part
+  const startedEarlier = !!service && startDayKey(service) !== dayKey
   const spinner = <LoaderCircle className="size-4 animate-spin" />
-  const dateLabel = parseLocalDateKey(todayKey)?.toLocaleDateString('fr-FR', {
+  const dateLabel = parseLocalDateKey(dayKey)?.toLocaleDateString('fr-FR', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -68,7 +74,7 @@ export function TodayCard({ userUuid, onShowServices, onActionDone }: TodayCardP
 
   return (
     <HubCard
-      title="Aujourd'hui"
+      title={isToday ? "Aujourd'hui" : 'Journée de la veille (service de nuit)'}
       description={<span className="capitalize">{dateLabel}</span>}
       icon={Sun}
       actions={
@@ -96,7 +102,9 @@ export function TodayCard({ userUuid, onShowServices, onActionDone }: TodayCardP
         >
           {formatClock(livePeriodSeconds(hoursDay, hoursElapsed))}
         </p>
-        <p className="text-xs text-muted-foreground">travaillé aujourd&apos;hui, pauses déduites</p>
+        <p className="text-xs text-muted-foreground">
+          {isToday ? "travaillé aujourd'hui" : 'travaillé sur la journée'}, pauses déduites
+        </p>
         {durations && (pause || startedEarlier) && (
           <div className="mt-2 flex flex-col gap-0.5 border-t pt-2 text-xs">
             {pause && (
@@ -160,6 +168,7 @@ export function TodayCard({ userUuid, onShowServices, onActionDone }: TodayCardP
         <ServiceTimeline
           lines={lines}
           elapsed={linesElapsed}
+          dayKey={dayKey}
           emptyText="Aucun pointage aujourd'hui"
         />
       </div>

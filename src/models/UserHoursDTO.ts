@@ -5,7 +5,10 @@ import type { HeuresPeriodeDTO } from './HeuresPeriodeDTO';
  * est un HeuresPeriodeDTO, plus un nombre)
  */
 export interface UserHoursDTO {
+  /** Journée de travail en cours (la veille pour un service de nuit) */
   hoursDay?: HeuresPeriodeDTO;
+  /** Jour (`YYYY-MM-DD`) de rattachement de `hoursDay` */
+  jour?: string;
   hoursWeek?: HeuresPeriodeDTO;
   hoursMonth?: HeuresPeriodeDTO;
   hoursYear?: HeuresPeriodeDTO;
@@ -35,8 +38,10 @@ export interface WorkedHoursDto {
   month?: HeuresPeriodeDTO;
   /** Heures travaillées sur la semaine en cours */
   week?: HeuresPeriodeDTO;
-  /** Heures travaillées aujourd'hui (services débutés ce jour-là) */
+  /** Heures de la journée de travail en cours (services débutés ce jour-là ; la veille pour un service de nuit) */
   day?: HeuresPeriodeDTO;
+  /** Jour (`YYYY-MM-DD`) de la période `day` */
+  jour?: string;
   /** Heures travaillées sur le mois dernier */
   lastMonth?: HeuresPeriodeDTO;
 }
